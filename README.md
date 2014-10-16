@@ -1,40 +1,45 @@
-mem-fs
+mem-fs-editor
 =============
 
-Simple in-memory vinyl file store.
-
+File edition helpers working on top of [mem-fs](/)
 
 Usage
 -------------
 
-### Loading a file
-
-You access a file using `store#get()` method. If the file is in memory, it will be used. Otherwise, we'll load the file from the file-system.
-
 ```js
-var store = require('mem-fs').create();
+var memFs = require('mem-fs');
+var editor = require('mem-fs-editor');
 
-store.get('/test/file.txt');
+var store = memFs.create();
+var fs = editor.create(store);
+
+fs.write('somefile.js', 'var a = 1;');
 ```
 
-### Adding/updating a file
+### `#read(filepath)`
 
-You update file references by using `store#add()` method. This method take a `vinyl` file object as parameter.
+Read a file and return its contents as a string.
 
-```js
-var File = require('vinyl');
-var store = require('mem-fs').create();
+### `#readJSON(filepath)`
 
-var coffeeFile = new File({
-  cwd: '/',
-  base: '/test/',
-  path: '/test/file.coffee',
-  contents: new Buffer('test = 123')
-});
+Read a file and parse its contents as JSON.
 
-store.add(coffeeFile);
-```
+### `#write(filepath, contents)`
 
-### Iterating over the file system
+Write to an existing file or a new file.
 
-Using `store#each(cb(file, index))`, you can iterate over every file stored in the file system.
+### `#delete(filepath)`
+
+Delete a file
+
+### `#copy(from, to, [options])`
+
+Copy a file from the `from` path to the `to` path.
+
+Optionnaly, pass an `options.process` function (`process(contents)`) returning a string who'll become the new file content.
+
+### `#copyTpl(from, to, context, [settings])`
+
+Copy the `from` file and parse its content as an underscore template where `context` is the template context.
+
+Optionnally pass a template `settings` object.

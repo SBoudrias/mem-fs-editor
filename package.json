@@ -1,5 +1,5 @@
 {
-  "name": "mem-fs-edit",
+  "name": "mem-fs-editor",
   "version": "1.0.0",
   "description": "File editions helpers working on a mem-fs store",
   "main": "index.js",
@@ -8,12 +8,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/SBoudrias/mem-fs-edit"
+    "url": "https://github.com/SBoudrias/mem-fs-editor"
   },
   "author": "Simon Boudrias",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/SBoudrias/mem-fs-edit/issues"
+    "url": "https://github.com/SBoudrias/mem-fs-editor/issues"
   },
-  "homepage": "https://github.com/SBoudrias/mem-fs-edit"
+  "homepage": "https://github.com/SBoudrias/mem-fs-editor"
 }
