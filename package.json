@@ -1,0 +1,19 @@
+{
+  "name": "mem-fs-edit",
+  "version": "1.0.0",
+  "description": "File editions helpers working on a mem-fs store",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SBoudrias/mem-fs-edit"
+  },
+  "author": "Simon Boudrias",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/SBoudrias/mem-fs-edit/issues"
+  },
+  "homepage": "https://github.com/SBoudrias/mem-fs-edit"
+}
