@@ -1,7 +1,7 @@
 mem-fs-editor
 =============
 
-File edition helpers working on top of [mem-fs](/)
+File edition helpers working on top of [mem-fs](https://github.com/SBoudrias/mem-fs)
 
 Usage
 -------------

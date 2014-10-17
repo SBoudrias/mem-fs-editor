@@ -3,7 +3,7 @@
 var assert = require('assert');
 var path = require('path');
 var editor = require('..');
-var memFs = require('../../mem-fs/');
+var memFs = require('mem-fs');
 
 describe('#copyTpl()', function () {
   beforeEach(function() {

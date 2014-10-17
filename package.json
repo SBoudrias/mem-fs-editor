@@ -1,7 +1,7 @@
 {
   "name": "mem-fs-editor",
   "version": "1.0.0",
-  "description": "File editions helpers working on a mem-fs store",
+  "description": "File edition helpers working on top of mem-fs",
   "main": "index.js",
   "scripts": {
     "test": "mocha"
@@ -15,5 +15,13 @@
   "bugs": {
     "url": "https://github.com/SBoudrias/mem-fs-editor/issues"
   },
-  "homepage": "https://github.com/SBoudrias/mem-fs-editor"
+  "homepage": "https://github.com/SBoudrias/mem-fs-editor",
+  "dependencies": {
+    "lodash": "^2.4.1",
+    "vinyl": "^0.4.3"
+  },
+  "devDependencies": {
+    "mem-fs": "SBoudrias/mem-fs",
+    "mocha": "^1.21.5"
+  }
 }
