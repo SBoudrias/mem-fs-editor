@@ -26,11 +26,11 @@ Read a file and parse its contents as JSON.
 
 ### `#write(filepath, contents)`
 
-Write to an existing file or a new file.
+Replace the content of a file (existing or new) with a string or a buffer.
 
 ### `#delete(filepath)`
 
-Delete a file
+Delete a file.
 
 ### `#copy(from, to, [options])`
 
