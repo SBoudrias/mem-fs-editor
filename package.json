@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/SBoudrias/mem-fs-editor",
   "dependencies": {
+    "glob": "^4.0.6",
     "lodash": "^2.4.1",
     "vinyl": "^0.4.3"
   },

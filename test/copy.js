@@ -33,4 +33,16 @@ describe('#copy()', function () {
     });
     assert.equal(this.fs.read(newPath), contents);
   });
+
+  it('copy by globbing', function () {
+    this.fs.copy(__dirname + '/fixtures/**', '/output');
+    assert.equal(this.fs.read('/output/file-a.txt'), 'foo\n');
+    assert.equal(this.fs.read('/output/nested/file.txt'), 'nested\n');
+  });
+
+  it('requires destination directory when globbing', function () {
+    assert.throws(
+      this.fs.copy.bind(this.fs, __dirname + '/fixtures/**', '/output/file.a')
+    );
+  });
 });

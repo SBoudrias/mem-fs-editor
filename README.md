@@ -40,6 +40,8 @@ Copy a file from the `from` path to the `to` path.
 
 Optionally, pass an `options.process` function (`process(contents)`) returning a string or a buffer who'll become the new file content. The process function will take a single contents argument who is the copied file contents as a `Buffer`.
 
+`from` can be a glob pattern that'll be match against the file system. If that's the case, then `to` must be an output directory.
+
 ### `#copyTpl(from, to, context, [settings])`
 
 Copy the `from` file and parse its content as an underscore template where `context` is the template context.
