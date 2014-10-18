@@ -38,7 +38,7 @@ Delete a file.
 
 Copy a file from the `from` path to the `to` path.
 
-Optionnaly, pass an `options.process` function (`process(contents)`) returning a string who'll become the new file content.
+Optionally, pass an `options.process` function (`process(contents)`) returning a string or a buffer who'll become the new file content. The process function will take a single contents argument who is the copied file contents as a `Buffer`.
 
 ### `#copyTpl(from, to, context, [settings])`
 

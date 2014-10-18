@@ -26,6 +26,7 @@ describe('#copy()', function () {
     var newPath = '/new/path/file.txt';
     this.fs.copy(filepath, newPath, {
       process: function (contentsArg) {
+        assert(contentsArg instanceof Buffer)
         assert.equal(contentsArg, initialContents);
         return contents;
       }

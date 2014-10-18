@@ -8,7 +8,7 @@ module.exports = function (from, to, context, tplSettings) {
   tplSettings = tplSettings || {};
   this.copy(from, to, {
     process: function (contents) {
-      return _.template(contents, context, tplSettings);
+      return _.template(contents.toString(), context, tplSettings);
     }
   });
 };
