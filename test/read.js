@@ -5,6 +5,8 @@ var path = require('path');
 var editor = require('..');
 var memFs = require('mem-fs');
 
+var fileA = path.join(__dirname, 'fixtures/file-a.txt');
+
 describe('#read()', function () {
   beforeEach(function() {
     var store = memFs.create();
@@ -12,8 +14,14 @@ describe('#read()', function () {
   });
 
   it('read the content of a file', function () {
-    var content = this.fs.read(path.join(__dirname, 'fixtures/file-a.txt'));
+    var content = this.fs.read(fileA);
     assert.equal(content, 'foo\n');
+  });
+
+  it('get the buffer content of a file', function () {
+    var content = this.fs.read(fileA, { raw: true });
+    assert(content instanceof Buffer);
+    assert.equal(content.toString(), 'foo\n');
   });
 
   it('throws if file does not exist', function () {

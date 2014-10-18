@@ -16,9 +16,11 @@ var fs = editor.create(store);
 fs.write('somefile.js', 'var a = 1;');
 ```
 
-### `#read(filepath)`
+### `#read(filepath, [options])`
 
 Read a file and return its contents as a string.
+
+You can alternatively get the raw contents buffer if you pass `options.raw = true`.
 
 ### `#readJSON(filepath)`
 
