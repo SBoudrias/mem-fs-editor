@@ -17,6 +17,7 @@ describe('#copy()', function () {
     var newPath = '/new/path/file.txt';
     this.fs.copy(filepath, newPath);
     assert.equal(this.fs.read(newPath), initialContents);
+    assert.equal(this.fs.store.get(newPath).state, 'modified');
   });
 
   it('copy file and process contents', function () {

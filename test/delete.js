@@ -17,4 +17,13 @@ describe('#delete()', function () {
     assert.throws(this.fs.read.bind(this.fs, filepath));
     assert.equal(this.fs.store.get(filepath).state, 'deleted');
   });
+
+  it('delete a directory', function () {
+    var dirpath = path.join(__dirname, 'fixtures/nested');
+    var nestedFile = path.join(dirpath, 'file.txt');
+    this.fs.read(nestedFile)
+    this.fs.delete(dirpath);
+    assert.equal(this.fs.store.get(dirpath).state, 'deleted');
+    assert.equal(this.fs.store.get(nestedFile).state, 'deleted');
+  });
 });

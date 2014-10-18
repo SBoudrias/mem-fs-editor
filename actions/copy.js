@@ -49,6 +49,7 @@ exports._copySingle = function (from, to, options) {
     path: to,
     contents: contents
   });
+  newFile.state = 'modified';
 
   this.store.add(newFile);
 };

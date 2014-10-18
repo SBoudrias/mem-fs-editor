@@ -32,7 +32,7 @@ Replace the content of a file (existing or new) with a string or a buffer.
 
 ### `#delete(filepath)`
 
-Delete a file.
+Delete a file or a directory.
 
 ### `#copy(from, to, [options])`
 
@@ -47,3 +47,11 @@ Optionally, pass an `options.process` function (`process(contents)`) returning a
 Copy the `from` file and parse its content as an underscore template where `context` is the template context.
 
 Optionnally pass a template `settings` object.
+
+### `#commit([filters,] callback)`
+
+Persist every changes made to files in the mem-fs store to disk.
+
+If provided, `filters` is an array of TransformStream to be applied on a stream of vinyl files (like gulp plugins).
+
+`callback` is called once the files are updated on disk.
