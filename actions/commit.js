@@ -9,7 +9,9 @@ var rimraf = require('rimraf');
 
 function write(file) {
   mkdirp.sync(path.dirname(file.path));
-  fs.writeFileSync(file.path, file.contents);
+  fs.writeFileSync(file.path, file.contents, {
+    mode: file.stat ? file.stat.mode : null
+  });
 }
 
 function remove(file) {

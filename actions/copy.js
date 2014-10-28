@@ -39,17 +39,17 @@ exports.copy = function (from, to, options) {
 
 exports._copySingle = function (from, to, options) {
   options = options || {};
-  var contents = this.read(from, { raw: true });
-  if (options.process) {
-    contents = applyProcessingFunc(options.process, contents);
-  }
-  var newFile = new File({
-    cwd: process.cwd(),
-    base: path.basename(to),
-    path: to,
-    contents: contents
-  });
+  var file = this.store.get(from);
+
+  var newFile = file.clone();
+  newFile.cwd = process.cwd();
+  newFile.base = path.basename(to);
+  newFile.path = to;
   newFile.state = 'modified';
+
+  if (options.process) {
+    newFile.contents = applyProcessingFunc(options.process, file.contents);
+  }
 
   this.store.add(newFile);
 };

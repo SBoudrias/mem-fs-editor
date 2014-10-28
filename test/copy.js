@@ -1,6 +1,8 @@
 'use strict';
 
 var assert = require('assert');
+var fs = require('fs');
+var os = require('os');
 var path = require('path');
 var editor = require('..');
 var memFs = require('mem-fs');
@@ -45,5 +47,20 @@ describe('#copy()', function () {
     assert.throws(
       this.fs.copy.bind(this.fs, __dirname + '/fixtures/**', '/output/file.a')
     );
+  });
+
+  it('preserve permissions', function (done) {
+    var filename = path.join(os.tmpdir(), 'perm.txt');
+    var copyname = path.join(os.tmpdir(), 'copy-perm.txt');
+    fs.writeFileSync(filename, 'foo', { mode: parseInt(733, 8) });
+
+    this.fs.copy(filename, copyname);
+
+    this.fs.commit(function () {
+      var oldStat = fs.statSync(filename);
+      var newStat = fs.statSync(copyname);
+      assert.equal(newStat.mode, oldStat.mode);
+      done();
+    });
   });
 });
