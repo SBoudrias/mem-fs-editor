@@ -40,6 +40,7 @@ module.exports = function (filters, cb) {
     } else if (file.state === 'deleted') {
       remove(file);
     }
+    delete file.state;
     this.push(file);
     cb();
   });

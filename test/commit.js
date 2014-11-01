@@ -71,4 +71,11 @@ describe('#commit()', function () {
       done();
     });
   });
+
+  it('reset file status after commiting', function (done) {
+    this.fs.commit(function () {
+      assert.equal(this.fs.store.get(path.join(output, '/file-a.txt')).state, undefined);
+      done();
+    }.bind(this));
+  });
 });
