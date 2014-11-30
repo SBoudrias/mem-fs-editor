@@ -1,6 +1,6 @@
 {
   "name": "mem-fs-editor",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "File edition helpers working on top of mem-fs",
   "main": "index.js",
   "scripts": {
