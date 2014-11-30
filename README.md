@@ -1,4 +1,4 @@
-mem-fs-editor
+mem-fs-editor [![Build Status](https://travis-ci.org/SBoudrias/mem-fs-editor.svg?branch=master)](https://travis-ci.org/SBoudrias/mem-fs-editor)
 =============
 
 File edition helpers working on top of [mem-fs](https://github.com/SBoudrias/mem-fs)
