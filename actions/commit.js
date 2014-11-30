@@ -41,7 +41,6 @@ module.exports = function (filters, cb) {
       remove(file);
     }
     delete file.state;
-    this.push(file);
     cb();
   });
 

@@ -11,12 +11,21 @@ var through = require('through2');
 var editor = require('..');
 
 describe('#commit()', function () {
+  var fixtureDir = path.join(os.tmpdir(), '/mem-fs-editor-test-fixture');
   var output = path.join(os.tmpdir(), '/mem-fs-editor-test');
 
   beforeEach(function(done) {
+    rimraf.sync(fixtureDir);
     var store = memFs.create();
     this.fs = editor.create(store);
-    this.fs.copy(__dirname + '/fixtures/**', output);
+    mkdirp.sync(fixtureDir);
+
+    // Create a 100 files to exercise the stream high water mark
+    var i = 100;
+    while (i--) {
+      fs.writeFileSync(path.join(fixtureDir, 'file-' + i + '.txt'), 'foo');
+    }
+    this.fs.copy(fixtureDir + '/**', output);
     rimraf(output, done);
   });
 
@@ -35,15 +44,17 @@ describe('#commit()', function () {
     });
 
     this.fs.commit([filter], function () {
-      assert.equal(called, 5);
-      assert.equal(this.fs.read(path.join(output, 'file-a.txt')), 'modified');
+      assert.equal(called, 100);
+      assert.equal(this.fs.read(path.join(output, 'file-1.txt')), 'modified');
       done();
     }.bind(this));
   });
 
   it('write file to disk', function (done) {
     this.fs.commit(function () {
-      assert(fs.existsSync(path.join(output, 'file-a.txt')));
+      assert(fs.existsSync(path.join(output, 'file-1.txt')));
+      assert(fs.existsSync(path.join(output, 'file-50.txt')));
+      assert(fs.existsSync(path.join(output, 'file-99.txt')));
       done();
     });
   });
