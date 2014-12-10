@@ -30,6 +30,16 @@ Read a file and parse its contents as JSON.
 
 Replace the content of a file (existing or new) with a string or a buffer.
 
+### `#writeJSON(filepath, contents[, replacer [, space]])`
+
+Replace the content of a file (existing or new) with an object that is to be converted by calling `JSON.stringify()`.
+
+`contents` should usually be a JSON object, but it can technically be anything that is acceptable by [JSON.stringify](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify).
+
+Optionally pass `replacer` and `space` as the last two arguments, as defined by [JSON.stringify](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify). `spacer` is used to format the output string (prettify).
+
+Default value for `space` is `2`, when not specified.
+
 ### `#delete(filepath)`
 
 Delete a file or a directory.

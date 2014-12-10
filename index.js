@@ -7,6 +7,7 @@ function EditionInterface(store) {
 EditionInterface.prototype.read = require('./actions/read.js');
 EditionInterface.prototype.readJSON = require('./actions/read-json.js');
 EditionInterface.prototype.write = require('./actions/write.js');
+EditionInterface.prototype.writeJSON = require('./actions/write-json.js');
 EditionInterface.prototype.delete = require('./actions/delete.js');
 EditionInterface.prototype.copy = require('./actions/copy.js').copy;
 EditionInterface.prototype._copySingle = require('./actions/copy.js')._copySingle;
