@@ -14,16 +14,16 @@ describe('#exists()', function () {
     this.fs = editor.create(store);
   });
 
-  it('doesn\'t exist', function () {
+  it('file doesn\'t exist', function () {
     assert.equal(this.fs.exists('something that doesnt exist'), false);
   });
 
-  it('does exist', function () { 
+  it('file does exist', function () { 
     this.fs.read(fileA);
     assert.equal(this.fs.exists(fileA), true);
   });
 
-  it('is deleted', function () {
+  it('file doesn\'t exist after delete', function () {
     this.fs.write(fileDelete, 'some content' );
     this.fs.delete(fileDelete);
     assert.equal(this.fs.exists(fileDelete), false);
