@@ -15,20 +15,17 @@ describe('#exists()', function () {
   });
 
   it('doesn\'t exist', function () {
-    
-    assert.deepEqual(this.fs.exists('something that doesnt exist'), false);
+    assert.equal(this.fs.exists('something that doesnt exist'), false);
   });
 
-  it('does exist', function () {
-    
+  it('does exist', function () { 
     this.fs.read(fileA);
-    assert.deepEqual(this.fs.exists(fileA), true);
+    assert.equal(this.fs.exists(fileA), true);
   });
 
   it('is deleted', function () {
-
     this.fs.write(fileDelete, 'some content' );
     this.fs.delete(fileDelete);
-    assert.deepEqual(this.fs.exists(fileDelete), false);
+    assert.equal(this.fs.exists(fileDelete), false);
   });
 });
