@@ -6,6 +6,7 @@ var editor = require('..');
 var memFs = require('mem-fs');
 
 var fileA = path.join(__dirname, 'fixtures/file-a.txt');
+var fileDelete = path.join(__dirname, 'fixtures/deleteAfter');
 
 describe('#exists()', function () {
   beforeEach(function() {
@@ -22,5 +23,12 @@ describe('#exists()', function () {
     
     this.fs.read(fileA);
     assert.deepEqual(this.fs.exists(fileA), true);
+  });
+
+  it('is deleted', function () {
+
+    this.fs.write(fileDelete, 'some content' );
+    this.fs.delete(fileDelete);
+    assert.deepEqual(this.fs.exists(fileDelete), false);
   });
 });
