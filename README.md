@@ -22,9 +22,13 @@ Read a file and return its contents as a string.
 
 You can alternatively get the raw contents buffer if you pass `options.raw = true`.
 
-### `#readJSON(filepath)`
+By default, calling `read()` on a file path that does not exist throws error. You can, however, pass `options.defaults = 'your default content'` to get a default content you pass in, if you prefer to not deal with try/catch.
+
+### `#readJSON(filepath, [defaults])`
 
 Read a file and parse its contents as JSON.
+
+`readJSON()` internally calls `read()` and will throw error if the file path you pass in does not exist. But if you pass in an optional `defaults`, the `defaults` content will be returned in case of the target file is missing, instead of throwing error (error would still be thrown if JSON.parse failed to parse your target file).
 
 ### `#write(filepath, contents)`
 
