@@ -48,6 +48,10 @@ Copy the `from` file and parse its content as an underscore template where `cont
 
 Optionnally pass a template `settings` object.
 
+### `#exists(filepath)`
+
+Returns `true` if a file exists. Returns `false` if the file is not found or deleted.
+
 ### `#commit([filters,] callback)`
 
 Persist every changes made to files in the mem-fs store to disk.
