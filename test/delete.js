@@ -21,7 +21,6 @@ describe('#delete()', function () {
   it('delete a directory', function () {
     var dirpath = path.join(__dirname, 'fixtures/nested');
     var nestedFile = path.join(dirpath, 'file.txt');
-    this.fs.read(nestedFile)
     this.fs.delete(dirpath);
     assert.equal(this.fs.store.get(dirpath).state, 'deleted');
     assert.equal(this.fs.store.get(nestedFile).state, 'deleted');

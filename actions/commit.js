@@ -8,7 +8,10 @@ var mkdirp = require('mkdirp');
 var rimraf = require('rimraf');
 
 function write(file) {
-  mkdirp.sync(path.dirname(file.path));
+  var dir = path.dirname(file.path);
+  if (!fs.existsSync(dir)) {
+    mkdirp.sync(dir);
+  }
   fs.writeFileSync(file.path, file.contents, {
     mode: file.stat ? file.stat.mode : null
   });

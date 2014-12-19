@@ -37,15 +37,27 @@ describe('#copy()', function () {
     assert.equal(this.fs.read(newPath), contents);
   });
 
+  it('copy by directory', function () {
+    this.fs.copy(__dirname + '/fixtures', '/output');
+    assert.equal(this.fs.read('/output/file-a.txt'), 'foo\n');
+    assert.equal(this.fs.read('/output/nested/file.txt'), 'nested\n');
+  });
+
   it('copy by globbing', function () {
     this.fs.copy(__dirname + '/fixtures/**', '/output');
     assert.equal(this.fs.read('/output/file-a.txt'), 'foo\n');
     assert.equal(this.fs.read('/output/nested/file.txt'), 'nested\n');
   });
 
+  it('accepts directory name with "."', function () {
+    this.fs.copy(__dirname + '/fixtures/**', '/out.put');
+    assert.equal(this.fs.read('/out.put/file-a.txt'), 'foo\n');
+    assert.equal(this.fs.read('/out.put/nested/file.txt'), 'nested\n');
+  });
+
   it('requires destination directory when globbing', function () {
     assert.throws(
-      this.fs.copy.bind(this.fs, __dirname + '/fixtures/**', '/output/file.a')
+      this.fs.copy.bind(this.fs, __dirname + '/fixtures/**', __dirname + '/fixtures/file-a.txt')
     );
   });
 
