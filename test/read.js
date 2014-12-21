@@ -27,4 +27,18 @@ describe('#read()', function () {
   it('throws if file does not exist', function () {
     assert.throws(this.fs.read.bind(this.fs, 'file-who-does-not-exist.txt'));
   });
+
+  it('return defaults as String if file does not exsit and defaults is provided', function () {
+    var content = this.fs.read('file-who-does-not-exist.txt', { defaults: 'foo\n' });
+    assert.equal(content, 'foo\n');
+  });
+
+  it('return defaults as Buffer if file does not exsit and defaults is provided', function () {
+    var content = this.fs.read('file-who-does-not-exist.txt', {
+      defaults: new Buffer('foo\n'),
+      raw: true
+    });
+    assert(content instanceof Buffer);
+    assert.equal(content.toString(), 'foo\n');
+  });
 });
