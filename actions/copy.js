@@ -4,6 +4,7 @@ var assert = require('assert');
 var fs = require('fs');
 var path = require('path');
 var glob = require('glob');
+var _ = require('lodash');
 var File = require('vinyl');
 var util = require('../util/util');
 
@@ -12,25 +13,25 @@ function applyProcessingFunc(process, contents) {
   return output instanceof Buffer ? output : new Buffer(output);
 }
 
-function isFile(filepath) {
-  return fs.existsSync(filepath) && fs.statSync(filepath).isFile();
-};
-
-exports.copy = function (from, to, options) {
+exports.copy = function(from, to, options) {
+  from = util.globify(from);
   to = path.resolve(to);
-  if (from.indexOf('*') === -1) {
-    return this._copySingle(from, to, options)
+  options = options || { globOptions : {} };
+
+  if (!glob.hasMagic(from)) {
+    return this._copySingle(from, to, options);
   }
 
   assert(
-    path.extname(to) === '',
+    !this.exists(to) || fs.statSync(to).isDirectory(),
     'When copying with glob patterns, provide a directory as destination'
   );
 
-  var files = glob.sync(from).filter(isFile);
-  var root = util.getCommonPath(files);
+  var globOptions = _.extend(options.globOptions, { nodir: true });
+  var files = glob.sync(from, globOptions);
+  var root = util.getCommonPath(from);
 
-  files.forEach(function (file, index) {
+  files.forEach(function (file) {
     var toFile = path.relative(root, file);
     toFile = path.join(to, toFile);
     this._copySingle(file, toFile, options);
