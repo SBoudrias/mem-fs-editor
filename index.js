@@ -13,6 +13,7 @@ EditionInterface.prototype.delete = require('./actions/delete.js');
 EditionInterface.prototype.copy = require('./actions/copy.js').copy;
 EditionInterface.prototype._copySingle = require('./actions/copy.js')._copySingle;
 EditionInterface.prototype.copyTpl = require('./actions/copy-tpl.js');
+EditionInterface.prototype.move = require('./actions/move.js');
 EditionInterface.prototype.commit = require('./actions/commit.js');
 
 exports.create = function (store) {

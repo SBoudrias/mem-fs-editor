@@ -64,6 +64,12 @@ Copy the `from` file and parse its content as an underscore template where `cont
 
 Optionnally pass a template `settings` object.
 
+### `#move(from, to, [options])`
+
+Move/rename a file from the `from` path to the `to` path.
+
+`#move` internally uses `#copy` and `#delete`, so `from` can be a glob pattern, and you can provide `options.globOptions` with it.
+
 ### `#exists(filepath)`
 
 Returns `true` if a file exists. Returns `false` if the file is not found or deleted.
