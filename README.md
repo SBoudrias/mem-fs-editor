@@ -62,7 +62,7 @@ Optionally, pass an `options.process` function (`process(contents)`) returning a
 
 Copy the `from` file and parse its content as an underscore template where `context` is the template context.
 
-Optionnally pass a template `settings` object.
+Optionally pass a template `settings` object.
 
 ### `#exists(filepath)`
 
