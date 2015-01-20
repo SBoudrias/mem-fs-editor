@@ -20,7 +20,7 @@ module.exports = function (path, options) {
   var g = new glob.Glob(path, globOptions);
   var files = g.found;
   files.forEach(function (file) {
-    deleteFile(file, this.store)
+    deleteFile(file, this.store);
   }.bind(this));
 
   this.store.each(function (file) {
