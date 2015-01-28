@@ -16,7 +16,7 @@ function applyProcessingFunc(process, contents) {
 exports.copy = function(from, to, options) {
   from = util.globify(from);
   to = path.resolve(to);
-  options = options || { globOptions : {} };
+  options = options || {};
 
   if (!glob.hasMagic(from)) {
     return this._copySingle(from, to, options);
@@ -27,7 +27,7 @@ exports.copy = function(from, to, options) {
     'When copying with glob patterns, provide a directory as destination'
   );
 
-  var globOptions = _.extend(options.globOptions, { nodir: true });
+  var globOptions = _.extend(options.globOptions || {}, { nodir: true });
   var files = glob.sync(from, globOptions);
   var root = util.getCommonPath(from);
 

@@ -4,6 +4,7 @@ var assert = require('assert');
 var fs = require('fs');
 var os = require('os');
 var path = require('path');
+var sinon = require('sinon');
 var editor = require('..');
 var memFs = require('mem-fs');
 
@@ -45,6 +46,14 @@ describe('#copy()', function () {
 
   it('copy by globbing', function () {
     this.fs.copy(__dirname + '/fixtures/**', '/output');
+    assert.equal(this.fs.read('/output/file-a.txt'), 'foo\n');
+    assert.equal(this.fs.read('/output/nested/file.txt'), 'nested\n');
+  });
+
+  it('copy files by globbing and process contents', function () {
+    var process = sinon.stub().returnsArg(0);
+    this.fs.copy(__dirname + '/fixtures/**', '/output', { process: process });
+    sinon.assert.callCount(process, 5); // 5 total files under 'fixtures', not counting folders
     assert.equal(this.fs.read('/output/file-a.txt'), 'foo\n');
     assert.equal(this.fs.read('/output/nested/file.txt'), 'nested\n');
   });
