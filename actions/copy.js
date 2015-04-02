@@ -40,6 +40,9 @@ exports.copy = function(from, to, options) {
 
 exports._copySingle = function (from, to, options) {
   options = options || {};
+
+  assert(this.exists(from), 'Trying to copy from a source that does not exist: ' + from);
+
   var file = this.store.get(from);
 
   var newFile = file.clone();

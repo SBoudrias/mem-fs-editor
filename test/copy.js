@@ -23,6 +23,12 @@ describe('#copy()', function () {
     assert.equal(this.fs.store.get(newPath).state, 'modified');
   });
 
+  it('throws when trying to copy from a non-existing file', function () {
+    var filepath = path.join(__dirname, 'fixtures/does-not-exits');
+    var newPath = '/new/path/file.txt';
+    assert.throws(this.fs.copy.bind(this.fs, filepath, newPath));
+  });
+
   it('copy file and process contents', function () {
     var filepath = path.join(__dirname, 'fixtures/file-a.txt');
     var initialContents = this.fs.read(filepath);
