@@ -58,11 +58,15 @@ Optionally, pass an `options.process` function (`process(contents)`) returning a
 
 `from` can be a glob pattern that'll be match against the file system. If that's the case, then `to` must be an output directory. For a globified `from`, you can optionally pass in an `options.globOptions` object to change its pattern matching behavior. The full list of options are being described [here](https://github.com/isaacs/node-glob#options). The `nodir` flag is forced to be `true` in `globOptions` to ensure a vinyl object representing each matching directory is marked as `deleted` in the `mem-fs` store.
 
-### `#copyTpl(from, to, context, [settings])`
+### `#copyTpl(from, to, [options])`
 
 Copy the `from` file and parse its content as an underscore template where `context` is the template context.
 
-Optionally pass a template `settings` object.
+`options.tplSettings` (optional) object as the options object when calling `_.template`, [more details here](https://lodash.com/docs#template).
+
+`options.tplContext` (optional) can be use to pass in the context object for invoking the compiled template function.
+
+`options.globOptions` (optional) would be used to control globbing behavior when `from` is a glob pattern. 
 
 ### `#move(from, to, [options])`
 

@@ -14,16 +14,27 @@ describe('#copyTpl()', function () {
   it('copy file and process contents as underscore template', function () {
     var filepath = path.join(__dirname, 'fixtures/file-tpl.txt');
     var newPath = '/new/path/file.txt';
-    this.fs.copyTpl(filepath, newPath, { name: 'new content' });
+    this.fs.copyTpl(filepath, newPath, { tplContext: { name: 'new content' } });
     assert.equal(this.fs.read(newPath), 'new content\n');
   });
 
   it('copy file with template settings', function() {
     var filepath = path.join(__dirname, 'fixtures/file-tpl-mustache.txt');
     var newPath = '/new/path/file.txt';
-    this.fs.copyTpl(filepath, newPath, { name: 'mustache' }, {
-      interpolate: /{{([\s\S]+?)}}/g
+    this.fs.copyTpl(filepath, newPath, {
+      tplContext: { name: 'mustache' },
+      tplSettings: { interpolate: /{{([\s\S]+?)}}/g }
     });
     assert.equal(this.fs.read(newPath), 'mustache\n');
+  });
+
+  it('copy/process template with globOptions', function () {
+    var filepath = path.join(__dirname, 'fixtures/.file-tpl.txt');
+    var newPath = '/new/path/file.txt';
+    this.fs.copyTpl(filepath, newPath, {
+      tplContext: { name: 'new content' },
+      globOptions: { dot: true }
+    });
+    assert.equal(this.fs.read(newPath), 'new content\n');
   });
 });
