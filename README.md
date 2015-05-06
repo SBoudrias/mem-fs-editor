@@ -58,11 +58,20 @@ Optionally, pass an `options.process` function (`process(contents)`) returning a
 
 `from` can be a glob pattern that'll be match against the file system. If that's the case, then `to` must be an output directory. For a globified `from`, you can optionally pass in an `options.globOptions` object to change its pattern matching behavior. The full list of options are being described [here](https://github.com/isaacs/node-glob#options). The `nodir` flag is forced to be `true` in `globOptions` to ensure a vinyl object representing each matching directory is marked as `deleted` in the `mem-fs` store.
 
-### `#copyTpl(from, to, context, [settings])`
+### `#copyTpl(from, to, context, [options])`
 
-Copy the `from` file and parse its content as an underscore template where `context` is the template context.
+Copy the `from` file and parse its content as an [ejs](http://ejs.co/) template where `context` is the template context (the variable names available inside the template).
 
-Optionally pass a template `settings` object.
+You can optionally pass a template `options` object. `mem-fs-editor` automatically setup the filename option so you can easily use partials.
+
+Templates syntax looks like this:
+
+```
+<%= value %>
+<%- include('partial.ejs', { name: 'Simon' }) %>
+```
+
+Refer to the [ejs documentation](http://ejs.co/) for more details.
 
 ### `#move(from, to, [options])`
 
