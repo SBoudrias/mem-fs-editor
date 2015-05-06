@@ -18,12 +18,19 @@ describe('#copyTpl()', function () {
     assert.equal(this.fs.read(newPath), 'new content\n');
   });
 
-  it('copy file with template settings', function() {
-    var filepath = path.join(__dirname, 'fixtures/file-tpl-mustache.txt');
+  it('allow setting custom template delimiters', function() {
+    var filepath = path.join(__dirname, 'fixtures/file-tpl-custom-delimiter.txt');
     var newPath = '/new/path/file.txt';
     this.fs.copyTpl(filepath, newPath, { name: 'mustache' }, {
-      interpolate: /{{([\s\S]+?)}}/g
+      delimiter: '?'
     });
     assert.equal(this.fs.read(newPath), 'mustache\n');
+  });
+
+  it('allow including partials', function() {
+    var filepath = path.join(__dirname, 'fixtures/file-tpl-include.txt');
+    var newPath = '/new/path/file.txt';
+    this.fs.copyTpl(filepath, newPath);
+    assert.equal(this.fs.read(newPath), 'partial\n\n');
   });
 });

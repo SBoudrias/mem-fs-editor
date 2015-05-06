@@ -59,7 +59,7 @@ describe('#copy()', function () {
   it('copy files by globbing and process contents', function () {
     var process = sinon.stub().returnsArg(0);
     this.fs.copy(__dirname + '/fixtures/**', '/output', { process: process });
-    sinon.assert.callCount(process, 5); // 5 total files under 'fixtures', not counting folders
+    sinon.assert.callCount(process, 7); // 5 total files under 'fixtures', not counting folders
     assert.equal(this.fs.read('/output/file-a.txt'), 'foo\n');
     assert.equal(this.fs.read('/output/nested/file.txt'), 'nested\n');
   });
