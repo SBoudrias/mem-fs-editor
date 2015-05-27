@@ -3,8 +3,13 @@
 var fs = require('fs');
 var path = require('path');
 var glob = require('glob');
+var commondir = require('commondir');
 
-exports.getCommonPath = function (filePath) {
+exports.getCommonPath = function getCommonPath(filePath) {
+  if (Array.isArray(filePath)) {
+    return commondir(filePath);
+  }
+
   filePath = this.globify(filePath);
   var globStartIndex = filePath.indexOf('*');
   if (globStartIndex !== -1) {
@@ -16,7 +21,7 @@ exports.getCommonPath = function (filePath) {
 
 
 exports.globify = function (filePath) {
-  if (glob.hasMagic(filePath) || !fs.existsSync(filePath)) {
+  if (Array.isArray(filePath) || glob.hasMagic(filePath) || !fs.existsSync(filePath)) {
     return filePath;
   }
 
