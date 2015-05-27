@@ -26,6 +26,10 @@ describe('util.getCommonPath()', function () {
   it('find the common root of glob /a/b/*.ext', function () {
     assert.equal(util.getCommonPath('/a/b/*.ext'), '/a/b');
   });
+
+  it('find the common root of multiple globs', function () {
+    assert.equal(util.getCommonPath(['/a/b/*.ext', '/a/b/c/*.ext', '!**/c/**']), '/a/b');
+  });
 });
 
 
