@@ -4,6 +4,7 @@ var assert = require('assert');
 var fs = require('fs');
 var path = require('path');
 var glob = require('glob');
+var globby = require('globby');
 var _ = require('lodash');
 var File = require('vinyl');
 var util = require('../util/util');
@@ -18,7 +19,7 @@ exports.copy = function(from, to, options) {
   to = path.resolve(to);
   options = options || {};
 
-  if (!glob.hasMagic(from)) {
+  if (!Array.isArray(from) && !glob.hasMagic(from)) {
     return this._copySingle(from, to, options);
   }
 
@@ -28,7 +29,7 @@ exports.copy = function(from, to, options) {
   );
 
   var globOptions = _.extend(options.globOptions || {}, { nodir: true });
-  var files = glob.sync(from, globOptions);
+  var files = globby.sync(from, globOptions);
   var root = util.getCommonPath(from);
 
   files.forEach(function (file) {

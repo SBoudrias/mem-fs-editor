@@ -2,7 +2,8 @@
 
 var assert = require('assert');
 var _ = require('lodash');
-var glob = require('glob');
+var globby = require('globby');
+var multimatch = require('multimatch');
 var util = require('../util/util');
 
 function deleteFile(path, store) {
@@ -12,19 +13,18 @@ function deleteFile(path, store) {
   store.add(file);
 }
 
-module.exports = function (path, options) {
-  path = util.globify(path);
-  options = options || { globOptions : {} };
+module.exports = function (paths, options) {
+  paths = util.globify(paths);
+  options = options || {};
 
-  var globOptions = _.extend(options.globOptions, { sync: true });
-  var g = new glob.Glob(path, globOptions);
-  var files = g.found;
+  var globOptions = options.globOptions || {};
+  var files = globby.sync(paths, globOptions);
   files.forEach(function (file) {
     deleteFile(file, this.store);
   }.bind(this));
 
   this.store.each(function (file) {
-    if (g.minimatch.match(file.path)) {
+    if (multimatch(paths, file.path).length !== 0) {
       deleteFile(file.path, this.store);
     }
   }.bind(this));

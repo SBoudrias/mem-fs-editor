@@ -56,6 +56,13 @@ describe('#copy()', function () {
     assert.equal(this.fs.read('/output/nested/file.txt'), 'nested\n');
   });
 
+  it('copy by globbing multiple patterns', function () {
+    this.fs.copy([__dirname + '/fixtures/**', '!**/*tpl*'], '/output');
+    assert.equal(this.fs.read('/output/file-a.txt'), 'foo\n');
+    assert.equal(this.fs.read('/output/nested/file.txt'), 'nested\n');
+    assert.throws(this.fs.read.bind(this.fs, '/output/file-tpl.txt'));
+  });
+
   it('copy files by globbing and process contents', function () {
     var process = sinon.stub().returnsArg(0);
     this.fs.copy(__dirname + '/fixtures/**', '/output', { process: process });
