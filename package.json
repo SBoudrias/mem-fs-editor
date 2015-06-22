@@ -23,8 +23,8 @@
     "multimatch": "^2.0.0",
     "rimraf": "^2.2.8",
     "sinon": "^1.12.2",
-    "through2": "^0.6.3",
-    "vinyl": "^0.4.3"
+    "through2": "^2.0.0",
+    "vinyl": "^0.5.0"
   },
   "devDependencies": {
     "mem-fs": "^1.0.0",
