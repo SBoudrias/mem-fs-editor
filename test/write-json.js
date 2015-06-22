@@ -18,7 +18,7 @@ describe('#writeJSON()', function () {
     var write = sinon.spy(this.fs, 'write');
     this.fs.writeJSON(filepath, contents, null, 2);
     sinon.assert.calledOnce(write);
-    sinon.assert.calledWith(write, filepath, JSON.stringify(contents, null, 2));
+    sinon.assert.calledWith(write, filepath, JSON.stringify(contents, null, 2) + '\n');
     write.restore();
   });
 
@@ -28,7 +28,7 @@ describe('#writeJSON()', function () {
     var write = sinon.spy(this.fs, 'write');
     this.fs.writeJSON(filepath, contents);
     sinon.assert.calledOnce(write);
-    sinon.assert.calledWith(write, filepath, JSON.stringify(contents, null, 2));
+    sinon.assert.calledWith(write, filepath, JSON.stringify(contents, null, 2) + '\n');
     write.restore();
   });
 
@@ -36,14 +36,14 @@ describe('#writeJSON()', function () {
     var filepath = path.join(__dirname, 'fixtures/does-not-exist.txt');
     var contents = { foo: 'bar' };
     this.fs.writeJSON(filepath, contents);
-    assert.equal(this.fs.read(filepath), JSON.stringify(contents, null, 2));
+    assert.equal(this.fs.read(filepath), JSON.stringify(contents, null, 2) + '\n');
   });
 
   it('write json object to an existing file', function () {
     var filepath = path.join(__dirname, 'fixtures/file.json');
     var contents = { bar: 'foo' };
     this.fs.writeJSON(filepath, contents);
-    assert.equal(this.fs.read(filepath), JSON.stringify(contents, null, 2));
+    assert.equal(this.fs.read(filepath), JSON.stringify(contents, null, 2) + '\n');
   });
 
   it('calls write() with stringified JSON object', function () {
@@ -52,7 +52,7 @@ describe('#writeJSON()', function () {
     var write = sinon.spy(this.fs, 'write');
     this.fs.writeJSON(filepath, contents);
     sinon.assert.calledOnce(write);
-    sinon.assert.calledWithMatch(write, filepath, JSON.stringify(contents, null, 2));
+    sinon.assert.calledWithMatch(write, filepath, JSON.stringify(contents, null, 2) + '\n');
     write.restore();
   });
 });
