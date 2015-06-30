@@ -7,7 +7,12 @@ module.exports = function (path, options) {
   var file = this.store.get(path);
 
   if (file.state === 'deleted' || file.contents === null) {
-    file.contents = options.defaults ? new Buffer(options.defaults) : null;
+    if (typeof options.defaults === 'string' || options.defaults instanceof Buffer) {
+      file.contents = new Buffer(options.defaults);
+    }
+    else {
+      file.contents = null;
+    }
   }
 
   assert(file.contents !== null, path + ' doesn\'t exist');
