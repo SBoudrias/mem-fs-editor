@@ -1,6 +1,7 @@
 'use strict';
 
 var assert = require('assert');
+var path = require('path');
 var _ = require('lodash');
 var globby = require('globby');
 var multimatch = require('multimatch');
@@ -14,6 +15,12 @@ function deleteFile(path, store) {
 }
 
 module.exports = function (paths, options) {
+  if (!Array.isArray(paths)) {
+    paths = [paths];
+  }
+  paths = paths.map(function (filePath) {
+    return path.resolve(filePath);
+  });
   paths = util.globify(paths);
   options = options || {};
 

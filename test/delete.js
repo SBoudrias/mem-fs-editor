@@ -25,4 +25,16 @@ describe('#delete()', function () {
     assert.equal(this.fs.store.get(dirpath).state, 'deleted');
     assert.equal(this.fs.store.get(nestedFile).state, 'deleted');
   });
+
+  it('delete new files', function () {
+    this.fs.write('foo', 'foo');
+    this.fs.delete('foo');
+    assert.equal(this.fs.store.get('foo').state, 'deleted');
+  });
+
+  it('delete new files if specifying a full path', function () {
+    this.fs.write('bar', 'bar');
+    this.fs.delete(path.resolve('bar'));
+    assert.equal(this.fs.store.get('bar').state, 'deleted');
+  });
 });
