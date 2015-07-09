@@ -5,6 +5,7 @@ var path = require('path');
 var sinon = require('sinon');
 var editor = require('..');
 var memFs = require('mem-fs');
+var escape = require('escape-regexp');
 
 describe('#readJSON()', function () {
   beforeEach(function() {
@@ -33,5 +34,10 @@ describe('#readJSON()', function () {
 
   it('throw error if file could not be parsed as JSON, even if defaults is provided', function () {
     assert.throws(this.fs.readJSON.bind(this.fs, path.join(__dirname, 'fixtures/file-tpl.txt'), { foo: 'bar' }));
-  })
+  });
+
+  it('throw error with file path info', function () {
+    var filePath = path.join(__dirname, 'fixtures/file-tpl.txt');
+    assert.throws(this.fs.readJSON.bind(this.fs, filePath), new RegExp(escape(filePath)));
+  });
 });
