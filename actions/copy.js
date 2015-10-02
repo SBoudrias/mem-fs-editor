@@ -28,7 +28,7 @@ exports.copy = function(from, to, options) {
     'When copying with glob patterns, provide a directory as destination'
   );
 
-  var globOptions = _.extend(options.globOptions || {}, { nodir: true });
+  var globOptions = _.extend(options.globOptions || {}, { nodir: true, dot: true });
   var files = globby.sync(from, globOptions);
   var root = util.getCommonPath(from);
 
