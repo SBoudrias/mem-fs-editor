@@ -18,6 +18,16 @@ describe('#copyTpl()', function () {
     assert.equal(this.fs.read(newPath), 'new content\n');
   });
 
+  it.only('copy files by globbing and process contents as underscore template', function () {
+    var filepath = [path.join(__dirname, 'fixtures/.tpls/**'), '!**/*.exclude'];
+    var newPath = '/new/path/';
+    this.fs.copyTpl(filepath, newPath, { name: 'new content' });
+    assert.equal(this.fs.read(newPath + 'file-tpl-glob-1.txt'), 'new content\n');
+    assert.equal(this.fs.read(newPath + 'file-tpl-glob-2.txt'), 'new content\n');
+    assert.equal(this.fs.read(newPath + 'file-tpl-glob-3.txt'), 'new content\n');
+    assert.throws(this.fs.read.bind(this.fs, newPath + 'file-tpl-glob-3.exclude'));
+  });
+
   it('allow setting custom template delimiters', function() {
     var filepath = path.join(__dirname, 'fixtures/file-tpl-custom-delimiter.txt');
     var newPath = '/new/path/file.txt';
