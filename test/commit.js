@@ -89,4 +89,23 @@ describe('#commit()', function () {
       done();
     }.bind(this));
   });
+
+  it('does not commit files who are deleted before being commited', function (done) {
+    this.fs.write('to-delete', 'foo');
+    this.fs.delete('to-delete');
+    this.fs.copy(path.join(__dirname, 'fixtures/file-a.txt'), 'copy-to-delete');
+    this.fs.delete('copy-to-delete');
+
+    var file = this.fs.store.get('to-delete');
+
+    this.fs.commit([
+      through.obj(function (file, enc, cb) {
+        assert.notEqual(file.path, path.resolve('to-delete'));
+        assert.notEqual(file.path, path.resolve('copy-to-delete'));
+
+        this.push(file);
+        cb();
+      })
+    ], done);
+  });
 });

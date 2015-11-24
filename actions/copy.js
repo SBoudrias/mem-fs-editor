@@ -46,15 +46,10 @@ exports._copySingle = function (from, to, options) {
 
   var file = this.store.get(from);
 
-  var newFile = file.clone();
-  newFile.cwd = process.cwd();
-  newFile.base = path.basename(to);
-  newFile.path = to;
-  newFile.state = 'modified';
-
+  var contents = file.contents;
   if (options.process) {
-    newFile.contents = applyProcessingFunc(options.process, file.contents);
+    contents = applyProcessingFunc(options.process, file.contents);
   }
 
-  this.store.add(newFile);
+  this.write(to, contents);
 };

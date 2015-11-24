@@ -30,9 +30,11 @@ module.exports = function (filters, cb) {
   }
 
   var modifiedFilter = through.obj(function (file, enc, cb) {
-    if (['modified', 'deleted'].indexOf(file.state) >= 0) {
+    // Don't process deleted file who haven't been commited yet.
+    if (file.state === 'modified' || (file.state === 'deleted' && !file.isNew)) {
       this.push(file);
     }
+
     cb();
   });
 
@@ -43,7 +45,9 @@ module.exports = function (filters, cb) {
     } else if (file.state === 'deleted') {
       remove(file);
     }
+
     delete file.state;
+    delete file.isNew;
     cb();
   });
 
