@@ -51,5 +51,5 @@ exports._copySingle = function (from, to, options) {
     contents = applyProcessingFunc(options.process, file.contents);
   }
 
-  this.write(to, contents);
+  this.write(to, contents, file.stat);
 };
