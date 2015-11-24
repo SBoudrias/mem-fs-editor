@@ -1,17 +1,13 @@
 'use strict';
 
 var path = require('path');
-var _ = require('lodash');
+var extend = require('deep-extend');
 var ejs = require('ejs');
 
 module.exports = function (from, to, context, tplSettings) {
   context = context || {};
-  tplSettings = tplSettings || {};
-
-  _.defaults(tplSettings, {
-    // Setting filename by default allow including partials.
-    filename: from
-  });
+  // Setting filename by default allow including partials.
+  tplSettings = extend({filename: from}, tplSettings || {});
 
   this.copy(from, to, {
     process: function (contents) {

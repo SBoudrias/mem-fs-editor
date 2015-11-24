@@ -2,7 +2,6 @@
 
 var assert = require('assert');
 var path = require('path');
-var _ = require('lodash');
 var globby = require('globby');
 var multimatch = require('multimatch');
 var util = require('../util/util');

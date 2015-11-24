@@ -2,7 +2,6 @@
 
 var fs = require('fs');
 var path = require('path');
-var _ = require('lodash');
 var through = require('through2');
 var mkdirp = require('mkdirp');
 var rimraf = require('rimraf');

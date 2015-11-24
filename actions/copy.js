@@ -5,7 +5,7 @@ var fs = require('fs');
 var path = require('path');
 var glob = require('glob');
 var globby = require('globby');
-var _ = require('lodash');
+var extend = require('deep-extend');
 var File = require('vinyl');
 var util = require('../util/util');
 
@@ -28,7 +28,7 @@ exports.copy = function(from, to, options) {
     'When copying with glob patterns, provide a directory as destination'
   );
 
-  var globOptions = _.extend(options.globOptions || {}, { nodir: true });
+  var globOptions = extend(options.globOptions || {}, { nodir: true });
   var files = globby.sync(from, globOptions);
   var root = util.getCommonPath(from);
 
