@@ -16,15 +16,15 @@
   "dependencies": {
     "commondir": "^1.0.1",
     "ejs": "^2.3.1",
-    "glob": "^5.0.3",
-    "globby": "^2.0.0",
+    "glob": "^6.0.1",
+    "globby": "^4.0.0",
     "lodash": "^3.6.0",
     "mkdirp": "^0.5.0",
     "multimatch": "^2.0.0",
     "rimraf": "^2.2.8",
     "sinon": "^1.12.2",
     "through2": "^2.0.0",
-    "vinyl": "^0.5.0"
+    "vinyl": "^1.1.0"
   },
   "devDependencies": {
     "escape-regexp": "0.0.1",
