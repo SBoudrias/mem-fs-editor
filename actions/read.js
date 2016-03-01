@@ -2,9 +2,9 @@
 
 var assert = require('assert');
 
-module.exports = function (path, options) {
+module.exports = function (filepath, options) {
   options = options || { raw: false };
-  var file = this.store.get(path);
+  var file = this.store.get(filepath);
 
   if (file.state === 'deleted' || file.contents === null) {
     if (typeof options.defaults === 'string' || options.defaults instanceof Buffer) {
@@ -15,7 +15,7 @@ module.exports = function (path, options) {
     }
   }
 
-  assert(file.contents !== null, path + ' doesn\'t exist');
+  assert(file.contents !== null, filepath + ' doesn\'t exist');
 
   return options.raw ? file.contents : file.contents.toString();
 };

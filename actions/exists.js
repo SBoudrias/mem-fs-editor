@@ -1,7 +1,7 @@
 'use strict';
 
-module.exports = function (path) {
-	var file = this.store.get(path);
+module.exports = function (filepath) {
+	var file = this.store.get(filepath);
 
 	return file.contents !== null && file.state !== 'deleted';
 };
