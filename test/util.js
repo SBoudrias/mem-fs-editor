@@ -2,7 +2,7 @@
 
 var path = require('path');
 var assert = require('assert');
-var util = require('../util/util');
+var util = require('../lib/util');
 
 describe('util.getCommonPath()', function () {
   it('find the common root of /a/b/c, where /a/b/c is an existing directory', function () {

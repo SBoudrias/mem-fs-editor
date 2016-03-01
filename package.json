@@ -8,10 +8,9 @@
   "repository": "SBoudrias/mem-fs-editor",
   "author": "Simon Boudrias",
   "license": "MIT",
+  "main": "lib/index.js",
   "files": [
-    "actions",
-    "util",
-    "index.js"
+    "lib"
   ],
   "dependencies": {
     "commondir": "^1.0.1",
