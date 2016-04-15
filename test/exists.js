@@ -28,4 +28,13 @@ describe('#exists()', function () {
     this.fs.delete(fileDelete);
     assert.equal(this.fs.exists(fileDelete), false);
   });
+
+  it('file contents are not null but are empty after delete', function() {
+    var file = this.fs.store.get(fileDelete);
+    this.fs.write(fileDelete, 'some content');
+    this.fs.delete(fileDelete);
+    assert.notEqual(file.contents, null);
+    assert.equal(file.contents.toString('utf-8'), '');
+    assert.equal(file.state, 'deleted');
+  });
 });
