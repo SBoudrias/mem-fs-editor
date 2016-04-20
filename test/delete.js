@@ -32,6 +32,14 @@ describe('#delete()', function () {
     assert.equal(this.fs.store.get('foo').state, 'deleted');
   });
 
+  it('after delete a file should set isNew flag on write', function() {
+    var filepath = path.join(__dirname, 'fixtures/file-a.txt');
+    this.fs.delete(filepath);
+    this.fs.write(filepath, 'foo');
+    assert.equal(this.fs.store.get(filepath).isNew, true);
+    // assert.equal(this.fs.store)
+  });
+
   it('delete new files if specifying a full path', function () {
     this.fs.write('bar', 'bar');
     this.fs.delete(path.resolve('bar'));
