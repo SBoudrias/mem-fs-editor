@@ -37,7 +37,6 @@ describe('#delete()', function () {
     this.fs.delete(filepath);
     this.fs.write(filepath, 'foo');
     assert.equal(this.fs.store.get(filepath).isNew, true);
-    // assert.equal(this.fs.store)
   });
 
   it('delete new files if specifying a full path', function () {
