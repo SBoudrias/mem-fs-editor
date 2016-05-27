@@ -16,7 +16,7 @@
     "commondir": "^1.0.1",
     "deep-extend": "^0.4.0",
     "ejs": "^2.3.1",
-    "glob": "^6.0.1",
+    "glob": "^7.0.3",
     "globby": "^4.0.0",
     "mkdirp": "^0.5.0",
     "multimatch": "^2.0.0",
