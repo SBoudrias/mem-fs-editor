@@ -33,4 +33,20 @@ describe('#copyTpl()', function () {
     this.fs.copyTpl(filepath, newPath);
     assert.equal(this.fs.read(newPath), 'partial\n\n');
   });
+
+  it('allow including glob options', function() {
+    var filenames = [
+      path.join(__dirname, 'fixtures/file-tpl-partial.txt'),
+      path.join(__dirname, 'fixtures/file-tpl.txt')
+    ];
+    var copyOptions = {
+      globOptions: {
+        ignore: filenames[1]
+      }
+    };
+    var newPath = '/new/path';
+    this.fs.copyTpl(filenames, newPath, {}, {}, copyOptions);
+    assert.equal(this.fs.exists(path.join(newPath, 'file-tpl-partial.txt')), true);
+    assert.equal(this.fs.exists(path.join(newPath, 'file-tpl.txt')), false);
+  });
 });
