@@ -8,7 +8,7 @@ var memFs = require('mem-fs');
 var escape = require('escape-regexp');
 
 describe('#readJSON()', function () {
-  beforeEach(function() {
+  beforeEach(function () {
     var store = memFs.create();
     this.fs = editor.create(store);
   });
@@ -28,12 +28,12 @@ describe('#readJSON()', function () {
   });
 
   it('return defaults if file does not exist and defaults is provided', function () {
-    var obj = this.fs.readJSON(path.join(__dirname, 'no-such-file.json'), { foo: 'bar' });
+    var obj = this.fs.readJSON(path.join(__dirname, 'no-such-file.json'), {foo: 'bar'});
     assert.equal(obj.foo, 'bar');
   });
 
   it('throw error if file could not be parsed as JSON, even if defaults is provided', function () {
-    assert.throws(this.fs.readJSON.bind(this.fs, path.join(__dirname, 'fixtures/file-tpl.txt'), { foo: 'bar' }));
+    assert.throws(this.fs.readJSON.bind(this.fs, path.join(__dirname, 'fixtures/file-tpl.txt'), {foo: 'bar'}));
   });
 
   it('throw error with file path info', function () {

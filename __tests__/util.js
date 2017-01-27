@@ -32,7 +32,6 @@ describe('util.getCommonPath()', function () {
   });
 });
 
-
 describe('util.globify()', function () {
   it('returns path for file path', function () {
     var filePath = path.resolve(__dirname, 'fixtures/file-a.txt');

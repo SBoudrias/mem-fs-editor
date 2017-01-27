@@ -4,3 +4,5 @@ node_js:
   - 4
   - 6
   - node
+after_script:
+  - cat ./coverage/lcov.info | coveralls

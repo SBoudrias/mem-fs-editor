@@ -8,7 +8,7 @@ var memFs = require('mem-fs');
 var fileA = path.join(__dirname, 'fixtures/file-a.txt');
 
 describe('#read()', function () {
-  beforeEach(function() {
+  beforeEach(function () {
     var store = memFs.create();
     this.fs = editor.create(store);
   });
@@ -19,7 +19,7 @@ describe('#read()', function () {
   });
 
   it('get the buffer content of a file', function () {
-    var content = this.fs.read(fileA, { raw: true });
+    var content = this.fs.read(fileA, {raw: true});
     assert(content instanceof Buffer);
     assert.equal(content.toString(), 'foo\n');
   });
@@ -34,12 +34,12 @@ describe('#read()', function () {
   });
 
   it('returns defaults as String if file does not exist and defaults is provided', function () {
-    var content = this.fs.read('file-who-does-not-exist.txt', { defaults: 'foo\n' });
+    var content = this.fs.read('file-who-does-not-exist.txt', {defaults: 'foo\n'});
     assert.equal(content, 'foo\n');
   });
 
   it('returns defaults as String if file does not exist and defaults is provided as empty string', function () {
-    var content = this.fs.read('file-who-does-not-exist.txt', { defaults: '' });
+    var content = this.fs.read('file-who-does-not-exist.txt', {defaults: ''});
     assert.equal(content, '');
   });
 
@@ -54,7 +54,7 @@ describe('#read()', function () {
 
   it('returns defaults if file is deleted', function () {
     this.fs.delete(fileA);
-    var content = this.fs.read(fileA, { defaults: 'foo' });
+    var content = this.fs.read(fileA, {defaults: 'foo'});
     assert.equal(content, 'foo');
   });
 });

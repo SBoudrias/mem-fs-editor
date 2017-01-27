@@ -14,7 +14,7 @@ describe('#commit()', function () {
   var fixtureDir = path.join(os.tmpdir(), '/mem-fs-editor-test-fixture');
   var output = path.join(os.tmpdir(), '/mem-fs-editor-test');
 
-  beforeEach(function(done) {
+  beforeEach(function (done) {
     rimraf.sync(fixtureDir);
     var store = memFs.create();
     this.fs = editor.create(store);
@@ -39,7 +39,7 @@ describe('#commit()', function () {
     var filter = through.obj(function (file, enc, cb) {
       called++;
       file.contents = new Buffer('modified');
-      this.push(file)
+      this.push(file);
       cb();
     });
 
@@ -96,8 +96,7 @@ describe('#commit()', function () {
     this.fs.copy(path.join(__dirname, 'fixtures/file-a.txt'), 'copy-to-delete');
     this.fs.delete('copy-to-delete');
 
-    var file = this.fs.store.get('to-delete');
-
+    this.fs.store.get('to-delete');
     this.fs.commit([
       through.obj(function (file, enc, cb) {
         assert.notEqual(file.path, path.resolve('to-delete'));

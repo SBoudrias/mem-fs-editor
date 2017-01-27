@@ -6,7 +6,7 @@ var editor = require('..');
 var memFs = require('mem-fs');
 
 describe('#write()', function () {
-  beforeEach(function() {
+  beforeEach(function () {
     var store = memFs.create();
     this.fs = editor.create(store);
   });

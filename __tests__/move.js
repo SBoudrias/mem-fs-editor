@@ -2,12 +2,11 @@
 
 var assert = require('assert');
 var path = require('path');
-var sinon = require('sinon');
 var editor = require('..');
 var memFs = require('mem-fs');
 
 describe('#move()', function () {
-  beforeEach(function() {
+  beforeEach(function () {
     var store = memFs.create();
     this.fs = editor.create(store);
   });
@@ -21,7 +20,7 @@ describe('#move()', function () {
     assert.throws(this.fs.read.bind(this.fs, filepath));
   });
 
-  it('move directory', function() {
+  it('move directory', function () {
     var filename = 'file.txt';
     var dirpath = path.join(__dirname, 'fixtures/nested');
     var filepath = path.join(dirpath, filename);
@@ -32,7 +31,7 @@ describe('#move()', function () {
     assert.throws(this.fs.read.bind(this.fs, filepath));
   });
 
-  it('move file to an existing `to` path', function() {
+  it('move file to an existing `to` path', function () {
     var filepath = path.join(__dirname, 'fixtures/file-a.txt');
     var initialContents = this.fs.read(filepath);
     var newpath = path.join(__dirname, 'fixtures/nested/file.txt');
@@ -55,7 +54,7 @@ describe('#move()', function () {
     assert.throws(this.fs.read.bind(this.fs, path.join(fromdir, 'file.txt')));
   });
 
-  it('throws when moving directory to an existing `to` path (as a file)', function() {
+  it('throws when moving directory to an existing `to` path (as a file)', function () {
     var filepath = path.join(__dirname, 'fixtures/file-a.txt');
     var frompath = path.join(__dirname, 'fixtures/nested');
 

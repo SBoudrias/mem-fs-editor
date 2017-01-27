@@ -6,7 +6,7 @@ var editor = require('..');
 var memFs = require('mem-fs');
 
 describe('#delete()', function () {
-  beforeEach(function() {
+  beforeEach(function () {
     var store = memFs.create();
     this.fs = editor.create(store);
   });
@@ -32,7 +32,7 @@ describe('#delete()', function () {
     assert.equal(this.fs.store.get('foo').state, 'deleted');
   });
 
-  it('after delete a file should set isNew flag on write', function() {
+  it('after delete a file should set isNew flag on write', function () {
     var filepath = path.join(__dirname, 'fixtures/file-a.txt');
     this.fs.delete(filepath);
     this.fs.write(filepath, 'foo');

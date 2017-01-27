@@ -1,13 +1,12 @@
 'use strict';
 
-var assert = require('assert');
 var path = require('path');
 var sinon = require('sinon');
 var editor = require('..');
 var memFs = require('mem-fs');
 
 describe('#extendJSON()', function () {
-  beforeEach(function() {
+  beforeEach(function () {
     var store = memFs.create();
     this.fs = editor.create(store);
   });
@@ -36,7 +35,7 @@ describe('#extendJSON()', function () {
 
   it('stringify with optional arguments (for JSON.stringify)', function () {
     var filepath = path.join(__dirname, 'fixtures/does-not-exist.txt');
-    var contents = { foo: 'bar' };
+    var contents = {foo: 'bar'};
     var write = sinon.spy(this.fs, 'write');
     this.fs.extendJSON(filepath, contents, '\n', 4);
     sinon.assert.calledOnce(write);

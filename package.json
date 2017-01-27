@@ -3,7 +3,8 @@
   "version": "2.3.0",
   "description": "File edition helpers working on top of mem-fs",
   "scripts": {
-    "test": "mocha"
+    "test": "jest && eslint **/*.js",
+    "prepublish": "nsp check"
   },
   "repository": "SBoudrias/mem-fs-editor",
   "author": "Simon Boudrias",
@@ -25,9 +26,28 @@
     "vinyl": "^2.0.1"
   },
   "devDependencies": {
+    "coveralls": "^2.11.15",
     "escape-regexp": "0.0.1",
+    "eslint": "^3.14.1",
+    "eslint-config-xo-space": "^0.15.0",
+    "jest": "^18.1.0",
     "mem-fs": "^1.0.0",
-    "mocha": "^3.1.2",
+    "nsp": "^2.6.2",
     "sinon": "^1.12.2"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "coverageDirectory": "coverage",
+    "testEnvironment": "node"
+  },
+  "eslintConfig": {
+    "extends": "xo-space",
+    "env": {
+      "jest": true
+    },
+    "rules": {
+      "eqeqeq": [2, "allow-null"],
+      "no-eq-null": 0
+    }
   }
 }
