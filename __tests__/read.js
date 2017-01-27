@@ -57,4 +57,9 @@ describe('#read()', function () {
     var content = this.fs.read(fileA, {defaults: 'foo'});
     assert.equal(content, 'foo');
   });
+
+  it('allows defaults to be null', function () {
+    var content = this.fs.read('not-existing.file', {defaults: null});
+    assert.equal(content, null);
+  });
 });
