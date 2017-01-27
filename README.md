@@ -44,6 +44,13 @@ Optionally pass `replacer` and `space` as the last two arguments, as defined by 
 
 Default value for `space` is `2`, when not specified.
 
+### `#append(filepath, contents, [options])`
+
+Append the new contents to the current file contents.
+
+- `options.trimEnd` (default `true`). Trim trailing whitespace of the current file contents.
+- `options.separator` (default `os.EOL`). Separator to insert between current and new contents.
+
 ### `#extendJSON(filepath, contents[, replacer [, space]])`
 
 Extend the content of an existing JSON file with the partial objects provided as argument.
