@@ -1,7 +1,9 @@
 'use strict';
 
+var fs = require('fs');
 var path = require('path');
 var assert = require('assert');
+var sinon = require('sinon');
 var util = require('../lib/util');
 
 describe('util.getCommonPath()', function () {
@@ -54,5 +56,17 @@ describe('util.globify()', function () {
   it('returns globified path for directory path', function () {
     var filePath = path.resolve(__dirname, 'fixtures/nested');
     assert.equal(util.globify(filePath), path.join(filePath, '**'));
+  });
+
+  it('throws if target path is neither a file or a directory', function () {
+    sinon.stub(fs, 'statSync').returns({
+      isFile: () => false,
+      isDirectory: () => false
+    });
+
+    var filePath = path.resolve(__dirname, 'fixtures/file-a.txt');
+    assert.throws(util.globify.bind(util, filePath));
+
+    fs.statSync.restore();
   });
 });
