@@ -11,14 +11,14 @@ describe('#delete()', function () {
     this.fs = editor.create(store);
   });
 
-  it('delete a file', function () {
+  it('deletes a file', function () {
     var filepath = path.join(__dirname, 'fixtures/file-a.txt');
     this.fs.delete(filepath);
     assert.throws(this.fs.read.bind(this.fs, filepath));
     assert.equal(this.fs.store.get(filepath).state, 'deleted');
   });
 
-  it('delete a directory', function () {
+  it('deletes a directory', function () {
     var dirpath = path.join(__dirname, 'fixtures/nested');
     var nestedFile = path.join(dirpath, 'file.txt');
     this.fs.delete(dirpath);
@@ -26,10 +26,16 @@ describe('#delete()', function () {
     assert.equal(this.fs.store.get(nestedFile).state, 'deleted');
   });
 
-  it('delete new files', function () {
+  it('deletes new files', function () {
     this.fs.write('foo', 'foo');
     this.fs.delete('foo');
     assert.equal(this.fs.store.get('foo').state, 'deleted');
+  });
+
+  it('deletes new directories', function () {
+    this.fs.write('/test/bar/foo.txt', 'foo');
+    this.fs.delete('/test/bar/');
+    assert.equal(this.fs.store.get('/test/bar/foo.txt').state, 'deleted');
   });
 
   it('after delete a file should set isNew flag on write', function () {

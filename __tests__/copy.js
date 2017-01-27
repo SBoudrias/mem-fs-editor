@@ -23,6 +23,16 @@ describe('#copy()', function () {
     assert.equal(this.fs.store.get(newPath).state, 'modified');
   });
 
+  it('can copy directory not commited to disk', function () {
+    this.fs.write('/test/foo/file-a.txt', 'a');
+    this.fs.write('/test/foo/file-b.txt', 'b');
+
+    this.fs.copy('/test/foo/**', '/test/bar/');
+
+    assert.equal(this.fs.read('/test/bar/file-a.txt'), 'a');
+    assert.equal(this.fs.read('/test/bar/file-b.txt'), 'b');
+  });
+
   it('throws when trying to copy from a non-existing file', function () {
     var filepath = path.join(__dirname, 'fixtures/does-not-exits');
     var newPath = '/new/path/file.txt';

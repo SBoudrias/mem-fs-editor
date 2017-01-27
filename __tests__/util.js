@@ -40,9 +40,12 @@ describe('util.globify()', function () {
     assert.equal(util.globify(filePath), filePath);
   });
 
-  it('returns path for nonexisting path', function () {
+  it('returns pattern matching both files and directory for nonexisting paths', function () {
     var filePath = '/nonexisting.file';
-    assert.equal(util.globify(filePath), filePath);
+    assert.deepEqual(util.globify(filePath), [
+      filePath,
+      path.join(filePath, '**')
+    ]);
   });
 
   it('returns glob for glob path', function () {
