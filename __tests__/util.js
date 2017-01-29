@@ -17,6 +17,11 @@ describe('util.getCommonPath()', function () {
     assert.equal(util.getCommonPath(path.join(filePath, 'file-a.txt')), filePath);
   });
 
+  it('find the common root of /a/b/c, where /a/b/c is a non-existing file', function () {
+    var filePath = path.resolve(__dirname, 'fixtures');
+    assert.equal(util.getCommonPath(path.join(filePath, 'does-not-exists.txt')), filePath);
+  });
+
   it('find the common root of glob /a/b/**', function () {
     assert.equal(util.getCommonPath('/a/b/**'), '/a/b');
   });
