@@ -3,7 +3,8 @@
   "version": "3.0.0",
   "description": "File edition helpers working on top of mem-fs",
   "scripts": {
-    "test": "jest && eslint **/*.js",
+    "pretest": "eslint **/*.js",
+    "test": "jest",
     "prepublish": "nsp check"
   },
   "repository": "SBoudrias/mem-fs-editor",
