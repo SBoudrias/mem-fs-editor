@@ -34,7 +34,7 @@
     "jest": "^19.0.0",
     "mem-fs": "^1.0.0",
     "nsp": "^2.6.2",
-    "sinon": "^1.12.2"
+    "sinon": "^2.0.0"
   },
   "jest": {
     "collectCoverage": true,
