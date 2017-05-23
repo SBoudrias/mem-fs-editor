@@ -1,43 +1,45 @@
 'use strict';
 
-var assert = require('assert');
-var path = require('path');
-var sinon = require('sinon');
-var editor = require('..');
-var memFs = require('mem-fs');
-var escape = require('escape-regexp');
+const path = require('path');
+const sinon = require('sinon');
+const editor = require('..');
+const memFs = require('mem-fs');
+const escape = require('escape-regexp');
 
-describe('#readJSON()', function () {
-  beforeEach(function () {
-    var store = memFs.create();
-    this.fs = editor.create(store);
+describe('#readJSON()', () => {
+  let store;
+  let fs;
+
+  beforeEach(() => {
+    store = memFs.create();
+    fs = editor.create(store);
   });
 
-  it('read the content of a file', function () {
-    var obj = this.fs.readJSON(path.join(__dirname, 'fixtures/file.json'));
-    assert.equal(obj.foo, 'bar');
+  it('read the content of a file', () => {
+    const obj = fs.readJSON(path.join(__dirname, 'fixtures/file.json'));
+    expect(obj.foo).toBe('bar');
   });
 
-  it('calls read() with path', function () {
-    var read = sinon.spy(this.fs, 'read');
-    var file = path.join(__dirname, 'fixtures/file.json');
-    this.fs.readJSON(file);
+  it('calls read() with path', () => {
+    const read = sinon.spy(fs, 'read');
+    const file = path.join(__dirname, 'fixtures/file.json');
+    fs.readJSON(file);
     sinon.assert.calledOnce(read);
     sinon.assert.calledWith(read, file);
     read.restore();
   });
 
-  it('return defaults if file does not exist and defaults is provided', function () {
-    var obj = this.fs.readJSON(path.join(__dirname, 'no-such-file.json'), {foo: 'bar'});
-    assert.equal(obj.foo, 'bar');
+  it('return defaults if file does not exist and defaults is provided', () => {
+    const obj = fs.readJSON(path.join(__dirname, 'no-such-file.json'), {foo: 'bar'});
+    expect(obj.foo).toBe('bar');
   });
 
-  it('throw error if file could not be parsed as JSON, even if defaults is provided', function () {
-    assert.throws(this.fs.readJSON.bind(this.fs, path.join(__dirname, 'fixtures/file-tpl.txt'), {foo: 'bar'}));
+  it('throw error if file could not be parsed as JSON, even if defaults is provided', () => {
+    expect(fs.readJSON.bind(fs, path.join(__dirname, 'fixtures/file-tpl.txt'), {foo: 'bar'})).toThrow();
   });
 
-  it('throw error with file path info', function () {
+  it('throw error with file path info', () => {
     var filePath = path.join(__dirname, 'fixtures/file-tpl.txt');
-    assert.throws(this.fs.readJSON.bind(this.fs, filePath), new RegExp(escape(filePath)));
+    expect(fs.readJSON.bind(fs, filePath), new RegExp(escape(filePath))).toThrow();
   });
 });

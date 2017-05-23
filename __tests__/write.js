@@ -1,37 +1,39 @@
 'use strict';
 
-var assert = require('assert');
-var path = require('path');
-var editor = require('..');
-var memFs = require('mem-fs');
+const path = require('path');
+const editor = require('..');
+const memFs = require('mem-fs');
 
-describe('#write()', function () {
-  beforeEach(function () {
-    var store = memFs.create();
-    this.fs = editor.create(store);
+describe('#write()', () => {
+  let store;
+  let fs;
+
+  beforeEach(() => {
+    store = memFs.create();
+    fs = editor.create(store);
   });
 
-  it('write string to a new file', function () {
-    var filepath = path.join(__dirname, 'fixtures/does-not-exist.txt');
-    var contents = 'some text';
-    this.fs.write(filepath, contents);
-    assert.equal(this.fs.read(filepath), contents);
-    assert.equal(this.fs.store.get(filepath).state, 'modified');
+  it('write string to a new file', () => {
+    const filepath = path.join(__dirname, 'fixtures/does-not-exist.txt');
+    const contents = 'some text';
+    fs.write(filepath, contents);
+    expect(fs.read(filepath)).toBe(contents);
+    expect(fs.store.get(filepath).state).toBe('modified');
   });
 
-  it('write buffer to a new file', function () {
-    var filepath = path.join(__dirname, 'fixtures/does-not-exist.txt');
-    var contents = new Buffer('omg!', 'base64');
-    this.fs.write(filepath, contents);
-    assert.equal(this.fs.read(filepath), contents.toString());
-    assert.equal(this.fs.store.get(filepath).state, 'modified');
+  it('write buffer to a new file', () => {
+    const filepath = path.join(__dirname, 'fixtures/does-not-exist.txt');
+    const contents = new Buffer('omg!', 'base64');
+    fs.write(filepath, contents);
+    expect(fs.read(filepath)).toBe(contents.toString());
+    expect(fs.store.get(filepath).state).toBe('modified');
   });
 
-  it('write an existing file', function () {
-    var filepath = path.join(__dirname, 'fixtures/file-a.txt');
-    var contents = 'some text';
-    this.fs.write(filepath, contents);
-    assert.equal(this.fs.read(filepath), contents);
-    assert.equal(this.fs.store.get(filepath).state, 'modified');
+  it('write an existing file', () => {
+    const filepath = path.join(__dirname, 'fixtures/file-a.txt');
+    const contents = 'some text';
+    fs.write(filepath, contents);
+    expect(fs.read(filepath)).toBe(contents);
+    expect(fs.store.get(filepath).state).toBe('modified');
   });
 });

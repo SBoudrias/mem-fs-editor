@@ -1,53 +1,55 @@
 'use strict';
 
-var assert = require('assert');
-var path = require('path');
-var editor = require('..');
-var memFs = require('mem-fs');
+const path = require('path');
+const editor = require('..');
+const memFs = require('mem-fs');
 
-describe('#delete()', function () {
+describe('#delete()', () => {
+  let store;
+  let fs;
+
   beforeEach(function () {
-    var store = memFs.create();
-    this.fs = editor.create(store);
+    store = memFs.create();
+    fs = editor.create(store);
   });
 
-  it('deletes a file', function () {
-    var filepath = path.join(__dirname, 'fixtures/file-a.txt');
-    this.fs.delete(filepath);
-    assert.throws(this.fs.read.bind(this.fs, filepath));
-    assert.equal(this.fs.store.get(filepath).state, 'deleted');
+  it('deletes a file', () => {
+    const filepath = path.join(__dirname, 'fixtures/file-a.txt');
+    fs.delete(filepath);
+    expect(fs.read.bind(fs, filepath)).toThrow();
+    expect(fs.store.get(filepath).state).toBe('deleted');
   });
 
-  it('deletes a directory', function () {
-    var dirpath = path.join(__dirname, 'fixtures/nested');
-    var nestedFile = path.join(dirpath, 'file.txt');
-    this.fs.delete(dirpath);
-    assert.equal(this.fs.store.get(dirpath).state, 'deleted');
-    assert.equal(this.fs.store.get(nestedFile).state, 'deleted');
+  it('deletes a directory', () => {
+    const dirpath = path.join(__dirname, 'fixtures/nested');
+    const nestedFile = path.join(dirpath, 'file.txt');
+    fs.delete(dirpath);
+    expect(fs.store.get(dirpath).state).toBe('deleted');
+    expect(fs.store.get(nestedFile).state).toBe('deleted');
   });
 
-  it('deletes new files', function () {
-    this.fs.write('foo', 'foo');
-    this.fs.delete('foo');
-    assert.equal(this.fs.store.get('foo').state, 'deleted');
+  it('deletes new files', () => {
+    fs.write('foo', 'foo');
+    fs.delete('foo');
+    expect(fs.store.get('foo').state).toBe('deleted');
   });
 
-  it('deletes new directories', function () {
-    this.fs.write('/test/bar/foo.txt', 'foo');
-    this.fs.delete('/test/bar/');
-    assert.equal(this.fs.store.get('/test/bar/foo.txt').state, 'deleted');
+  it('deletes new directories', () => {
+    fs.write('/test/bar/foo.txt', 'foo');
+    fs.delete('/test/bar/');
+    expect(fs.store.get('/test/bar/foo.txt').state).toBe('deleted');
   });
 
-  it('after delete a file should set isNew flag on write', function () {
-    var filepath = path.join(__dirname, 'fixtures/file-a.txt');
-    this.fs.delete(filepath);
-    this.fs.write(filepath, 'foo');
-    assert.equal(this.fs.store.get(filepath).isNew, true);
+  it('after delete a file should set isNew flag on write', () => {
+    const filepath = path.join(__dirname, 'fixtures/file-a.txt');
+    fs.delete(filepath);
+    fs.write(filepath, 'foo');
+    expect(fs.store.get(filepath).isNew).toBeTruthy();
   });
 
-  it('delete new files if specifying a full path', function () {
-    this.fs.write('bar', 'bar');
-    this.fs.delete(path.resolve('bar'));
-    assert.equal(this.fs.store.get('bar').state, 'deleted');
+  it('delete new files if specifying a full path', () => {
+    fs.write('bar', 'bar');
+    fs.delete(path.resolve('bar'));
+    expect(fs.store.get('bar').state).toBe('deleted');
   });
 });

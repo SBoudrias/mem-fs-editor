@@ -1,33 +1,35 @@
 'use strict';
 
-var assert = require('assert');
-var editor = require('..');
-var memFs = require('mem-fs');
+const editor = require('..');
+const memFs = require('mem-fs');
 
-describe('#write()', function () {
-  beforeEach(function () {
-    var store = memFs.create();
-    this.fs = editor.create(store);
+describe('#write()', () => {
+  let store;
+  let fs;
+
+  beforeEach(() => {
+    store = memFs.create();
+    fs = editor.create(store);
   });
 
-  it('appends new content to file', function () {
-    this.fs.write('append.txt', 'a\n\n\n');
-    this.fs.append('append.txt', 'b');
+  it('appends new content to file', () => {
+    fs.write('append.txt', 'a\n\n\n');
+    fs.append('append.txt', 'b');
 
-    assert.equal(this.fs.read('append.txt'), 'a\nb');
+    expect(fs.read('append.txt')).toBe('a\nb');
   });
 
-  it('allows specifying custom separator', function () {
-    this.fs.write('append.txt', 'a');
-    this.fs.append('append.txt', 'b', {separator: ', '});
+  it('allows specifying custom separator', () => {
+    fs.write('append.txt', 'a');
+    fs.append('append.txt', 'b', {separator: ', '});
 
-    assert.equal(this.fs.read('append.txt'), 'a, b');
+    expect(fs.read('append.txt')).toBe('a, b');
   });
 
-  it('allows disabling end trim', function () {
-    this.fs.write('append.txt', 'a\n\n');
-    this.fs.append('append.txt', 'b', {trimEnd: false});
+  it('allows disabling end trim', () => {
+    fs.write('append.txt', 'a\n\n');
+    fs.append('append.txt', 'b', {trimEnd: false});
 
-    assert.equal(this.fs.read('append.txt'), 'a\n\n\nb');
+    expect(fs.read('append.txt')).toBe('a\n\n\nb');
   });
 });
