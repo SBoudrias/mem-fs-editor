@@ -31,7 +31,7 @@
     "escape-regexp": "0.0.1",
     "eslint": "^3.14.1",
     "eslint-config-xo-space": "^0.15.0",
-    "jest": "^20.0.0",
+    "jest": "^20.0.4",
     "mem-fs": "^1.0.0",
     "nsp": "^2.6.2",
     "sinon": "^2.0.0"
