@@ -1,113 +1,115 @@
 'use strict';
 
-var assert = require('assert');
-var fs = require('fs');
-var os = require('os');
-var path = require('path');
-var sinon = require('sinon');
-var editor = require('..');
-var memFs = require('mem-fs');
+const filesystem = require('fs');
+const os = require('os');
+const path = require('path');
+const sinon = require('sinon');
+const editor = require('..');
+const memFs = require('mem-fs');
 
-describe('#copy()', function () {
-  beforeEach(function () {
-    var store = memFs.create();
-    this.fs = editor.create(store);
+describe('#copy()', () => {
+  let store;
+  let fs;
+
+  beforeEach(() => {
+    store = memFs.create();
+    fs = editor.create(store);
   });
 
-  it('copy file', function () {
-    var filepath = path.join(__dirname, 'fixtures/file-a.txt');
-    var initialContents = this.fs.read(filepath);
-    var newPath = '/new/path/file.txt';
-    this.fs.copy(filepath, newPath);
-    assert.equal(this.fs.read(newPath), initialContents);
-    assert.equal(this.fs.store.get(newPath).state, 'modified');
+  it('copy file', () => {
+    const filepath = path.join(__dirname, 'fixtures/file-a.txt');
+    const initialContents = fs.read(filepath);
+    const newPath = '/new/path/file.txt';
+    fs.copy(filepath, newPath);
+    expect(fs.read(newPath)).toBe(initialContents);
+    expect(fs.store.get(newPath).state).toBe('modified');
   });
 
-  it('can copy directory not commited to disk', function () {
-    this.fs.write('/test/foo/file-a.txt', 'a');
-    this.fs.write('/test/foo/file-b.txt', 'b');
+  it('can copy directory not commited to disk', () => {
+    fs.write('/test/foo/file-a.txt', 'a');
+    fs.write('/test/foo/file-b.txt', 'b');
 
-    this.fs.copy('/test/foo/**', '/test/bar/');
+    fs.copy('/test/foo/**', '/test/bar/');
 
-    assert.equal(this.fs.read('/test/bar/file-a.txt'), 'a');
-    assert.equal(this.fs.read('/test/bar/file-b.txt'), 'b');
+    expect(fs.read('/test/bar/file-a.txt')).toBe('a');
+    expect(fs.read('/test/bar/file-b.txt')).toBe('b');
   });
 
-  it('throws when trying to copy from a non-existing file', function () {
-    var filepath = path.join(__dirname, 'fixtures/does-not-exits');
-    var newPath = '/new/path/file.txt';
-    assert.throws(this.fs.copy.bind(this.fs, filepath, newPath));
+  it('throws when trying to copy from a non-existing file', () => {
+    const filepath = path.join(__dirname, 'fixtures/does-not-exits');
+    const newPath = '/new/path/file.txt';
+    expect(fs.copy.bind(fs, filepath, newPath)).toThrow();
   });
 
-  it('copy file and process contents', function () {
-    var filepath = path.join(__dirname, 'fixtures/file-a.txt');
-    var initialContents = this.fs.read(filepath);
-    var contents = 'some processed contents';
-    var newPath = '/new/path/file.txt';
-    this.fs.copy(filepath, newPath, {
-      process: function (contentsArg) {
-        assert(contentsArg instanceof Buffer);
-        assert.equal(contentsArg, initialContents);
+  it('copy file and process contents', () => {
+    const filepath = path.join(__dirname, 'fixtures/file-a.txt');
+    const initialContents = fs.read(filepath);
+    const contents = 'some processed contents';
+    const newPath = '/new/path/file.txt';
+    fs.copy(filepath, newPath, {
+      process(contentsArg) {
+        expect(contentsArg).toBeInstanceOf(Buffer);
+        expect(contentsArg.toString()).toEqual(initialContents);
         return contents;
       }
     });
-    assert.equal(this.fs.read(newPath), contents);
+    expect(fs.read(newPath)).toBe(contents);
   });
 
-  it('copy by directory', function () {
-    this.fs.copy(path.join(__dirname, '/fixtures'), '/output');
-    assert.equal(this.fs.read('/output/file-a.txt'), 'foo\n');
-    assert.equal(this.fs.read('/output/nested/file.txt'), 'nested\n');
+  it('copy by directory', () => {
+    fs.copy(path.join(__dirname, '/fixtures'), '/output');
+    expect(fs.read('/output/file-a.txt')).toBe('foo\n');
+    expect(fs.read('/output/nested/file.txt')).toBe('nested\n');
   });
 
-  it('copy by globbing', function () {
-    this.fs.copy(path.join(__dirname, '/fixtures/**'), '/output');
-    assert.equal(this.fs.read('/output/file-a.txt'), 'foo\n');
-    assert.equal(this.fs.read('/output/nested/file.txt'), 'nested\n');
+  it('copy by globbing', () => {
+    fs.copy(path.join(__dirname, '/fixtures/**'), '/output');
+    expect(fs.read('/output/file-a.txt')).toBe('foo\n');
+    expect(fs.read('/output/nested/file.txt')).toBe('nested\n');
   });
 
-  it('copy by globbing multiple patterns', function () {
-    this.fs.copy([path.join(__dirname, '/fixtures/**'), '!**/*tpl*'], '/output');
-    assert.equal(this.fs.read('/output/file-a.txt'), 'foo\n');
-    assert.equal(this.fs.read('/output/nested/file.txt'), 'nested\n');
-    assert.throws(this.fs.read.bind(this.fs, '/output/file-tpl.txt'));
+  it('copy by globbing multiple patterns', () => {
+    fs.copy([path.join(__dirname, '/fixtures/**'), '!**/*tpl*'], '/output');
+    expect(fs.read('/output/file-a.txt')).toBe('foo\n');
+    expect(fs.read('/output/nested/file.txt')).toBe('nested\n');
+    expect(fs.read.bind(fs, '/output/file-tpl.txt')).toThrow();
   });
 
-  it('copy files by globbing and process contents', function () {
-    var process = sinon.stub().returnsArg(0);
-    this.fs.copy(path.join(__dirname, '/fixtures/**'), '/output', {process: process});
+  it('copy files by globbing and process contents', () => {
+    const process = sinon.stub().returnsArg(0);
+    fs.copy(path.join(__dirname, '/fixtures/**'), '/output', {process});
     sinon.assert.callCount(process, 7); // 5 total files under 'fixtures', not counting folders
-    assert.equal(this.fs.read('/output/file-a.txt'), 'foo\n');
-    assert.equal(this.fs.read('/output/nested/file.txt'), 'nested\n');
+    expect(fs.read('/output/file-a.txt')).toBe('foo\n');
+    expect(fs.read('/output/nested/file.txt')).toBe('nested\n');
   });
 
-  it('accepts directory name with "."', function () {
-    this.fs.copy(path.join(__dirname, '/fixtures/**'), '/out.put');
-    assert.equal(this.fs.read('/out.put/file-a.txt'), 'foo\n');
-    assert.equal(this.fs.read('/out.put/nested/file.txt'), 'nested\n');
+  it('accepts directory name with "."', () => {
+    fs.copy(path.join(__dirname, '/fixtures/**'), '/out.put');
+    expect(fs.read('/out.put/file-a.txt')).toBe('foo\n');
+    expect(fs.read('/out.put/nested/file.txt')).toBe('nested\n');
   });
 
-  it('requires destination directory when globbing', function () {
-    assert.throws(
-      this.fs.copy.bind(
-        this.fs,
+  it('requires destination directory when globbing', () => {
+    expect(
+      fs.copy.bind(
+        fs,
         path.join(__dirname, '/fixtures/**'),
         path.join(__dirname, '/fixtures/file-a.txt')
       )
-    );
+    ).toThrow();
   });
 
-  it('preserve permissions', function (done) {
-    var filename = path.join(os.tmpdir(), 'perm.txt');
-    var copyname = path.join(os.tmpdir(), 'copy-perm.txt');
-    fs.writeFileSync(filename, 'foo', {mode: parseInt(733, 8)});
+  it('preserve permissions', done => {
+    const filename = path.join(os.tmpdir(), 'perm.txt');
+    const copyname = path.join(os.tmpdir(), 'copy-perm.txt');
+    filesystem.writeFileSync(filename, 'foo', {mode: parseInt(733, 8)});
 
-    this.fs.copy(filename, copyname);
+    fs.copy(filename, copyname);
 
-    this.fs.commit(function () {
-      var oldStat = fs.statSync(filename);
-      var newStat = fs.statSync(copyname);
-      assert.equal(newStat.mode, oldStat.mode);
+    fs.commit(() => {
+      const oldStat = filesystem.statSync(filename);
+      const newStat = filesystem.statSync(copyname);
+      expect(newStat.mode).toBe(oldStat.mode);
       done();
     });
   });

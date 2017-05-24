@@ -1,65 +1,67 @@
 'use strict';
 
-var assert = require('assert');
-var path = require('path');
-var editor = require('..');
-var memFs = require('mem-fs');
+const path = require('path');
+const editor = require('..');
+const memFs = require('mem-fs');
 
-var fileA = path.join(__dirname, 'fixtures/file-a.txt');
+const fileA = path.join(__dirname, 'fixtures/file-a.txt');
 
-describe('#read()', function () {
-  beforeEach(function () {
-    var store = memFs.create();
-    this.fs = editor.create(store);
+describe('#read()', () => {
+  let store;
+  let fs;
+
+  beforeEach(() => {
+    store = memFs.create();
+    fs = editor.create(store);
   });
 
-  it('read the content of a file', function () {
-    var content = this.fs.read(fileA);
-    assert.equal(content, 'foo\n');
+  it('read the content of a file', () => {
+    const content = fs.read(fileA);
+    expect(content).toBe('foo\n');
   });
 
-  it('get the buffer content of a file', function () {
-    var content = this.fs.read(fileA, {raw: true});
-    assert(content instanceof Buffer);
-    assert.equal(content.toString(), 'foo\n');
+  it('get the buffer content of a file', () => {
+    const content = fs.read(fileA, {raw: true});
+    expect(content).toBeInstanceOf(Buffer);
+    expect(content.toString()).toBe('foo\n');
   });
 
-  it('throws if file does not exist', function () {
-    assert.throws(this.fs.read.bind(this.fs, 'file-who-does-not-exist.txt'));
+  it('throws if file does not exist', () => {
+    expect(fs.read.bind(fs, 'file-who-does-not-exist.txt')).toThrow();
   });
 
-  it('throws if file is deleted', function () {
-    this.fs.delete(fileA);
-    assert.throws(this.fs.read.bind(this.fs, 'file-who-does-not-exist.txt'));
+  it('throws if file is deleted', () => {
+    fs.delete(fileA);
+    expect(fs.read.bind(fs, 'file-who-does-not-exist.txt')).toThrow();
   });
 
-  it('returns defaults as String if file does not exist and defaults is provided', function () {
-    var content = this.fs.read('file-who-does-not-exist.txt', {defaults: 'foo\n'});
-    assert.equal(content, 'foo\n');
+  it('returns defaults as String if file does not exist and defaults is provided', () => {
+    const content = fs.read('file-who-does-not-exist.txt', {defaults: 'foo\n'});
+    expect(content).toBe('foo\n');
   });
 
-  it('returns defaults as String if file does not exist and defaults is provided as empty string', function () {
-    var content = this.fs.read('file-who-does-not-exist.txt', {defaults: ''});
-    assert.equal(content, '');
+  it('returns defaults as String if file does not exist and defaults is provided as empty string', () => {
+    const content = fs.read('file-who-does-not-exist.txt', {defaults: ''});
+    expect(content).toBe('');
   });
 
-  it('returns defaults as Buffer if file does not exist and defaults is provided', function () {
-    var content = this.fs.read('file-who-does-not-exist.txt', {
+  it('returns defaults as Buffer if file does not exist and defaults is provided', () => {
+    const content = fs.read('file-who-does-not-exist.txt', {
       defaults: new Buffer('foo\n'),
       raw: true
     });
-    assert(content instanceof Buffer);
-    assert.equal(content.toString(), 'foo\n');
+    expect(content).toBeInstanceOf(Buffer);
+    expect(content.toString()).toBe('foo\n');
   });
 
-  it('returns defaults if file is deleted', function () {
-    this.fs.delete(fileA);
-    var content = this.fs.read(fileA, {defaults: 'foo'});
-    assert.equal(content, 'foo');
+  it('returns defaults if file is deleted', () => {
+    fs.delete(fileA);
+    const content = fs.read(fileA, {defaults: 'foo'});
+    expect(content).toBe('foo');
   });
 
-  it('allows defaults to be null', function () {
-    var content = this.fs.read('not-existing.file', {defaults: null});
-    assert.equal(content, null);
+  it('allows defaults to be null', () => {
+    const content = fs.read('not-existing.file', {defaults: null});
+    expect(content).toBeNull();
   });
 });
