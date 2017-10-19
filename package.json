@@ -30,7 +30,7 @@
     "coveralls": "^3.0.0",
     "escape-regexp": "0.0.1",
     "eslint": "^4.1.0",
-    "eslint-config-xo-space": "^0.16.0",
+    "eslint-config-xo-space": "^0.17.0",
     "jest": "^21.0.0",
     "mem-fs": "^1.0.0",
     "nsp": "^2.6.2",
