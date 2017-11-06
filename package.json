@@ -33,7 +33,7 @@
     "eslint-config-xo-space": "^0.17.0",
     "jest": "^21.0.0",
     "mem-fs": "^1.0.0",
-    "nsp": "^2.6.2",
+    "nsp": "^3.0.0",
     "sinon": "^4.0.0"
   },
   "jest": {
