@@ -77,6 +77,8 @@ Copy the `from` file and parse its content as an [ejs](http://ejs.co/) template 
 
 You can optionally pass a `templateOptions` object. `mem-fs-editor` automatically setup the filename option so you can easily use partials.
 
+Binary files are by default excluded from ejs template substitution, but this can be changed by setting `templateOptions`' `forceBinarySubstition` to true.
+
 You can also optionally pass a `copyOptions` object (see [copy() documentation for more details](https://github.com/SBoudrias/mem-fs-editor#copyfrom-to-options)).
 
 Templates syntax looks like this:
