@@ -58,13 +58,4 @@ describe('#copyTpl()', () => {
     fs.copyTpl(filepath, newPath);
     expect(fs.read(newPath)).toBe(fs.read(filepath));
   });
-
-  it('force substitution on binary files', function () {
-    const filepath = path.join(__dirname, 'fixtures/file-binary.bin');
-    const newPath = '/new/path/file.bin';
-    fs.copyTpl(filepath, newPath, {name: 'apa bepa'}, {
-      forceBinarySubstition: true
-    });
-    expect(fs.read(newPath)).toMatch(/apa bepa/);
-  });
 });
