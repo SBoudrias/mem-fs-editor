@@ -24,7 +24,6 @@ describe('#delete()', () => {
     const dirpath = path.join(__dirname, 'fixtures/nested');
     const nestedFile = path.join(dirpath, 'file.txt');
     fs.delete(dirpath);
-    expect(fs.store.get(dirpath).state).toBe('deleted');
     expect(fs.store.get(nestedFile).state).toBe('deleted');
   });
 
