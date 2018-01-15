@@ -51,4 +51,11 @@ describe('#copyTpl()', () => {
     expect(fs.exists(path.join(newPath, 'file-tpl-partial.txt'))).toBeTruthy();
     expect(fs.exists(path.join(newPath, 'file-tpl.txt'))).toBeFalsy();
   });
+
+  it('perform no substitution on binary files', function () {
+    const filepath = path.join(__dirname, 'fixtures/file-binary.bin');
+    const newPath = '/new/path/file.bin';
+    fs.copyTpl(filepath, newPath);
+    expect(fs.read(newPath)).toBe(fs.read(filepath));
+  });
 });

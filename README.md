@@ -73,7 +73,7 @@ Optionally, pass an `options.process` function (`process(contents)`) returning a
 
 ### `#copyTpl(from, to, context[, templateOptions [, copyOptions]])`
 
-Copy the `from` file and parse its content as an [ejs](http://ejs.co/) template where `context` is the template context (the variable names available inside the template).
+Copy the `from` file and, if it is not a binary file, parse its content as an [ejs](http://ejs.co/) template where `context` is the template context (the variable names available inside the template).
 
 You can optionally pass a `templateOptions` object. `mem-fs-editor` automatically setup the filename option so you can easily use partials.
 
