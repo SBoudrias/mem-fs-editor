@@ -47,7 +47,7 @@ describe('#read()', () => {
 
   it('returns defaults as Buffer if file does not exist and defaults is provided', () => {
     const content = fs.read('file-who-does-not-exist.txt', {
-      defaults: new Buffer('foo\n'),
+      defaults: Buffer.from('foo\n'),
       raw: true
     });
     expect(content).toBeInstanceOf(Buffer);

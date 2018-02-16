@@ -40,7 +40,7 @@ describe('#commit()', () => {
 
     let filter = through.obj(function (file, enc, cb) {
       called++;
-      file.contents = new Buffer('modified');
+      file.contents = Buffer.from('modified');
       this.push(file);
       cb();
     });

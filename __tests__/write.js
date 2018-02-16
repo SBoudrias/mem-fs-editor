@@ -23,7 +23,7 @@ describe('#write()', () => {
 
   it('write buffer to a new file', () => {
     const filepath = path.join(__dirname, 'fixtures/does-not-exist.txt');
-    const contents = new Buffer('omg!', 'base64');
+    const contents = Buffer.from('omg!', 'base64');
     fs.write(filepath, contents);
     expect(fs.read(filepath)).toBe(contents.toString());
     expect(fs.store.get(filepath).state).toBe('modified');
