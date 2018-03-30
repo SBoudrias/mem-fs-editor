@@ -28,7 +28,7 @@ By default, calling `read()` on a file path that does not exist throws error. Yo
 
 Read a file and parse its contents as JSON.
 
-`readJSON()` internally calls `read()` and will throw error if the file path you pass in does not exist. But if you pass in an optional `defaults`, the `defaults` content will be returned in case of the target file is missing, instead of throwing error (error would still be thrown if JSON.parse failed to parse your target file).
+`readJSON()` internally calls `read()` but will not throw an error if the file path you pass in does not exist. If you pass in an optional `defaults`, the `defaults` content will be returned in case of the target file is missing, instead of `undefined`. (Error would still be thrown if `JSON.parse` failed to parse your target file.)
 
 ### `#write(filepath, contents)`
 
