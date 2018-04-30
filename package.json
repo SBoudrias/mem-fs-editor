@@ -16,8 +16,8 @@
   ],
   "dependencies": {
     "commondir": "^1.0.1",
-    "deep-extend": "^0.5.0",
-    "ejs": "^2.3.1",
+    "deep-extend": "^0.5.1",
+    "ejs": "^2.5.9",
     "glob": "^7.0.3",
     "globby": "^8.0.0",
     "isbinaryfile": "^3.0.2",
@@ -30,11 +30,11 @@
   "devDependencies": {
     "coveralls": "^3.0.0",
     "escape-regexp": "0.0.1",
-    "eslint": "^4.1.0",
+    "eslint": "^4.19.1",
     "eslint-config-xo-space": "^0.18.0",
-    "jest": "^22.1.0",
+    "jest": "^22.4.3",
     "mem-fs": "^1.0.0",
-    "nsp": "^3.1.0",
+    "nsp": "^3.2.1",
     "sinon": "^5.0.0"
   },
   "jest": {
