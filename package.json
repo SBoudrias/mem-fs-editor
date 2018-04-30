@@ -1,6 +1,6 @@
 {
   "name": "mem-fs-editor",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "File edition helpers working on top of mem-fs",
   "scripts": {
     "pretest": "eslint **/*.js",
