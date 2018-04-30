@@ -43,7 +43,7 @@ describe('#copyTpl()', () => {
     ];
     const copyOptions = {
       globOptions: {
-        ignore: filenames[1]
+        ignore: [filenames[1]]
       }
     };
     const newPath = '/new/path';
