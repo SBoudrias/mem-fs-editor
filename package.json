@@ -5,7 +5,7 @@
   "scripts": {
     "pretest": "eslint **/*.js",
     "test": "jest",
-    "prepublish": "nsp check"
+    "prepublishOnly": "nsp check"
   },
   "repository": "SBoudrias/mem-fs-editor",
   "author": "Simon Boudrias",
