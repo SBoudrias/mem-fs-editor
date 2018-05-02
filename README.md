@@ -85,12 +85,22 @@ Templates syntax looks like this:
 <%= value %>
 <%- include('partial.ejs', { name: 'Simon' }) %>
 ```
+Dir syntax looks like this:
+```
+/some/path/dir{ value }/...
+```
 
 Refer to the [ejs documentation](http://ejs.co/) for more details.
 
 ### `#move(from, to, [options])`
 
 Move/rename a file from the `from` path to the `to` path.
+
+`#move` internally uses `#copy` and `#delete`, so `from` can be a glob pattern, and you can provide `options.globOptions` with it.
+
+### `#moveDirTpl(from, to, context, [options])`
+
+Move/rename a file from the `from` path to the `to` path, where to can rplace part of the path using `context`.
 
 `#move` internally uses `#copy` and `#delete`, so `from` can be a glob pattern, and you can provide `options.globOptions` with it.
 
