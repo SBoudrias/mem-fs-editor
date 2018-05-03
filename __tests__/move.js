@@ -1,5 +1,6 @@
 'use strict';
 
+const os = require('os');
 const path = require('path');
 const editor = require('..');
 const memFs = require('mem-fs');
@@ -51,7 +52,7 @@ describe('#move()', () => {
     fs.write(filepath, contents);
     fs.move(fromdir, dirpath);
 
-    expect(fs.read(path.join(dirpath, 'file.txt'))).toBe('nested\n');
+    expect(fs.read(path.join(dirpath, 'file.txt'))).toBe('nested' + os.EOL);
     expect(fs.read(filepath)).toBe(contents);
     expect(fs.read.bind(fs, path.join(fromdir, 'file.txt'))).toThrow();
   });
