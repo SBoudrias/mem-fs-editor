@@ -1,5 +1,6 @@
 'use strict';
 
+const os = require('os');
 const editor = require('..');
 const memFs = require('mem-fs');
 
@@ -16,7 +17,7 @@ describe('#write()', () => {
     fs.write('append.txt', 'a\n\n\n');
     fs.append('append.txt', 'b');
 
-    expect(fs.read('append.txt')).toBe('a\nb');
+    expect(fs.read('append.txt')).toBe('a' + os.EOL + 'b');
   });
 
   it('allows specifying custom separator', () => {
@@ -30,6 +31,6 @@ describe('#write()', () => {
     fs.write('append.txt', 'a\n\n');
     fs.append('append.txt', 'b', {trimEnd: false});
 
-    expect(fs.read('append.txt')).toBe('a\n\n\nb');
+    expect(fs.read('append.txt')).toBe('a\n\n' + os.EOL + 'b');
   });
 });
