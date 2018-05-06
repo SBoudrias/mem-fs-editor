@@ -87,7 +87,7 @@ Templates syntax looks like this:
 ```
 Dir syntax looks like this:
 ```
-/some/path/dir{ value }/...
+/some/path/dir<%= value %>/...
 ```
 
 Refer to the [ejs documentation](http://ejs.co/) for more details.
