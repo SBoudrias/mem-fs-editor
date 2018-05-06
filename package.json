@@ -1,6 +1,6 @@
 {
   "name": "mem-fs-editor",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "File edition helpers working on top of mem-fs",
   "scripts": {
     "pretest": "eslint **/*.js",
@@ -41,18 +41,5 @@
     "collectCoverage": true,
     "coverageDirectory": "coverage",
     "testEnvironment": "node"
-  },
-  "eslintConfig": {
-    "extends": "xo-space",
-    "env": {
-      "jest": true
-    },
-    "rules": {
-      "eqeqeq": [
-        2,
-        "allow-null"
-      ],
-      "no-eq-null": 0
-    }
   }
 }

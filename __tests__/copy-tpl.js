@@ -1,5 +1,6 @@
 'use strict';
 
+const os = require('os');
 const path = require('path');
 const editor = require('..');
 const memFs = require('mem-fs');
@@ -17,7 +18,7 @@ describe('#copyTpl()', () => {
     const filepath = path.join(__dirname, 'fixtures/file-tpl.txt');
     const newPath = '/new/path/file.txt';
     fs.copyTpl(filepath, newPath, {name: 'new content'});
-    expect(fs.read(newPath)).toBe('new content\n');
+    expect(fs.read(newPath)).toBe('new content' + os.EOL);
   });
 
   it('allow setting custom template delimiters', function () {
@@ -26,14 +27,14 @@ describe('#copyTpl()', () => {
     fs.copyTpl(filepath, newPath, {name: 'mustache'}, {
       delimiter: '?'
     });
-    expect(fs.read(newPath)).toBe('mustache\n');
+    expect(fs.read(newPath)).toBe('mustache' + os.EOL);
   });
 
   it('allow including partials', function () {
     const filepath = path.join(__dirname, 'fixtures/file-tpl-include.txt');
     const newPath = '/new/path/file.txt';
     fs.copyTpl(filepath, newPath);
-    expect(fs.read(newPath)).toBe('partial\n\n');
+    expect(fs.read(newPath)).toBe('partial' + os.EOL + os.EOL);
   });
 
   it('allow including glob options', function () {

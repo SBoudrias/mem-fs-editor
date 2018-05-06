@@ -1,0 +1,14 @@
+{
+  "extends": "xo-space",
+  "env": {
+    "jest": true
+  },
+  "rules": {
+    "eqeqeq": [
+      2,
+      "allow-null"
+    ],
+    "no-eq-null": 0,
+    "max-params": "off"
+  }
+}
