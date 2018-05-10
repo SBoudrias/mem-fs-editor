@@ -63,7 +63,7 @@ Delete a file or a directory.
 
 `filePath` can also be a `glob`. If `filePath` is glob, you can optionally pass in an `options.globOptions` object to change its pattern matching behavior. The full list of options are being described [here](https://github.com/isaacs/node-glob#options). The `sync` flag is forced to be `true` in `globOptions`.
 
-### `#copy(from, to, [options])`
+### `#copy(from, to, [options], context[, templateOptions ])`
 
 Copy a file from the `from` path to the `to` path.
 
@@ -95,12 +95,6 @@ Refer to the [ejs documentation](http://ejs.co/) for more details.
 ### `#move(from, to, [options])`
 
 Move/rename a file from the `from` path to the `to` path.
-
-`#move` internally uses `#copy` and `#delete`, so `from` can be a glob pattern, and you can provide `options.globOptions` with it.
-
-### `#moveDirTpl(from, to, context, [options])`
-
-Move/rename a file from the `from` path to the `to` path, where to can rplace part of the path using `context`.
 
 `#move` internally uses `#copy` and `#delete`, so `from` can be a glob pattern, and you can provide `options.globOptions` with it.
 
