@@ -59,4 +59,13 @@ describe('#copyTpl()', () => {
     fs.copyTpl(filepath, newPath);
     expect(fs.read(newPath)).toBe(fs.read(filepath));
   });
+
+  it('perform no substitution on binary files from memory file store', function () {
+    const filepath = path.join(__dirname, 'fixtures/file-binary.bin');
+    const pathCopied = path.resolve('/new/path/file-inmemory.bin');
+    const newPath = '/new/path/file.bin';
+    fs.copy(filepath, pathCopied);
+    fs.copyTpl(pathCopied, newPath);
+    expect(fs.read(newPath)).toBe(fs.read(filepath));
+  });
 });
