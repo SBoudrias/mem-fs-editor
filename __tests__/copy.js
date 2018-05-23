@@ -96,13 +96,16 @@ describe('#copy()', () => {
     expect(fs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
   });
 
-  it('accepts template paths', () => {
-    let outputFile = path.join(__dirname, 'test/<%= category %>/file-a.txt');
+  it('accepts processPath() option', () => {
+    let outputFile = path.join(__dirname, 'test/bar/file-a.txt');
     fs.copy(
       path.join(__dirname, '/fixtures/file-a.txt'),
       outputFile,
-      {},
-      {category: 'foo'}
+      {
+        processPath: path => {
+          return (path || '').replace('bar', 'foo');
+        }
+      }
     );
     expect(
       fs.read(path.join(__dirname, 'test/foo/file-a.txt'))

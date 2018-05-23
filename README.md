@@ -61,11 +61,13 @@ Delete a file or a directory.
 
 `filePath` can also be a `glob`. If `filePath` is glob, you can optionally pass in an `options.globOptions` object to change its pattern matching behavior. The full list of options are being described [here](https://github.com/mrmlnc/fast-glob#options-1). The `sync` flag is forced to be `true` in `globOptions`.
 
-### `#copy(from, to, [options], context[, templateOptions ])`
+### `#copy(from, to, [options])`
 
 Copy a file from the `from` path to the `to` path.
 
 Optionally, pass an `options.process` function (`process(contents)`) returning a string or a buffer who'll become the new file content. The process function will take a single contents argument who is the copied file contents as a `Buffer`.
+
+Optionally, pass an `options.processPath` function (`processPath(pathTo)`) returning a string that'll become the new file to path. The process function will take a single string argument that is a path of a file relative to a target directory.
 
 `option.ignoreNoMatch` can be used to silence the error thrown if no files match the `from` pattern.
 

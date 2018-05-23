@@ -68,4 +68,16 @@ describe('#copyTpl()', () => {
     fs.copyTpl(pathCopied, newPath);
     expect(fs.read(newPath)).toBe(fs.read(filepath));
   });
+
+  it('accepts template paths', () => {
+    let outputFile = path.join(__dirname, 'test/<%= category %>/file-a.txt');
+    fs.copyTpl(
+      path.join(__dirname, '/fixtures/file-a.txt'),
+      outputFile,
+      {category: 'foo'}
+    );
+    expect(
+      fs.read(path.join(__dirname, 'test/foo/file-a.txt'))
+    ).toBe('foo' + os.EOL);
+  });
 });
