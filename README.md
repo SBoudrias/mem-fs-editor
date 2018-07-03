@@ -1,19 +1,17 @@
-mem-fs-editor [![Build Status](https://api.travis-ci.org/SBoudrias/mem-fs-editor.svg?branch=master)](https://travis-ci.org/SBoudrias/mem-fs-editor) [![NPM version](https://badge.fury.io/js/mem-fs-editor.svg)](http://badge.fury.io/js/mem-fs-editor) [![Coverage Status](https://coveralls.io/repos/github/SBoudrias/mem-fs-editor/badge.svg)](https://coveralls.io/github/SBoudrias/mem-fs-editor)
-=============
+# mem-fs-editor [![Build Status](https://api.travis-ci.org/SBoudrias/mem-fs-editor.svg?branch=master)](https://travis-ci.org/SBoudrias/mem-fs-editor) [![NPM version](https://badge.fury.io/js/mem-fs-editor.svg)](http://badge.fury.io/js/mem-fs-editor) [![Coverage Status](https://coveralls.io/repos/github/SBoudrias/mem-fs-editor/badge.svg)](https://coveralls.io/github/SBoudrias/mem-fs-editor)
 
 File edition helpers working on top of [mem-fs](https://github.com/SBoudrias/mem-fs)
 
-Usage
--------------
+## Usage
 
 ```js
-var memFs = require('mem-fs');
-var editor = require('mem-fs-editor');
+var memFs = require("mem-fs");
+var editor = require("mem-fs-editor");
 
 var store = memFs.create();
 var fs = editor.create(store);
 
-fs.write('somefile.js', 'var a = 1;');
+fs.write("somefile.js", "var a = 1;");
 ```
 
 ### `#read(filepath, [options])`
@@ -61,7 +59,7 @@ Optionally take the same JSON formatting arguments than `#writeJSON()`.
 
 Delete a file or a directory.
 
-`filePath` can also be a `glob`. If `filePath` is glob, you can optionally pass in an `options.globOptions` object to change its pattern matching behavior. The full list of options are being described [here](https://github.com/isaacs/node-glob#options). The `sync` flag is forced to be `true` in `globOptions`.
+`filePath` can also be a `glob`. If `filePath` is glob, you can optionally pass in an `options.globOptions` object to change its pattern matching behavior. The full list of options are being described [here](https://github.com/mrmlnc/fast-glob#options-1). The `sync` flag is forced to be `true` in `globOptions`.
 
 ### `#copy(from, to, [options], context[, templateOptions ])`
 
@@ -71,7 +69,7 @@ Optionally, pass an `options.process` function (`process(contents)`) returning a
 
 `option.ignoreNoMatch` can be used to silence the error thrown if no files match the `from` pattern.
 
-`from` can be a glob pattern that'll be match against the file system. If that's the case, then `to` must be an output directory. For a globified `from`, you can optionally pass in an `options.globOptions` object to change its pattern matching behavior. The full list of options are being described [here](https://github.com/isaacs/node-glob#options). The `nodir` flag is forced to be `true` in `globOptions` to ensure a vinyl object representing each matching directory is marked as `deleted` in the `mem-fs` store.
+`from` can be a glob pattern that'll be match against the file system. If that's the case, then `to` must be an output directory. For a globified `from`, you can optionally pass in an `options.globOptions` object to change its pattern matching behavior. The full list of options are being described [here](https://github.com/mrmlnc/fast-glob#options-1). The `nodir` flag is forced to be `true` in `globOptions` to ensure a vinyl object representing each matching directory is marked as `deleted` in the `mem-fs` store.
 
 ### `#copyTpl(from, to, context[, templateOptions [, copyOptions]])`
 
@@ -87,7 +85,9 @@ Templates syntax looks like this:
 <%= value %>
 <%- include('partial.ejs', { name: 'Simon' }) %>
 ```
+
 Dir syntax looks like this:
+
 ```
 /some/path/dir<%= value %>/...
 ```
