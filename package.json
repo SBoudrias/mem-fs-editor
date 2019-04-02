@@ -18,7 +18,7 @@
     "deep-extend": "^0.6.0",
     "ejs": "^2.5.9",
     "glob": "^7.0.3",
-    "globby": "^8.0.1",
+    "globby": "^9.1.0",
     "isbinaryfile": "^3.0.2",
     "mkdirp": "^0.5.0",
     "multimatch": "^3.0.0",
