@@ -1,10 +1,8 @@
 sudo: false
 language: node_js
 node_js:
-  - 6
   - 8
-  - node
-cache:
-  yarn: true
+  - 10
+  - 12
 after_script:
   - cat ./coverage/lcov.info | coveralls

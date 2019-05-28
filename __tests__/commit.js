@@ -27,6 +27,7 @@ describe('#commit()', () => {
     while (i--) {
       filesystem.writeFileSync(path.join(fixtureDir, 'file-' + i + '.txt'), 'foo');
     }
+
     fs.copy(fixtureDir + '/**', output);
     rimraf(output, done);
   });
