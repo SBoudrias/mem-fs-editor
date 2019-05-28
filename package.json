@@ -19,9 +19,9 @@
     "ejs": "^2.6.1",
     "glob": "^7.1.4",
     "globby": "^9.2.0",
-    "isbinaryfile": "^3.0.3",
+    "isbinaryfile": "^4.0.0",
     "mkdirp": "^0.5.0",
-    "multimatch": "^3.0.0",
+    "multimatch": "^4.0.0",
     "rimraf": "^2.6.3",
     "through2": "^3.0.1",
     "vinyl": "^2.2.0"
