@@ -17,7 +17,7 @@
     "commondir": "^1.0.1",
     "deep-extend": "^0.6.0",
     "ejs": "^2.6.1",
-    "glob": "^7.1.4",
+    "glob": "^7.1.5",
     "globby": "^10.0.0",
     "isbinaryfile": "^4.0.0",
     "mkdirp": "^0.5.0",
