@@ -33,7 +33,7 @@
     "eslint-config-xo-space": "^0.21.0",
     "jest": "^24.8.0",
     "mem-fs": "^1.0.0",
-    "sinon": "^7.3.2"
+    "sinon": "^8.0.2"
   },
   "jest": {
     "collectCoverage": true,
