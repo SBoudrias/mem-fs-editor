@@ -22,7 +22,7 @@
     "isbinaryfile": "^4.0.0",
     "mkdirp": "^1.0.0",
     "multimatch": "^4.0.0",
-    "rimraf": "^2.6.3",
+    "rimraf": "^3.0.0",
     "through2": "^3.0.1",
     "vinyl": "^2.2.0"
   },
