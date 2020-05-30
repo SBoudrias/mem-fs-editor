@@ -84,7 +84,7 @@ describe('#copy()', () => {
     let outputDir = path.join(__dirname, '../test/output');
     const process = sinon.stub().returnsArg(0);
     fs.copy(path.join(__dirname, '/fixtures/**'), outputDir, {process});
-    sinon.assert.callCount(process, 9); // 8 total files under 'fixtures', not counting folders
+    sinon.assert.callCount(process, 10); // 8 total files under 'fixtures', not counting folders
     expect(fs.read(path.join(outputDir, 'file-a.txt'))).toBe('foo' + os.EOL);
     expect(fs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
   });

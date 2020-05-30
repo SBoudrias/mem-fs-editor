@@ -71,6 +71,8 @@ Optionally, pass an `options.process` function (`process(contents)`) returning a
 
 `from` can be a glob pattern that'll be match against the file system. If that's the case, then `to` must be an output directory. For a globified `from`, you can optionally pass in an `options.globOptions` object to change its pattern matching behavior. The full list of options are being described [here](https://github.com/mrmlnc/fast-glob#options-1). The `nodir` flag is forced to be `true` in `globOptions` to ensure a vinyl object representing each matching directory is marked as `deleted` in the `mem-fs` store.
 
+Optionally, when `from` is a glob pattern, pass an `options.processDestinationPath` function (`processDestinationPath(destinationFile)`) returning a string who'll become the new file name.
+
 ### `#copyTpl(from, to, context[, templateOptions [, copyOptions]])`
 
 Copy the `from` file and, if it is not a binary file, parse its content as an [ejs](http://ejs.co/) template where `context` is the template context (the variable names available inside the template).

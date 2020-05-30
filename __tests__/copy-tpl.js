@@ -80,4 +80,18 @@ describe('#copyTpl()', () => {
     });
     expect(fs.read(newPath)).toBe('new content new content' + os.EOL);
   });
+
+  it('removes ejs extension when globbing', function () {
+    const filepath = path.join(__dirname, 'fixtures/ejs');
+    const newPath = '/new/path/';
+    fs.copyTpl(filepath, newPath);
+    expect(fs.exists(path.join(newPath, 'file-ejs-extension.txt'))).toBeTruthy();
+  });
+
+  it('doens\'t removes ejs extension when not globbing', function () {
+    const filepath = path.join(__dirname, 'fixtures/ejs/file-ejs-extension.txt.ejs');
+    const newPath = '/new/path/file-ejs-extension.txt.ejs';
+    fs.copyTpl(filepath, newPath);
+    expect(fs.exists(newPath)).toBeTruthy();
+  });
 });
