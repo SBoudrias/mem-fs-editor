@@ -68,4 +68,16 @@ describe('#copyTpl()', () => {
     fs.copyTpl(pathCopied, newPath);
     expect(fs.read(newPath)).toBe(fs.read(filepath));
   });
+
+  it('allow passing circular function context', function () {
+    const b = {};
+    const a = {name: 'new content', b};
+    b.a = a;
+    const filepath = path.join(__dirname, 'fixtures/file-circular.txt');
+    const newPath = '/new/path/file.txt';
+    fs.copyTpl(filepath, newPath, {}, {
+      context: {a}
+    });
+    expect(fs.read(newPath)).toBe('new content new content' + os.EOL);
+  });
 });
