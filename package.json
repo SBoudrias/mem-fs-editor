@@ -39,5 +39,8 @@
     "collectCoverage": true,
     "coverageDirectory": "coverage",
     "testEnvironment": "node"
+  },
+  "engines": {
+    "node": ">=10.0.0"
   }
 }
