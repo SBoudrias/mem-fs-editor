@@ -4,7 +4,6 @@ const filesystem = require('fs');
 const os = require('os');
 const path = require('path');
 const memFs = require('mem-fs');
-const rimraf = require('rimraf');
 const through = require('through2');
 const editor = require('..');
 
@@ -15,8 +14,8 @@ describe('#commit()', () => {
   let store;
   let fs;
 
-  beforeEach(done => {
-    rimraf.sync(fixtureDir);
+  beforeEach(() => {
+    filesystem.rmdirSync(fixtureDir, {recursive: true});
     store = memFs.create();
     fs = editor.create(store);
     filesystem.mkdirSync(fixtureDir, {recursive: true});
@@ -28,7 +27,7 @@ describe('#commit()', () => {
     }
 
     fs.copy(fixtureDir + '/**', output);
-    rimraf(output, done);
+    filesystem.rmdirSync(output, {recursive: true});
   });
 
   it('triggers callback when done', done => {
