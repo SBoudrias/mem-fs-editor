@@ -4,7 +4,6 @@ const filesystem = require('fs');
 const os = require('os');
 const path = require('path');
 const memFs = require('mem-fs');
-const mkdirp = require('mkdirp');
 const rimraf = require('rimraf');
 const through = require('through2');
 const editor = require('..');
@@ -20,7 +19,7 @@ describe('#commit()', () => {
     rimraf.sync(fixtureDir);
     store = memFs.create();
     fs = editor.create(store);
-    mkdirp.sync(fixtureDir);
+    filesystem.mkdirSync(fixtureDir, {recursive: true});
 
     // Create a 100 files to exercise the stream high water mark
     let i = 100;
@@ -93,7 +92,7 @@ describe('#commit()', () => {
 
   it('delete file from disk', done => {
     const file = path.join(output, 'delete.txt');
-    mkdirp.sync(output);
+    filesystem.mkdirSync(output, {recursive: true});
     filesystem.writeFileSync(file, 'to delete');
 
     fs.delete(file);
@@ -106,7 +105,7 @@ describe('#commit()', () => {
 
   it('delete directories from disk', done => {
     const file = path.join(output, 'nested/delete.txt');
-    mkdirp.sync(path.join(output, 'nested'));
+    filesystem.mkdirSync(path.join(output, 'nested'), {recursive: true});
     filesystem.writeFileSync(file, 'to delete');
 
     fs.delete(path.join(output, 'nested'));
