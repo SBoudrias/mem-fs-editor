@@ -16,7 +16,7 @@
   "dependencies": {
     "commondir": "^1.0.1",
     "deep-extend": "^0.6.0",
-    "ejs": "^3.0.1",
+    "ejs": "^3.1.5",
     "glob": "^7.1.4",
     "globby": "^9.2.0",
     "isbinaryfile": "^4.0.0",
