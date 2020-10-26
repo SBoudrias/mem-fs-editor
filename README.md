@@ -106,10 +106,11 @@ Move/rename a file from the `from` path to the `to` path.
 
 Returns `true` if a file exists. Returns `false` if the file is not found or deleted.
 
-### `#commit([filters,] callback)`
+### `#commit([filters,] [stream,] callback)`
 
 Persist every changes made to files in the mem-fs store to disk.
 
 If provided, `filters` is an array of TransformStream to be applied on a stream of vinyl files (like gulp plugins).
+If provided, `stream` is a stream of vinyl files.
 
 `callback` is called once the files are updated on disk.
