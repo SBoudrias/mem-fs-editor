@@ -53,6 +53,34 @@ describe('#commit()', () => {
     });
   });
 
+  it('call filters, update memory model and commit selected files', done => {
+    let called = 0;
+
+    let filter = through.obj(function (file, enc, cb) {
+      called++;
+      file.contents = Buffer.from('modified');
+      this.push(file);
+      cb();
+    });
+
+    let beforeFilter = through.obj(function (file, enc, cb) {
+      if (file.path.endsWith('1.txt')) {
+        this.push(file);
+      }
+
+      cb();
+    });
+
+    fs.commit([filter], store.stream().pipe(beforeFilter), () => {
+      expect(called).toBe(10);
+      expect(fs.read(path.join(output, 'file-1.txt'))).toBe('modified');
+      expect(fs.read(path.join(output, 'file-2.txt'))).not.toBe('modified');
+      expect(store.get(path.join(output, 'file-1.txt')).committed).toBeTruthy();
+      expect(store.get(path.join(output, 'file-2.txt')).result).toBe(undefined);
+      done();
+    });
+  });
+
   it('write file to disk', done => {
     fs.commit(() => {
       expect(filesystem.existsSync(path.join(output, 'file-1.txt'))).toBeTruthy();
@@ -71,6 +99,7 @@ describe('#commit()', () => {
     fs.delete(file);
     fs.commit(() => {
       expect(filesystem.existsSync(file)).toBeFalsy();
+      expect(store.get(file).committed).toBeTruthy();
       done();
     });
   });
