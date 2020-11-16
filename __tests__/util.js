@@ -4,6 +4,7 @@ const filesystem = require('fs');
 const path = require('path');
 const sinon = require('sinon');
 const util = require('../lib/util');
+const normalize = require('normalize-path');
 
 describe('util.getCommonPath()', () => {
   it('find the common root of /a/b/c, where /a/b/c is an existing directory', () => {
@@ -41,28 +42,28 @@ describe('util.getCommonPath()', () => {
 describe('util.globify()', () => {
   it('returns path for file path', () => {
     const filePath = path.resolve(__dirname, 'fixtures/file-a.txt');
-    expect(util.globify(filePath)).toBe(filePath);
+    expect(util.globify(filePath)).toBe(normalize(filePath));
   });
 
   it('returns pattern matching both files and directory for nonexisting paths', () => {
     const filePath = '/nonexisting.file';
     expect(util.globify(filePath)).toEqual([
-      filePath,
-      path.join(filePath, '**')
+      normalize(filePath),
+      normalize(path.join(filePath, '**'))
     ]);
   });
 
   it('returns glob for glob path', () => {
     const filePath = path.resolve(__dirname, 'fixtures/*.txt');
-    expect(util.globify(filePath)).toBe(filePath);
+    expect(util.globify(filePath)).toBe(normalize(filePath));
 
     const filePath2 = path.resolve(__dirname, 'fixtures/file-{a,b}.txt');
-    expect(util.globify(filePath2)).toBe(filePath2);
+    expect(util.globify(filePath2)).toBe(normalize(filePath2));
   });
 
   it('returns globified path for directory path', () => {
     const filePath = path.resolve(__dirname, 'fixtures/nested');
-    expect(util.globify(filePath)).toBe(path.join(filePath, '**'));
+    expect(util.globify(filePath)).toBe(normalize(path.join(filePath, '**')));
   });
 
   it('throws if target path is neither a file or a directory', () => {
