@@ -4,6 +4,7 @@ const os = require('os');
 const path = require('path');
 const editor = require('..');
 const memFs = require('mem-fs');
+const normalize = require('normalize-path');
 
 describe('#copyTpl()', () => {
   let store;
@@ -44,7 +45,7 @@ describe('#copyTpl()', () => {
     ];
     const copyOptions = {
       globOptions: {
-        ignore: [filenames[1]]
+        ignore: [normalize(filenames[1])]
       }
     };
     const newPath = '/new/path';
