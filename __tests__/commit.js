@@ -34,6 +34,21 @@ describe('#commit()', () => {
     fs.commit(done);
   });
 
+  it('call filters and trigger callback on error', done => {
+    let called = 0;
+
+    let filter = through.obj(function (file, enc, cb) {
+      called++;
+      cb(new Error(`error ${called}`));
+    });
+
+    fs.commit([filter], error => {
+      expect(called).toBe(1);
+      expect(error.message).toBe('error 1');
+      done();
+    });
+  });
+
   it('call filters and update memory model', done => {
     let called = 0;
 
