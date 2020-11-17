@@ -1,4 +1,4 @@
-# mem-fs-editor [![Build Status](https://api.travis-ci.org/SBoudrias/mem-fs-editor.svg?branch=master)](https://travis-ci.org/SBoudrias/mem-fs-editor) [![NPM version](https://badge.fury.io/js/mem-fs-editor.svg)](http://badge.fury.io/js/mem-fs-editor) [![Coverage Status](https://coveralls.io/repos/github/SBoudrias/mem-fs-editor/badge.svg)](https://coveralls.io/github/SBoudrias/mem-fs-editor)
+# mem-fs-editor [![Node.js CI](https://github.com/SBoudrias/mem-fs-editor/workflows/Node.js%20CI/badge.svg)](https://github.com/SBoudrias/mem-fs-editor/actions?query=workflow%3A%22Node.js+CI%22) [![NPM version](https://badge.fury.io/js/mem-fs-editor.svg)](http://badge.fury.io/js/mem-fs-editor) [![Coverage Status](https://coveralls.io/repos/github/SBoudrias/mem-fs-editor/badge.svg)](https://coveralls.io/github/SBoudrias/mem-fs-editor)
 
 File edition helpers working on top of [mem-fs](https://github.com/SBoudrias/mem-fs)
 
