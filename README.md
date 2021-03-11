@@ -49,6 +49,13 @@ Append the new contents to the current file contents.
 - `options.trimEnd` (default `true`). Trim trailing whitespace of the current file contents.
 - `options.separator` (default `os.EOL`). Separator to insert between current and new contents.
 
+### `#appendTpl(filepath, contents, context[, templateOptions[, [options]])`
+
+Append the new `contents` to the exsting `filepath` content and parse the new contents as an [ejs](http://ejs.co/) template where `context` is the template context (the variable names available inside the template).
+
+- `options.trimEnd` (default `true`). Trim trailing whitespace of the current file contents.
+- `options.separator` (default `os.EOL`). Separator to insert between current and new contents.
+
 ### `#extendJSON(filepath, contents[, replacer [, space]])`
 
 Extend the content of an existing JSON file with the partial objects provided as argument.
