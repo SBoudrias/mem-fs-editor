@@ -48,6 +48,7 @@ Append the new contents to the current file contents.
 
 - `options.trimEnd` (default `true`). Trim trailing whitespace of the current file contents.
 - `options.separator` (default `os.EOL`). Separator to insert between current and new contents.
+- `options.create` (default `false`). Create the file if doesn't exists.
 
 ### `#extendJSON(filepath, contents[, replacer [, space]])`
 

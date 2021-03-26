@@ -13,6 +13,12 @@ describe('#write()', () => {
     fs = editor.create(store);
   });
 
+  it('appends new content to new file', () => {
+    fs.append('append.txt', 'b', {create: true});
+
+    expect(fs.read('append.txt')).toBe('b');
+  });
+
   it('appends new content to file', () => {
     fs.write('append.txt', 'a\n\n\n');
     fs.append('append.txt', 'b');
