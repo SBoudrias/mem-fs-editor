@@ -25,6 +25,18 @@ describe('#copy()', () => {
     expect(fs.store.get(newPath).state).toBe('modified');
   });
 
+  it('append file', () => {
+    const filepath = path.join(__dirname, 'fixtures/file-a.txt');
+    const initialContents = fs.read(filepath);
+    const newPath = '/new/path/file.txt';
+    fs.copy(filepath, newPath);
+    expect(fs.read(newPath)).toBe(initialContents);
+    expect(fs.store.get(newPath).state).toBe('modified');
+
+    fs.copy(filepath, newPath, {append: true});
+    expect(fs.read(newPath)).toBe(initialContents + initialContents);
+  });
+
   it('can copy directory not commited to disk', () => {
     let sourceDir = path.join(__dirname, '../test/foo');
     let destDir = path.join(__dirname, '../test/bar');

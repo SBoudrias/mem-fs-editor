@@ -67,7 +67,8 @@ Copy a file from the `from` path to the `to` path.
 
 Optionally, pass an `options.process` function (`process(contents)`) returning a string or a buffer who'll become the new file content. The process function will take a single contents argument who is the copied file contents as a `Buffer`.
 
-`option.ignoreNoMatch` can be used to silence the error thrown if no files match the `from` pattern.
+`options.ignoreNoMatch` can be used to silence the error thrown if no files match the `from` pattern.
+`options.append` can be used to append `from` contents to `to` instead of copying.
 
 `from` can be a glob pattern that'll be match against the file system. If that's the case, then `to` must be an output directory. For a globified `from`, you can optionally pass in an `options.globOptions` object to change its pattern matching behavior. The full list of options are being described [here](https://github.com/mrmlnc/fast-glob#options-1). The `nodir` flag is forced to be `true` in `globOptions` to ensure a vinyl object representing each matching directory is marked as `deleted` in the `mem-fs` store.
 
