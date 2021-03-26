@@ -82,6 +82,15 @@ Optionally, pass an `options.process` function (`process(contents)`) returning a
 
 Optionally, when `from` is a glob pattern, pass an `options.processDestinationPath` function (`processDestinationPath(destinationFile)`) returning a string who'll become the new file name.
 
+### `#copyAsync(from, to, [options], context[, templateOptions ])`
+
+Async version of `copy`.
+
+`copy` loads `from` to memory and copy its contents to `to`.
+`copyAsync` copies directly from the disk to `to`, falling back to `copy` behavior if the file doesn't exists on disk.
+
+Same parameters of `copy` (see [copy() documentation for more details](#copyfrom-to-options-context-templateoptions-)).
+
 ### `#copyTpl(from, to, context[, templateOptions [, copyOptions]])`
 
 Copy the `from` file and, if it is not a binary file, parse its content as an [ejs](http://ejs.co/) template where `context` is the template context (the variable names available inside the template).
@@ -104,6 +113,14 @@ Dir syntax looks like this:
 ```
 
 Refer to the [ejs documentation](http://ejs.co/) for more details.
+
+### `#copyTplAsync(from, to, [options], context[, templateOptions ])`
+
+Async version of `copyTpl` that uses `copyAsync` instead of `copy`.
+
+Can be used for best performance. Reduces overheads.
+
+Same parameters of `copyTpl` (see [copyTpl() documentation for more details](#copyfrom-to-options-context-templateoptions-)).
 
 ### `#move(from, to, [options])`
 
