@@ -29,7 +29,7 @@ describe('#copy()', () => {
     const filepath = path.join(__dirname, 'fixtures/file-a.txt');
     const initialContents = fs.read(filepath);
     const newPath = '/new/path/file.txt';
-    fs.copy(filepath, newPath);
+    fs.copy(filepath, newPath, {append: true});
     expect(fs.read(newPath)).toBe(initialContents);
     expect(fs.store.get(newPath).state).toBe('modified');
 
