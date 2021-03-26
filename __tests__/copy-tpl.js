@@ -38,6 +38,15 @@ describe('#copyTpl()', () => {
     expect(fs.read(newPath)).toBe('partial' + os.EOL + os.EOL);
   });
 
+  it('allow appending files', function () {
+    const filepath = path.join(__dirname, 'fixtures/file-tpl.txt');
+    const newPath = '/new/path/file-append.txt';
+    fs.copyTpl(filepath, newPath, {name: 'new content'});
+    expect(fs.read(newPath)).toBe('new content' + os.EOL);
+    fs.copyTpl(filepath, newPath, {name: 'new content'}, undefined, {append: true});
+    expect(fs.read(newPath)).toBe('new content' + os.EOL + 'new content' + os.EOL);
+  });
+
   it('allow including glob options', function () {
     const filenames = [
       path.join(__dirname, 'fixtures/file-tpl-partial.txt'),
