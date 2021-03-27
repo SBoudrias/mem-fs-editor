@@ -104,6 +104,19 @@ describe('#commit()', () => {
     });
   });
 
+  it('handle error when write fails', done => {
+    filesystem.writeFileSync(output, 'foo');
+    fs.commit(async error => {
+      filesystem.unlinkSync(output);
+      if (error) {
+        done();
+        return;
+      }
+
+      done(new Error('should not happen'));
+    });
+  });
+
   it('delete file from disk', done => {
     const file = path.join(output, 'delete.txt');
     filesystem.mkdirSync(output, {recursive: true});
