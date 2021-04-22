@@ -4,8 +4,8 @@ const filesystem = require('fs');
 const os = require('os');
 const path = require('path');
 const memFs = require('mem-fs');
-const through = require('through2');
 const editor = require('..');
+const {createTransform} = require('../lib/util');
 
 describe('#commit()', () => {
   const fixtureDir = path.join(os.tmpdir(), '/mem-fs-editor-test-fixture');
@@ -37,7 +37,7 @@ describe('#commit()', () => {
   it('call filters and trigger callback on error', done => {
     let called = 0;
 
-    let filter = through.obj(function (file, enc, cb) {
+    let filter = createTransform(function (file, enc, cb) {
       called++;
       cb(new Error(`error ${called}`));
     });
@@ -52,7 +52,7 @@ describe('#commit()', () => {
   it('call filters and update memory model', done => {
     let called = 0;
 
-    let filter = through.obj(function (file, enc, cb) {
+    let filter = createTransform(function (file, enc, cb) {
       called++;
       file.contents = Buffer.from('modified');
       this.push(file);
@@ -69,14 +69,14 @@ describe('#commit()', () => {
   it('call filters, update memory model and commit selected files', done => {
     let called = 0;
 
-    let filter = through.obj(function (file, enc, cb) {
+    let filter = createTransform(function (file, enc, cb) {
       called++;
       file.contents = Buffer.from('modified');
       this.push(file);
       cb();
     });
 
-    let beforeFilter = through.obj(function (file, enc, cb) {
+    let beforeFilter = createTransform(function (file, enc, cb) {
       if (file.path.endsWith('1.txt')) {
         this.push(file);
       }
@@ -157,7 +157,7 @@ describe('#commit()', () => {
 
     fs.store.get('to-delete');
     fs.commit([
-      through.obj(function (file, enc, cb) {
+      createTransform(function (file, enc, cb) {
         expect(file.path).not.toEqual(path.resolve('to-delete'));
         expect(file.path).not.toEqual(path.resolve('copy-to-delete'));
 

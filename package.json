@@ -21,7 +21,6 @@
     "isbinaryfile": "^4.0.0",
     "multimatch": "^5.0.0",
     "normalize-path": "^3.0.0",
-    "through2": "^4.0.2",
     "vinyl": "^2.2.1"
   },
   "devDependencies": {
