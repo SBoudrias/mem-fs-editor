@@ -3,6 +3,7 @@
   "version": "8.0.0",
   "description": "File edition helpers working on top of mem-fs",
   "scripts": {
+    "fix": "eslint . --fix",
     "pretest": "eslint .",
     "test": "jest"
   },
