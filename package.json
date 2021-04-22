@@ -24,13 +24,21 @@
     "normalize-path": "^3.0.0",
     "vinyl": "^2.2.1"
   },
+  "peerDependencies": {
+    "mem-fs": "^2.0.0"
+  },
+  "peerDependenciesMeta": {
+    "mem-fs": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "coveralls": "^3.0.3",
     "escape-regexp": "0.0.1",
     "eslint": "^6.0.0",
     "eslint-config-xo-space": "^0.21.0",
     "jest": "^24.8.0",
-    "mem-fs": "^1.0.0",
+    "mem-fs": "2.0.0",
     "sinon": "^8.0.0"
   },
   "jest": {
