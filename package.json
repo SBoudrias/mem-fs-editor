@@ -24,7 +24,7 @@
     "normalize-path": "^3.0.0"
   },
   "peerDependencies": {
-    "mem-fs": "^2.0.0"
+    "mem-fs": "^1.2.0 || ^2.0.0"
   },
   "peerDependenciesMeta": {
     "mem-fs": {
