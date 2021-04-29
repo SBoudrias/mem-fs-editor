@@ -4,12 +4,14 @@ const filesystem = require('fs');
 const os = require('os');
 const path = require('path');
 const memFs = require('mem-fs');
+const sinon = require('sinon');
 const editor = require('..');
 const {createTransform} = require('../lib/util');
 
 describe('#commit()', () => {
   const fixtureDir = path.join(os.tmpdir(), '/mem-fs-editor-test-fixture');
   const output = path.join(os.tmpdir(), '/mem-fs-editor-test');
+  const NUMBER_FILES = 100;
 
   let store;
   let fs;
@@ -21,7 +23,7 @@ describe('#commit()', () => {
     filesystem.mkdirSync(fixtureDir, {recursive: true});
 
     // Create a 100 files to exercise the stream high water mark
-    let i = 100;
+    let i = NUMBER_FILES;
     while (i--) {
       filesystem.writeFileSync(path.join(fixtureDir, 'file-' + i + '.txt'), 'foo');
     }
@@ -154,8 +156,9 @@ describe('#commit()', () => {
     fs.delete('to-delete');
     fs.copy(path.join(__dirname, 'fixtures/file-a.txt'), 'copy-to-delete');
     fs.delete('copy-to-delete');
-
     fs.store.get('to-delete');
+
+    fs.commitFileAsync = sinon.stub().returns(Promise.resolve());
     fs.commit([
       createTransform(function (file, enc, cb) {
         expect(file.path).not.toEqual(path.resolve('to-delete'));
@@ -164,6 +167,9 @@ describe('#commit()', () => {
         this.push(file);
         cb();
       })
-    ], done);
+    ], () => {
+      expect(fs.commitFileAsync.callCount).toBe(NUMBER_FILES);
+      done();
+    });
   });
 });
