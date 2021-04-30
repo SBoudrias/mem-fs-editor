@@ -1,0 +1,32 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`#dump() should match snapshot 1`] = `
+Object {
+  "foo/committed": Object {
+    "contents": "committed",
+    "stateCleared": "modified",
+  },
+  "foo/committed-changed": Object {
+    "contents": "committed-changed",
+    "state": "modified",
+    "stateCleared": "modified",
+  },
+  "foo/committed-delete": Object {
+    "contents": null,
+    "stateCleared": "deleted",
+  },
+  "foo/committed-delete-changed": Object {
+    "contents": null,
+    "state": "deleted",
+    "stateCleared": "modified",
+  },
+  "foo/not-committed": Object {
+    "contents": "not-committed",
+    "state": "modified",
+  },
+  "foo/not-committed-delete": Object {
+    "contents": null,
+    "state": "deleted",
+  },
+}
+`;

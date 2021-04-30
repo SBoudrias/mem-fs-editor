@@ -1,0 +1,525 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`#commit() should match snapshot 1`] = `
+Object {
+  "file-0.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-1.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-10.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-11.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-12.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-13.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-14.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-15.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-16.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-17.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-18.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-19.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-2.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-20.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-21.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-22.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-23.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-24.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-25.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-26.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-27.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-28.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-29.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-3.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-30.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-31.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-32.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-33.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-34.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-35.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-36.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-37.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-38.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-39.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-4.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-40.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-41.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-42.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-43.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-44.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-45.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-46.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-47.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-48.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-49.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-5.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-50.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-51.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-52.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-53.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-54.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-55.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-56.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-57.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-58.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-59.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-6.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-60.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-61.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-62.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-63.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-64.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-65.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-66.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-67.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-68.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-69.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-7.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-70.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-71.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-72.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-73.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-74.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-75.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-76.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-77.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-78.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-79.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-8.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-80.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-81.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-82.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-83.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-84.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-85.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-86.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-87.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-88.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-89.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-9.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-90.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-91.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-92.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-93.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-94.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-95.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-96.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-97.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-98.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+  "file-99.txt": Object {
+    "contents": "foo",
+    "stateCleared": "modified",
+  },
+}
+`;
+
+exports[`#copy() and #commit() should match snapshot 1`] = `
+Object {
+  "ejs/file-ejs-extension.txt.ejs": Object {
+    "contents": "",
+    "stateCleared": "modified",
+  },
+  "file-a.txt": Object {
+    "contents": "foo
+",
+    "stateCleared": "modified",
+  },
+  "file-binary.bin": Object {
+    "contents": "     �  \`FFTMf/�W<%= name %>",
+    "stateCleared": "modified",
+  },
+  "file-binary.jpg": Object {
+    "contents": "     �  \`FFTMf/�W<%= name %>",
+    "stateCleared": "modified",
+  },
+  "file-circular.txt": Object {
+    "contents": "<%= this.a.name %> <%= this.a.b.a.name %>
+",
+    "stateCleared": "modified",
+  },
+  "file-tpl-custom-delimiter.txt": Object {
+    "contents": "<?= name ?>
+",
+    "stateCleared": "modified",
+  },
+  "file-tpl-include.txt": Object {
+    "contents": "<%- include('file-tpl-partial.txt') %>
+",
+    "stateCleared": "modified",
+  },
+  "file-tpl-partial.txt": Object {
+    "contents": "partial
+",
+    "stateCleared": "modified",
+  },
+  "file-tpl.txt": Object {
+    "contents": "<%= name %>
+",
+    "stateCleared": "modified",
+  },
+  "file.json": Object {
+    "contents": "{
+  \\"foo\\": \\"bar\\"
+}
+",
+    "stateCleared": "modified",
+  },
+  "nested/file.txt": Object {
+    "contents": "nested
+",
+    "stateCleared": "modified",
+  },
+}
+`;
+
+exports[`#copyTpl() and #commit() should match snapshot 1`] = `
+Object {
+  "ejs/file-ejs-extension.txt": Object {
+    "contents": "",
+    "stateCleared": "modified",
+  },
+  "file-a.txt": Object {
+    "contents": "foo
+",
+    "stateCleared": "modified",
+  },
+  "file-binary.bin": Object {
+    "contents": "     �  \`FFTMf/�W<%= name %>",
+    "stateCleared": "modified",
+  },
+  "file-binary.jpg": Object {
+    "contents": "     �  \`FFTMf/�W<%= name %>",
+    "stateCleared": "modified",
+  },
+  "file-circular.txt": Object {
+    "contents": "foo foo
+",
+    "stateCleared": "modified",
+  },
+  "file-tpl-custom-delimiter.txt": Object {
+    "contents": "<?= name ?>
+",
+    "stateCleared": "modified",
+  },
+  "file-tpl-include.txt": Object {
+    "contents": "partial
+
+",
+    "stateCleared": "modified",
+  },
+  "file-tpl-partial.txt": Object {
+    "contents": "partial
+",
+    "stateCleared": "modified",
+  },
+  "file-tpl.txt": Object {
+    "contents": "bar
+",
+    "stateCleared": "modified",
+  },
+  "file.json": Object {
+    "contents": "{
+  \\"foo\\": \\"bar\\"
+}
+",
+    "stateCleared": "modified",
+  },
+  "nested/file.txt": Object {
+    "contents": "nested
+",
+    "stateCleared": "modified",
+  },
+}
+`;

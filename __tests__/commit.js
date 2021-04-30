@@ -36,6 +36,13 @@ describe('#commit()', () => {
     fs.commit(done);
   });
 
+  it('should match snapshot', done => {
+    fs.commit(error => {
+      expect(fs.dump(output)).toMatchSnapshot();
+      done(error);
+    });
+  });
+
   it('call filters and trigger callback on error', done => {
     let called = 0;
 
@@ -170,6 +177,54 @@ describe('#commit()', () => {
     ], () => {
       expect(fs.commitFileAsync.callCount).toBe(NUMBER_FILES);
       done();
+    });
+  });
+});
+
+describe('#copy() and #commit()', () => {
+  const output = path.join(os.tmpdir(), '/mem-fs-editor-test');
+
+  let store;
+  let fs;
+
+  beforeEach(() => {
+    store = memFs.create();
+    fs = editor.create(store);
+
+    fs.copy(path.join(__dirname, 'fixtures', '**'), output);
+    filesystem.rmdirSync(output, {recursive: true});
+  });
+
+  it('should match snapshot', done => {
+    fs.commit(error => {
+      expect(fs.dump(output)).toMatchSnapshot();
+      done(error);
+    });
+  });
+});
+
+describe('#copyTpl() and #commit()', () => {
+  const output = path.join(os.tmpdir(), '/mem-fs-editor-test');
+
+  let store;
+  let fs;
+
+  beforeEach(() => {
+    store = memFs.create();
+    fs = editor.create(store);
+
+    const a = {name: 'foo'};
+    const b = {a};
+    a.b = b;
+
+    fs.copyTpl(path.join(__dirname, 'fixtures', '**'), output, {name: 'bar'}, {context: {a}});
+    filesystem.rmdirSync(output, {recursive: true});
+  });
+
+  it('should match snapshot', done => {
+    fs.commit(error => {
+      expect(fs.dump(output)).toMatchSnapshot();
+      done(error);
     });
   });
 });
