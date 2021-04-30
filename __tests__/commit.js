@@ -97,14 +97,14 @@ describe('#commit()', () => {
   });
 
   it('write file to disk', done => {
-    fs.commit(() => {
+    fs.commit(error => {
       expect(filesystem.existsSync(path.join(output, 'file-1.txt'))).toBeTruthy();
       expect(filesystem.existsSync(path.join(output, 'file-1.txt'))).toBeTruthy();
       expect(filesystem.existsSync(path.join(output, 'file-50.txt'))).toBeTruthy();
       expect(filesystem.existsSync(path.join(output, 'file-99.txt'))).toBeTruthy();
-      done();
+      done(error);
     });
-  });
+  }, 10000);
 
   it('handle error when write fails', done => {
     filesystem.writeFileSync(output, 'foo');
