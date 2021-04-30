@@ -1,6 +1,6 @@
 {
   "name": "mem-fs-editor",
-  "version": "8.1.2",
+  "version": "9.0.0",
   "description": "File edition helpers working on top of mem-fs",
   "scripts": {
     "fix": "eslint . --fix",
