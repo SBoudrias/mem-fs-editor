@@ -120,7 +120,7 @@ describe('#copyAsync()', () => {
       return this.store.get(from).contents;
     });
     await fs.copyAsync(path.join(__dirname, '/fixtures/**'), outputDir, {processFile});
-    sinon.assert.callCount(processFile, 10); // 8 total files under 'fixtures', not counting folders
+    sinon.assert.callCount(processFile, 11); // 9 total files under 'fixtures', not counting folders
     expect(fs.read(path.join(outputDir, 'file-a.txt'))).toBe('foo' + os.EOL);
     expect(fs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
   });
