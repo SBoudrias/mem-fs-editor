@@ -6,6 +6,8 @@ const path = require('path');
 const memFs = require('mem-fs');
 const editor = require('..');
 
+const rmSync = filesystem.rmSync || filesystem.rmdirSync;
+
 describe('#dump()', () => {
   const output = path.join(os.tmpdir(), '/mem-fs-editor-test');
   const subdir = 'foo';
@@ -13,8 +15,6 @@ describe('#dump()', () => {
   let fs;
 
   beforeEach(async function () {
-    filesystem.rmdirSync(output, {recursive: true});
-
     store = memFs.create();
     fs = editor.create(store);
 
@@ -33,6 +33,10 @@ describe('#dump()', () => {
 
     fs.delete(path.join(output, subdir, 'committed-delete-changed'));
     fs.delete(path.join(output, subdir, 'not-committed-delete'));
+  });
+
+  afterEach(() => {
+    rmSync(output, {recursive: true, force: true});
   });
 
   it('should match snapshot', () => {

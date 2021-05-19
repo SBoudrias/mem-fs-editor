@@ -6,6 +6,8 @@ const path = require('path');
 const memFs = require('mem-fs');
 const editor = require('..');
 
+const rmSync = filesystem.rmSync || filesystem.rmdirSync;
+
 describe('#commit()', () => {
   const outputRoot = path.join(os.tmpdir(), 'mem-fs-editor-test');
   const outputDir = path.join(outputRoot, 'output');
@@ -22,7 +24,7 @@ describe('#commit()', () => {
   });
 
   afterEach(() => {
-    filesystem.rmdirSync(outputRoot, {recursive: true});
+    rmSync(outputRoot, {recursive: true});
   });
 
   it('triggers callback when done', async () => {

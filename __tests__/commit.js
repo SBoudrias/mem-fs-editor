@@ -8,6 +8,8 @@ const sinon = require('sinon');
 const editor = require('..');
 const {createTransform} = require('../lib/util');
 
+const rmSync = filesystem.rmSync || filesystem.rmdirSync;
+
 describe('#commit()', () => {
   const fixtureDir = path.join(os.tmpdir(), '/mem-fs-editor-test-fixture');
   const output = path.join(os.tmpdir(), '/mem-fs-editor-test');
@@ -17,10 +19,9 @@ describe('#commit()', () => {
   let fs;
 
   beforeEach(() => {
-    filesystem.rmdirSync(fixtureDir, {recursive: true});
     store = memFs.create();
     fs = editor.create(store);
-    filesystem.mkdirSync(fixtureDir, {recursive: true});
+    filesystem.mkdirSync(fixtureDir, {recursive: true, force: true});
 
     // Create a 100 files to exercise the stream high water mark
     let i = NUMBER_FILES;
@@ -29,7 +30,11 @@ describe('#commit()', () => {
     }
 
     fs.copy(fixtureDir + '/**', output);
-    filesystem.rmdirSync(output, {recursive: true});
+  });
+
+  afterEach(() => {
+    rmSync(fixtureDir, {recursive: true, force: true});
+    rmSync(output, {recursive: true, force: true});
   });
 
   it('triggers callback when done', done => {
@@ -128,7 +133,7 @@ describe('#commit()', () => {
 
   it('delete file from disk', done => {
     const file = path.join(output, 'delete.txt');
-    filesystem.mkdirSync(output, {recursive: true});
+    filesystem.mkdirSync(output, {recursive: true, force: true});
     filesystem.writeFileSync(file, 'to delete');
 
     fs.delete(file);
@@ -141,7 +146,7 @@ describe('#commit()', () => {
 
   it('delete directories from disk', done => {
     const file = path.join(output, 'nested/delete.txt');
-    filesystem.mkdirSync(path.join(output, 'nested'), {recursive: true});
+    filesystem.mkdirSync(path.join(output, 'nested'), {recursive: true, force: true});
     filesystem.writeFileSync(file, 'to delete');
 
     fs.delete(path.join(output, 'nested'));
@@ -192,7 +197,10 @@ describe('#copy() and #commit()', () => {
     fs = editor.create(store);
 
     fs.copy(path.join(__dirname, 'fixtures', '**'), output);
-    filesystem.rmdirSync(output, {recursive: true});
+  });
+
+  afterEach(() => {
+    rmSync(output, {recursive: true, force: true});
   });
 
   it('should match snapshot', done => {
@@ -218,7 +226,10 @@ describe('#copyTpl() and #commit()', () => {
     a.b = b;
 
     fs.copyTpl(path.join(__dirname, 'fixtures', '**'), output, {name: 'bar'}, {context: {a}});
-    filesystem.rmdirSync(output, {recursive: true});
+  });
+
+  afterEach(() => {
+    rmSync(output, {recursive: true, force: true});
   });
 
   it('should match snapshot', done => {
