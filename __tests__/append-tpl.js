@@ -32,8 +32,7 @@ describe('#appendTpl()', () => {
     const contents = fs.read(contentPath);
     fs.appendTpl(filepath, contents, {
       name: 'bar'
-    },
-    {
+    }, {
       delimiter: '?'
     });
     expect(fs.read(filepath)).toBe(orginalContent + 'bar' + os.EOL);
