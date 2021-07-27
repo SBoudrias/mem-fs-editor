@@ -62,8 +62,8 @@ describe('#copyAsync()', () => {
   });
 
   it('can copy directory not commited to disk', async () => {
-    let sourceDir = path.join(__dirname, '../test/foo');
-    let destDir = path.join(__dirname, '../test/bar');
+    const sourceDir = path.join(__dirname, '../test/foo');
+    const destDir = path.join(__dirname, '../test/bar');
     fs.write(path.join(sourceDir, 'file-a.txt'), 'a');
     fs.write(path.join(sourceDir, 'file-b.txt'), 'b');
 
@@ -87,27 +87,27 @@ describe('#copyAsync()', () => {
       processFile(filename) {
         expect(filename).toEqual(filepath);
         return contents;
-      }
+      },
     });
     expect(fs.read(newPath)).toBe(contents);
   });
 
   it('copy by directory', async () => {
-    let outputDir = path.join(__dirname, '../test/output');
+    const outputDir = path.join(__dirname, '../test/output');
     await fs.copyAsync(path.join(__dirname, '/fixtures'), outputDir);
     expect(fs.read(path.join(outputDir, 'file-a.txt'))).toBe('foo' + os.EOL);
     expect(fs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
   });
 
   it('copy by globbing', async () => {
-    let outputDir = path.join(__dirname, '../test/output');
+    const outputDir = path.join(__dirname, '../test/output');
     await fs.copyAsync(path.join(__dirname, '/fixtures/**'), outputDir);
     expect(fs.read(path.join(outputDir, 'file-a.txt'))).toBe('foo' + os.EOL);
     expect(fs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
   });
 
   it('copy by globbing multiple patterns', async () => {
-    let outputDir = path.join(__dirname, '../test/output');
+    const outputDir = path.join(__dirname, '../test/output');
     await fs.copyAsync([path.join(__dirname, '/fixtures/**'), '!**/*tpl*'], outputDir);
     expect(fs.read(path.join(outputDir, 'file-a.txt'))).toBe('foo' + os.EOL);
     expect(fs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
@@ -115,7 +115,7 @@ describe('#copyAsync()', () => {
   });
 
   it('copy files by globbing and process contents', async () => {
-    let outputDir = path.join(__dirname, '../test/output');
+    const outputDir = path.join(__dirname, '../test/output');
     const processFile = sinon.stub().callsFake(function (from) {
       return this.store.get(from).contents;
     });
@@ -126,22 +126,22 @@ describe('#copyAsync()', () => {
   });
 
   it('accepts directory name with "."', async () => {
-    let outputDir = path.join(__dirname, '../test/out.put');
+    const outputDir = path.join(__dirname, '../test/out.put');
     await fs.copyAsync(path.join(__dirname, '/fixtures/**'), outputDir);
     expect(fs.read(path.join(outputDir, 'file-a.txt'))).toBe('foo' + os.EOL);
     expect(fs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
   });
 
   it('accepts template paths', async () => {
-    let outputFile = path.join(__dirname, 'test/<%= category %>/file-a.txt');
+    const outputFile = path.join(__dirname, 'test/<%= category %>/file-a.txt');
     await fs.copyAsync(
       path.join(__dirname, '/fixtures/file-a.txt'),
       outputFile,
       {},
-      {category: 'foo'}
+      {category: 'foo'},
     );
     expect(
-      fs.read(path.join(__dirname, 'test/foo/file-a.txt'))
+      fs.read(path.join(__dirname, 'test/foo/file-a.txt')),
     ).toBe('foo' + os.EOL);
   });
 
@@ -149,23 +149,22 @@ describe('#copyAsync()', () => {
     expect(
       fs.copyAsync(
         path.join(__dirname, '/fixtures/**'),
-        path.join(__dirname, '/fixtures/file-a.txt')
-      )
+        path.join(__dirname, '/fixtures/file-a.txt'),
+      ),
     ).rejects.toThrow();
   });
 
-  it('preserve permissions', async done => {
+  it('preserve permissions', async () => {
     const filename = path.join(os.tmpdir(), 'perm.txt');
     const copyname = path.join(os.tmpdir(), 'copy-perm.txt');
     filesystem.writeFileSync(filename, 'foo', {mode: parseInt(733, 8)});
 
     await fs.copyAsync(filename, copyname);
 
-    fs.commit(() => {
+    await fs.commit(() => {
       const oldStat = filesystem.statSync(filename);
       const newStat = filesystem.statSync(copyname);
       expect(newStat.mode).toBe(oldStat.mode);
-      done();
     });
   });
 });

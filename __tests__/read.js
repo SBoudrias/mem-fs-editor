@@ -49,7 +49,7 @@ describe('#read()', () => {
   it('returns defaults as Buffer if file does not exist and defaults is provided', () => {
     const content = fs.read('file-who-does-not-exist.txt', {
       defaults: Buffer.from('foo' + os.EOL),
-      raw: true
+      raw: true,
     });
     expect(content).toBeInstanceOf(Buffer);
     expect(content.toString()).toBe('foo' + os.EOL);

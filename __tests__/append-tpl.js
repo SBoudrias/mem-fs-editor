@@ -20,7 +20,7 @@ describe('#appendTpl()', () => {
     const contentPath = path.join(__dirname, 'fixtures/file-tpl.txt');
     const contents = fs.read(contentPath);
     fs.appendTpl(filepath, contents, {
-      name: 'bar'
+      name: 'bar',
     });
     expect(fs.read(filepath)).toBe(orginalContent + 'bar' + os.EOL);
   });
@@ -31,9 +31,9 @@ describe('#appendTpl()', () => {
     const contentPath = path.join(__dirname, 'fixtures/file-tpl-custom-delimiter.txt');
     const contents = fs.read(contentPath);
     fs.appendTpl(filepath, contents, {
-      name: 'bar'
+      name: 'bar',
     }, {
-      delimiter: '?'
+      delimiter: '?',
     });
     expect(fs.read(filepath)).toBe(orginalContent + 'bar' + os.EOL);
   });

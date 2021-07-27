@@ -8,7 +8,7 @@ describe('#delete()', () => {
   let store;
   let fs;
 
-  beforeEach(function () {
+  beforeEach(() => {
     store = memFs.create();
     fs = editor.create(store);
   });

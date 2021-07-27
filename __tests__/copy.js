@@ -62,8 +62,8 @@ describe('#copy()', () => {
   });
 
   it('can copy directory not commited to disk', () => {
-    let sourceDir = path.join(__dirname, '../test/foo');
-    let destDir = path.join(__dirname, '../test/bar');
+    const sourceDir = path.join(__dirname, '../test/foo');
+    const destDir = path.join(__dirname, '../test/bar');
     fs.write(path.join(sourceDir, 'file-a.txt'), 'a');
     fs.write(path.join(sourceDir, 'file-b.txt'), 'b');
 
@@ -89,27 +89,27 @@ describe('#copy()', () => {
         expect(contentsArg).toBeInstanceOf(Buffer);
         expect(contentsArg.toString()).toEqual(initialContents);
         return contents;
-      }
+      },
     });
     expect(fs.read(newPath)).toBe(contents);
   });
 
   it('copy by directory', () => {
-    let outputDir = path.join(__dirname, '../test/output');
+    const outputDir = path.join(__dirname, '../test/output');
     fs.copy(path.join(__dirname, '/fixtures'), outputDir);
     expect(fs.read(path.join(outputDir, 'file-a.txt'))).toBe('foo' + os.EOL);
     expect(fs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
   });
 
   it('copy by globbing', () => {
-    let outputDir = path.join(__dirname, '../test/output');
+    const outputDir = path.join(__dirname, '../test/output');
     fs.copy(path.join(__dirname, '/fixtures/**'), outputDir);
     expect(fs.read(path.join(outputDir, 'file-a.txt'))).toBe('foo' + os.EOL);
     expect(fs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
   });
 
   it('copy by globbing multiple patterns', () => {
-    let outputDir = path.join(__dirname, '../test/output');
+    const outputDir = path.join(__dirname, '../test/output');
     fs.copy([path.join(__dirname, '/fixtures/**'), '!**/*tpl*'], outputDir);
     expect(fs.read(path.join(outputDir, 'file-a.txt'))).toBe('foo' + os.EOL);
     expect(fs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
@@ -117,7 +117,7 @@ describe('#copy()', () => {
   });
 
   it('copy files by globbing and process contents', () => {
-    let outputDir = path.join(__dirname, '../test/output');
+    const outputDir = path.join(__dirname, '../test/output');
     const process = sinon.stub().returnsArg(0);
     fs.copy(path.join(__dirname, '/fixtures/**'), outputDir, {process});
     sinon.assert.callCount(process, 11); // 9 total files under 'fixtures', not counting folders
@@ -126,22 +126,22 @@ describe('#copy()', () => {
   });
 
   it('accepts directory name with "."', () => {
-    let outputDir = path.join(__dirname, '../test/out.put');
+    const outputDir = path.join(__dirname, '../test/out.put');
     fs.copy(path.join(__dirname, '/fixtures/**'), outputDir);
     expect(fs.read(path.join(outputDir, 'file-a.txt'))).toBe('foo' + os.EOL);
     expect(fs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
   });
 
   it('accepts template paths', () => {
-    let outputFile = path.join(__dirname, 'test/<%= category %>/file-a.txt');
+    const outputFile = path.join(__dirname, 'test/<%= category %>/file-a.txt');
     fs.copy(
       path.join(__dirname, '/fixtures/file-a.txt'),
       outputFile,
       {},
-      {category: 'foo'}
+      {category: 'foo'},
     );
     expect(
-      fs.read(path.join(__dirname, 'test/foo/file-a.txt'))
+      fs.read(path.join(__dirname, 'test/foo/file-a.txt')),
     ).toBe('foo' + os.EOL);
   });
 
@@ -150,8 +150,8 @@ describe('#copy()', () => {
       fs.copy.bind(
         fs,
         path.join(__dirname, '/fixtures/**'),
-        path.join(__dirname, '/fixtures/file-a.txt')
-      )
+        path.join(__dirname, '/fixtures/file-a.txt'),
+      ),
     ).toThrow();
   });
 

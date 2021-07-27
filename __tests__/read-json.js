@@ -39,7 +39,7 @@ describe('#readJSON()', () => {
   });
 
   it('throw error with file path info', () => {
-    var filePath = path.join(__dirname, 'fixtures/file-tpl.txt');
+    const filePath = path.join(__dirname, 'fixtures/file-tpl.txt');
     expect(fs.readJSON.bind(fs, new RegExp(escape(filePath)))).toThrow();
   });
 });

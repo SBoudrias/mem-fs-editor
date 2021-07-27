@@ -14,7 +14,7 @@ describe('#dump()', () => {
   let store;
   let fs;
 
-  beforeEach(async function () {
+  beforeEach(async () => {
     store = memFs.create();
     fs = editor.create(store);
 

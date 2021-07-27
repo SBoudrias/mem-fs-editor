@@ -49,7 +49,7 @@ describe('util.globify()', () => {
     const filePath = '/nonexisting.file';
     expect(util.globify(filePath)).toEqual([
       normalize(filePath),
-      normalize(path.join(filePath, '**'))
+      normalize(path.join(filePath, '**')),
     ]);
   });
 
@@ -69,7 +69,7 @@ describe('util.globify()', () => {
   it('throws if target path is neither a file or a directory', () => {
     sinon.stub(filesystem, 'statSync').returns({
       isFile: () => false,
-      isDirectory: () => false
+      isDirectory: () => false,
     });
 
     const filePath = path.resolve(__dirname, 'fixtures/file-a.txt');

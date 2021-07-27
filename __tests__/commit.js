@@ -51,7 +51,7 @@ describe('#commit()', () => {
   it('call filters and trigger callback on error', done => {
     let called = 0;
 
-    let filter = createTransform(function (file, enc, cb) {
+    const filter = createTransform((file, enc, cb) => {
       called++;
       cb(new Error(`error ${called}`));
     });
@@ -66,7 +66,7 @@ describe('#commit()', () => {
   it('call filters and update memory model', done => {
     let called = 0;
 
-    let filter = createTransform(function (file, enc, cb) {
+    const filter = createTransform(function (file, enc, cb) {
       called++;
       file.contents = Buffer.from('modified');
       this.push(file);
@@ -83,14 +83,14 @@ describe('#commit()', () => {
   it('call filters, update memory model and commit selected files', done => {
     let called = 0;
 
-    let filter = createTransform(function (file, enc, cb) {
+    const filter = createTransform(function (file, enc, cb) {
       called++;
       file.contents = Buffer.from('modified');
       this.push(file);
       cb();
     });
 
-    let beforeFilter = createTransform(function (file, enc, cb) {
+    const beforeFilter = createTransform(function (file, enc, cb) {
       if (file.path.endsWith('1.txt')) {
         this.push(file);
       }
@@ -178,7 +178,7 @@ describe('#commit()', () => {
 
         this.push(file);
         cb();
-      })
+      }),
     ], () => {
       expect(fs.commitFileAsync.callCount).toBe(NUMBER_FILES);
       done();
