@@ -82,6 +82,8 @@ Optionally, pass an `options.process` function (`process(contents)`) returning a
 
 Optionally, when `from` is a glob pattern, pass an `options.processDestinationPath` function (`processDestinationPath(destinationFile)`) returning a string who'll become the new file name.
 
+`options.noGlob` can be used to by bypass glob matching entirely. In that case, `from` will directly match file paths against the file system.
+
 ### `#copyAsync(from, to, [options], context[, templateOptions ])`
 
 Async version of `copy`.

@@ -411,6 +411,11 @@ Object {
     "contents": "",
     "stateCleared": "modified",
   },
+  "file-(specia!-char$).txt": Object {
+    "contents": "special
+",
+    "stateCleared": "modified",
+  },
   "file-a.txt": Object {
     "contents": "foo
 ",
@@ -468,6 +473,11 @@ exports[`#copyTpl() and #commit() should match snapshot 1`] = `
 Object {
   "ejs/file-ejs-extension.txt": Object {
     "contents": "",
+    "stateCleared": "modified",
+  },
+  "file-(specia!-char$).txt": Object {
+    "contents": "special
+",
     "stateCleared": "modified",
   },
   "file-a.txt": Object {
