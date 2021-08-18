@@ -23,7 +23,7 @@
     "isbinaryfile": "^4.0.8",
     "multimatch": "^5.0.0",
     "normalize-path": "^3.0.0",
-    "textextensions": "^5.12.0"
+    "textextensions": "^5.13.0"
   },
   "peerDependencies": {
     "mem-fs": "^2.1.0"
