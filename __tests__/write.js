@@ -1,6 +1,7 @@
 'use strict';
 
 const path = require('path');
+const sinon = require('sinon');
 const editor = require('..');
 const memFs = require('mem-fs');
 
@@ -10,6 +11,8 @@ describe('#write()', () => {
 
   beforeEach(() => {
     store = memFs.create();
+    sinon.spy(store, 'add');
+
     fs = editor.create(store);
   });
 
@@ -35,5 +38,17 @@ describe('#write()', () => {
     fs.write(filepath, contents);
     expect(fs.read(filepath)).toBe(contents);
     expect(fs.store.get(filepath).state).toBe('modified');
+  });
+
+  it('doesn\'t re-add an identical file that already exist in memory', () => {
+    const filepath = path.join(__dirname, 'fixtures/file-a.txt');
+    const contents = 'some text';
+    fs.write(filepath, contents);
+    expect(store.add.callCount).toBe(1);
+    expect(fs.read(filepath)).toBe(contents);
+    expect(fs.store.get(filepath).state).toBe('modified');
+
+    fs.write(filepath, contents);
+    expect(store.add.callCount).toBe(1);
   });
 });
