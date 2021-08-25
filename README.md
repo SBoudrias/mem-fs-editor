@@ -142,3 +142,9 @@ If provided, `filters` is an array of TransformStream to be applied on a stream 
 If provided, `stream` is a stream of vinyl files.
 
 `callback` is called once the files are updated on disk.
+
+### `#dump([cwd,] [filter])`
+
+Dump files to compare expected result.
+Provide a `cwd` for relative path. Allows to omit temporary path.
+Provide a `filter` function or glob to focus on specific files.

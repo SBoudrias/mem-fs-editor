@@ -42,4 +42,10 @@ describe('#dump()', () => {
   it('should match snapshot', () => {
     expect(fs.dump(output)).toMatchSnapshot();
   });
+
+  describe('with a glob pattern', () => {
+    it('should match snapshot', () => {
+      expect(fs.dump(output, '**/committed')).toMatchSnapshot();
+    });
+  });
 });
