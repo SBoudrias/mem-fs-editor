@@ -30,3 +30,12 @@ Object {
   },
 }
 `;
+
+exports[`#dump() with a glob pattern should match snapshot 1`] = `
+Object {
+  "foo/committed": Object {
+    "contents": "committed",
+    "stateCleared": "modified",
+  },
+}
+`;
