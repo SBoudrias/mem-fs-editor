@@ -37,11 +37,11 @@
   "devDependencies": {
     "coveralls": "^3.0.3",
     "escape-regexp": "0.0.1",
-    "eslint": "^7.26.0",
-    "eslint-config-xo-space": "^0.29.0",
+    "eslint": "^8.5.0",
+    "eslint-config-xo-space": "^0.30.0",
     "jest": "^27.0.6",
     "mem-fs": "^2.2.1",
-    "sinon": "^11.1.2"
+    "sinon": "^12.0.1"
   },
   "jest": {
     "collectCoverage": true,
