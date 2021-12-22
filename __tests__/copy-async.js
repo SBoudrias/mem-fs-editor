@@ -57,11 +57,7 @@ describe('#copyAsync()', () => {
       store.existsInMemory = undefined;
       const filepath = path.join(__dirname, 'fixtures/file-a.txt');
       const newPath = '/new/path/file.txt';
-      expect(
-        fs.copyAsync(filepath, newPath, {append: true, processFile: () => ''}),
-      ).rejects.toEqual(
-        new Error('Current mem-fs is not compatible with append'),
-      );
+      expect(fs.copyAsync(filepath, newPath, {append: true, processFile: () => ''})).rejects.toEqual(new Error('Current mem-fs is not compatible with append'));
     });
   });
 
@@ -100,30 +96,21 @@ describe('#copyAsync()', () => {
     const outputDir = path.join(__dirname, '../test/output');
     await fs.copyAsync(path.join(__dirname, '/fixtures'), outputDir);
     expect(fs.read(path.join(outputDir, 'file-a.txt'))).toBe('foo' + os.EOL);
-    expect(fs.read(path.join(outputDir, '/nested/file.txt'))).toBe(
-      'nested' + os.EOL,
-    );
+    expect(fs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
   });
 
   it('copy by globbing', async () => {
     const outputDir = path.join(__dirname, '../test/output');
     await fs.copyAsync(path.join(__dirname, '/fixtures/**'), outputDir);
     expect(fs.read(path.join(outputDir, 'file-a.txt'))).toBe('foo' + os.EOL);
-    expect(fs.read(path.join(outputDir, '/nested/file.txt'))).toBe(
-      'nested' + os.EOL,
-    );
+    expect(fs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
   });
 
   it('copy by globbing multiple patterns', async () => {
     const outputDir = path.join(__dirname, '../test/output');
-    await fs.copyAsync(
-      [path.join(__dirname, '/fixtures/**'), '!**/*tpl*'],
-      outputDir,
-    );
+    await fs.copyAsync([path.join(__dirname, '/fixtures/**'), '!**/*tpl*'], outputDir);
     expect(fs.read(path.join(outputDir, 'file-a.txt'))).toBe('foo' + os.EOL);
-    expect(fs.read(path.join(outputDir, '/nested/file.txt'))).toBe(
-      'nested' + os.EOL,
-    );
+    expect(fs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
     expect(fs.read.bind(fs, path.join(outputDir, 'file-tpl.txt'))).toThrow();
   });
 
@@ -132,23 +119,17 @@ describe('#copyAsync()', () => {
     const processFile = sinon.stub().callsFake(function (from) {
       return this.store.get(from).contents;
     });
-    await fs.copyAsync(path.join(__dirname, '/fixtures/**'), outputDir, {
-      processFile,
-    });
+    await fs.copyAsync(path.join(__dirname, '/fixtures/**'), outputDir, {processFile});
     sinon.assert.callCount(processFile, 13); // 10 total files under 'fixtures', not counting folders
     expect(fs.read(path.join(outputDir, 'file-a.txt'))).toBe('foo' + os.EOL);
-    expect(fs.read(path.join(outputDir, '/nested/file.txt'))).toBe(
-      'nested' + os.EOL,
-    );
+    expect(fs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
   });
 
   it('accepts directory name with "."', async () => {
     const outputDir = path.join(__dirname, '../test/out.put');
     await fs.copyAsync(path.join(__dirname, '/fixtures/**'), outputDir);
     expect(fs.read(path.join(outputDir, 'file-a.txt'))).toBe('foo' + os.EOL);
-    expect(fs.read(path.join(outputDir, '/nested/file.txt'))).toBe(
-      'nested' + os.EOL,
-    );
+    expect(fs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
   });
 
   it('accepts template paths', async () => {
@@ -159,9 +140,9 @@ describe('#copyAsync()', () => {
       {},
       {category: 'foo'},
     );
-    expect(fs.read(path.join(__dirname, 'test/foo/file-a.txt'))).toBe(
-      'foo' + os.EOL,
-    );
+    expect(
+      fs.read(path.join(__dirname, 'test/foo/file-a.txt')),
+    ).toBe('foo' + os.EOL);
   });
 
   it('requires destination directory when globbing', async () => {
