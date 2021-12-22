@@ -170,11 +170,15 @@ describe('#copy()', () => {
     });
   });
 
+  it('copy with globbing disabled', () => {
+    const newPath = path.join(__dirname, '../test/output', 'file.txt');
+    fs.copy(path.join(__dirname, '/fixtures/file-(specia!-char$).txt'), newPath, {noGlob: true});
+    expect(fs.read(newPath)).toBe('special' + os.EOL);
+  });
+
   it('copy glob like file when noGlob', () => {
     const newPath = path.join(__dirname, '../test/output', 'file.txt');
-    fs.copy(path.join(__dirname, '/fixtures/[file].txt'), newPath, {
-      noGlob: true,
-    });
+    fs.copy(path.join(__dirname, '/fixtures/[file].txt'), newPath, {noGlob: true});
     expect(fs.read(newPath)).toBe('foo' + os.EOL);
   });
 });
