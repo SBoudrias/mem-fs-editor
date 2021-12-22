@@ -1,17 +1,21 @@
-# mem-fs-editor [![Node.js CI](https://github.com/SBoudrias/mem-fs-editor/workflows/Node.js%20CI/badge.svg)](https://github.com/SBoudrias/mem-fs-editor/actions?query=workflow%3A%22Node.js+CI%22) [![NPM version](https://badge.fury.io/js/mem-fs-editor.svg)](http://badge.fury.io/js/mem-fs-editor) [![Coverage Status](https://coveralls.io/repos/github/SBoudrias/mem-fs-editor/badge.svg)](https://coveralls.io/github/SBoudrias/mem-fs-editor)
+# mem-fs-editor
+
+[![Node.js CI](https://github.com/SBoudrias/mem-fs-editor/workflows/Node.js%20CI/badge.svg)](https://github.com/SBoudrias/mem-fs-editor/actions?query=workflow%3A%22Node.js+CI%22)
+[![NPM version](https://badge.fury.io/js/mem-fs-editor.svg)](http://badge.fury.io/js/mem-fs-editor)
+[![Coverage Status](https://codecov.io/gh/SBoudrias/mem-fs-editor/branch/master/graph/badge.svg)](https://codecov.io/gh/SBoudrias/mem-fs-editor)
 
 File edition helpers working on top of [mem-fs](https://github.com/SBoudrias/mem-fs)
 
 ## Usage
 
 ```js
-var memFs = require("mem-fs");
-var editor = require("mem-fs-editor");
+import memFs from 'mem-fs';
+import editor from 'mem-fs-editor';
 
-var store = memFs.create();
-var fs = editor.create(store);
+const store = memFs.create();
+const fs = editor.create(store);
 
-fs.write("somefile.js", "var a = 1;");
+fs.write('somefile.js', 'var a = 1;');
 ```
 
 ### `#read(filepath, [options])`
