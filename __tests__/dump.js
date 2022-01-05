@@ -36,7 +36,7 @@ describe('#dump()', () => {
   });
 
   afterEach(() => {
-    rmSync(output, {recursive: true, force: true});
+    rmSync(output, { recursive: true, force: true });
   });
 
   it('should match snapshot', () => {

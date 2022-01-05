@@ -29,7 +29,7 @@ describe('#commit()', () => {
   });
 
   afterEach(() => {
-    rmSync(outputRoot, {recursive: true});
+    rmSync(outputRoot, { recursive: true });
   });
 
   it('triggers callback when done', async () => {
@@ -38,11 +38,15 @@ describe('#commit()', () => {
   });
 
   it('adds non existing file to store', async () => {
-    await fs.commitFileAsync({path: filenameNew, contents: Buffer.from('bar'), state: 'modified'});
+    await fs.commitFileAsync({
+      path: filenameNew,
+      contents: Buffer.from('bar'),
+      state: 'modified',
+    });
     expect(store.add.callCount).toEqual(2);
   });
 
-  it('doesn\'t readd same file to store', async () => {
+  it("doesn't readd same file to store", async () => {
     await fs.commitFileAsync(store.get(filename));
     expect(store.add.callCount).toEqual(1);
   });

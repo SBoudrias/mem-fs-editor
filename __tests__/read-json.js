@@ -30,12 +30,18 @@ describe('#readJSON()', () => {
   });
 
   it('return defaults if file does not exist and defaults is provided', () => {
-    const obj = fs.readJSON(path.join(__dirname, 'no-such-file.json'), {foo: 'bar'});
+    const obj = fs.readJSON(path.join(__dirname, 'no-such-file.json'), {
+      foo: 'bar',
+    });
     expect(obj.foo).toBe('bar');
   });
 
   it('throw error if file could not be parsed as JSON, even if defaults is provided', () => {
-    expect(fs.readJSON.bind(fs, path.join(__dirname, 'fixtures/file-tpl.txt'), {foo: 'bar'})).toThrow();
+    expect(
+      fs.readJSON.bind(fs, path.join(__dirname, 'fixtures/file-tpl.txt'), {
+        foo: 'bar',
+      })
+    ).toThrow();
   });
 
   it('throw error with file path info', () => {

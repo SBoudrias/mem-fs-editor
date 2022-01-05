@@ -14,7 +14,7 @@ describe('#write()', () => {
   });
 
   it('appends new content to new file', () => {
-    fs.append('append.txt', 'b', {create: true});
+    fs.append('append.txt', 'b', { create: true });
 
     expect(fs.read('append.txt')).toBe('b');
   });
@@ -28,14 +28,14 @@ describe('#write()', () => {
 
   it('allows specifying custom separator', () => {
     fs.write('append.txt', 'a');
-    fs.append('append.txt', 'b', {separator: ', '});
+    fs.append('append.txt', 'b', { separator: ', ' });
 
     expect(fs.read('append.txt')).toBe('a, b');
   });
 
   it('allows disabling end trim', () => {
     fs.write('append.txt', 'a\n\n');
-    fs.append('append.txt', 'b', {trimEnd: false});
+    fs.append('append.txt', 'b', { trimEnd: false });
 
     expect(fs.read('append.txt')).toBe('a\n\n' + os.EOL + 'b');
   });

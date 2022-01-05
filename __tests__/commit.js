@@ -6,7 +6,7 @@ const path = require('path');
 const memFs = require('mem-fs');
 const sinon = require('sinon');
 const editor = require('..');
-const {createTransform} = require('../lib/util');
+const { createTransform } = require('../lib/util');
 
 const rmSync = filesystem.rmSync || filesystem.rmdirSync;
 
@@ -21,7 +21,7 @@ describe('#commit()', () => {
   beforeEach(() => {
     store = memFs.create();
     fs = editor.create(store);
-    filesystem.mkdirSync(fixtureDir, {recursive: true, force: true});
+    filesystem.mkdirSync(fixtureDir, { recursive: true, force: true });
 
     // Create a 100 files to exercise the stream high water mark
     let i = NUMBER_FILES;
@@ -33,22 +33,22 @@ describe('#commit()', () => {
   });
 
   afterEach(() => {
-    rmSync(fixtureDir, {recursive: true, force: true});
-    rmSync(output, {recursive: true, force: true});
+    rmSync(fixtureDir, { recursive: true, force: true });
+    rmSync(output, { recursive: true, force: true });
   });
 
-  it('triggers callback when done', done => {
+  it('triggers callback when done', (done) => {
     fs.commit(done);
   });
 
-  it('should match snapshot', done => {
-    fs.commit(error => {
+  it('should match snapshot', (done) => {
+    fs.commit((error) => {
       expect(fs.dump(output)).toMatchSnapshot();
       done(error);
     });
   });
 
-  it('call filters and trigger callback on error', done => {
+  it('call filters and trigger callback on error', (done) => {
     let called = 0;
 
     const filter = createTransform((file, enc, cb) => {
@@ -56,14 +56,14 @@ describe('#commit()', () => {
       cb(new Error(`error ${called}`));
     });
 
-    fs.commit([filter], error => {
+    fs.commit([filter], (error) => {
       expect(called).toBe(1);
       expect(error.message).toBe('error 1');
       done();
     });
   });
 
-  it('call filters and update memory model', done => {
+  it('call filters and update memory model', (done) => {
     let called = 0;
 
     const filter = createTransform(function (file, enc, cb) {
@@ -80,7 +80,7 @@ describe('#commit()', () => {
     });
   });
 
-  it('call filters, update memory model and commit selected files', done => {
+  it('call filters, update memory model and commit selected files', (done) => {
     let called = 0;
 
     const filter = createTransform(function (file, enc, cb) {
@@ -108,8 +108,8 @@ describe('#commit()', () => {
     });
   });
 
-  it('write file to disk', done => {
-    fs.commit(error => {
+  it('write file to disk', (done) => {
+    fs.commit((error) => {
       expect(filesystem.existsSync(path.join(output, 'file-1.txt'))).toBeTruthy();
       expect(filesystem.existsSync(path.join(output, 'file-1.txt'))).toBeTruthy();
       expect(filesystem.existsSync(path.join(output, 'file-50.txt'))).toBeTruthy();
@@ -118,9 +118,9 @@ describe('#commit()', () => {
     });
   }, 10000);
 
-  it('handle error when write fails', done => {
+  it('handle error when write fails', (done) => {
     filesystem.writeFileSync(output, 'foo');
-    fs.commit(async error => {
+    fs.commit(async (error) => {
       filesystem.unlinkSync(output);
       if (error) {
         done();
@@ -131,9 +131,9 @@ describe('#commit()', () => {
     });
   });
 
-  it('delete file from disk', done => {
+  it('delete file from disk', (done) => {
     const file = path.join(output, 'delete.txt');
-    filesystem.mkdirSync(output, {recursive: true, force: true});
+    filesystem.mkdirSync(output, { recursive: true, force: true });
     filesystem.writeFileSync(file, 'to delete');
 
     fs.delete(file);
@@ -144,9 +144,12 @@ describe('#commit()', () => {
     });
   });
 
-  it('delete directories from disk', done => {
+  it('delete directories from disk', (done) => {
     const file = path.join(output, 'nested/delete.txt');
-    filesystem.mkdirSync(path.join(output, 'nested'), {recursive: true, force: true});
+    filesystem.mkdirSync(path.join(output, 'nested'), {
+      recursive: true,
+      force: true,
+    });
     filesystem.writeFileSync(file, 'to delete');
 
     fs.delete(path.join(output, 'nested'));
@@ -156,14 +159,14 @@ describe('#commit()', () => {
     });
   });
 
-  it('reset file status after commiting', done => {
+  it('reset file status after commiting', (done) => {
     fs.commit(() => {
       expect(fs.store.get(path.join(output, '/file-a.txt')).state).toBeUndefined();
       done();
     });
   });
 
-  it('does not commit files who are deleted before being commited', done => {
+  it('does not commit files who are deleted before being commited', (done) => {
     fs.write('to-delete', 'foo');
     fs.delete('to-delete');
     fs.copy(path.join(__dirname, 'fixtures/file-a.txt'), 'copy-to-delete');
@@ -171,18 +174,21 @@ describe('#commit()', () => {
     fs.store.get('to-delete');
 
     fs.commitFileAsync = sinon.stub().returns(Promise.resolve());
-    fs.commit([
-      createTransform(function (file, enc, cb) {
-        expect(file.path).not.toEqual(path.resolve('to-delete'));
-        expect(file.path).not.toEqual(path.resolve('copy-to-delete'));
+    fs.commit(
+      [
+        createTransform(function (file, enc, cb) {
+          expect(file.path).not.toEqual(path.resolve('to-delete'));
+          expect(file.path).not.toEqual(path.resolve('copy-to-delete'));
 
-        this.push(file);
-        cb();
-      }),
-    ], () => {
-      expect(fs.commitFileAsync.callCount).toBe(NUMBER_FILES);
-      done();
-    });
+          this.push(file);
+          cb();
+        }),
+      ],
+      () => {
+        expect(fs.commitFileAsync.callCount).toBe(NUMBER_FILES);
+        done();
+      }
+    );
   });
 });
 
@@ -200,11 +206,11 @@ describe('#copy() and #commit()', () => {
   });
 
   afterEach(() => {
-    rmSync(output, {recursive: true, force: true});
+    rmSync(output, { recursive: true, force: true });
   });
 
-  it('should match snapshot', done => {
-    fs.commit(error => {
+  it('should match snapshot', (done) => {
+    fs.commit((error) => {
       expect(fs.dump(output)).toMatchSnapshot();
       done(error);
     });
@@ -221,19 +227,24 @@ describe('#copyTpl() and #commit()', () => {
     store = memFs.create();
     fs = editor.create(store);
 
-    const a = {name: 'foo'};
-    const b = {a};
+    const a = { name: 'foo' };
+    const b = { a };
     a.b = b;
 
-    fs.copyTpl(path.join(__dirname, 'fixtures', '**'), output, {name: 'bar'}, {context: {a}});
+    fs.copyTpl(
+      path.join(__dirname, 'fixtures', '**'),
+      output,
+      { name: 'bar' },
+      { context: { a } }
+    );
   });
 
   afterEach(() => {
-    rmSync(output, {recursive: true, force: true});
+    rmSync(output, { recursive: true, force: true });
   });
 
-  it('should match snapshot', done => {
-    fs.commit(error => {
+  it('should match snapshot', (done) => {
+    fs.commit((error) => {
       expect(fs.dump(output)).toMatchSnapshot();
       done(error);
     });

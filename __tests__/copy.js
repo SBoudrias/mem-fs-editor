@@ -39,14 +39,14 @@ describe('#copy()', () => {
       const filepath = path.join(__dirname, 'fixtures/file-a.txt');
       const initialContents = fs.read(filepath);
       const newPath = '/new/path/file.txt';
-      fs.copy(filepath, newPath, {append: true});
+      fs.copy(filepath, newPath, { append: true });
 
       expect(fs.write.callCount).toBe(1);
       expect(fs.append.callCount).toBe(0);
       expect(fs.read(newPath)).toBe(initialContents);
       expect(fs.store.get(newPath).state).toBe('modified');
 
-      fs.copy(filepath, newPath, {append: true});
+      fs.copy(filepath, newPath, { append: true });
 
       expect(fs.write.callCount).toBe(2);
       expect(fs.append.callCount).toBe(1);
@@ -57,7 +57,7 @@ describe('#copy()', () => {
       store.existsInMemory = undefined;
       const filepath = path.join(__dirname, 'fixtures/file-a.txt');
       const newPath = '/new/path/file.txt';
-      expect(() => fs.copy(filepath, newPath, {append: true})).toThrow();
+      expect(() => fs.copy(filepath, newPath, { append: true })).toThrow();
     });
   });
 
@@ -119,7 +119,7 @@ describe('#copy()', () => {
   it('copy files by globbing and process contents', () => {
     const outputDir = path.join(__dirname, '../test/output');
     const process = sinon.stub().returnsArg(0);
-    fs.copy(path.join(__dirname, '/fixtures/**'), outputDir, {process});
+    fs.copy(path.join(__dirname, '/fixtures/**'), outputDir, { process });
     sinon.assert.callCount(process, 13); // 10 total files under 'fixtures', not counting folders
     expect(fs.read(path.join(outputDir, 'file-a.txt'))).toBe('foo' + os.EOL);
     expect(fs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
@@ -138,11 +138,9 @@ describe('#copy()', () => {
       path.join(__dirname, '/fixtures/file-a.txt'),
       outputFile,
       {},
-      {category: 'foo'},
+      { category: 'foo' }
     );
-    expect(
-      fs.read(path.join(__dirname, 'test/foo/file-a.txt')),
-    ).toBe('foo' + os.EOL);
+    expect(fs.read(path.join(__dirname, 'test/foo/file-a.txt'))).toBe('foo' + os.EOL);
   });
 
   it('requires destination directory when globbing', () => {
@@ -150,15 +148,15 @@ describe('#copy()', () => {
       fs.copy.bind(
         fs,
         path.join(__dirname, '/fixtures/**'),
-        path.join(__dirname, '/fixtures/file-a.txt'),
-      ),
+        path.join(__dirname, '/fixtures/file-a.txt')
+      )
     ).toThrow();
   });
 
-  it('preserve permissions', done => {
+  it('preserve permissions', (done) => {
     const filename = path.join(os.tmpdir(), 'perm.txt');
     const copyname = path.join(os.tmpdir(), 'copy-perm.txt');
-    filesystem.writeFileSync(filename, 'foo', {mode: parseInt(733, 8)});
+    filesystem.writeFileSync(filename, 'foo', { mode: parseInt(733, 8) });
 
     fs.copy(filename, copyname);
 
@@ -172,13 +170,17 @@ describe('#copy()', () => {
 
   it('copy with globbing disabled', () => {
     const newPath = path.join(__dirname, '../test/output', 'file.txt');
-    fs.copy(path.join(__dirname, '/fixtures/file-(specia!-char$).txt'), newPath, {noGlob: true});
+    fs.copy(path.join(__dirname, '/fixtures/file-(specia!-char$).txt'), newPath, {
+      noGlob: true,
+    });
     expect(fs.read(newPath)).toBe('special' + os.EOL);
   });
 
   it('copy glob like file when noGlob', () => {
     const newPath = path.join(__dirname, '../test/output', 'file.txt');
-    fs.copy(path.join(__dirname, '/fixtures/[file].txt'), newPath, {noGlob: true});
+    fs.copy(path.join(__dirname, '/fixtures/[file].txt'), newPath, {
+      noGlob: true,
+    });
     expect(fs.read(newPath)).toBe('foo' + os.EOL);
   });
 });

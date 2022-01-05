@@ -1,14 +1,22 @@
 {
-  "extends": "xo-space",
+  "extends": ["xo", "prettier"],
   "env": {
-    "jest": true
+    "mocha": true,
+    "jest": true,
+    "node": true
   },
   "rules": {
+    "default-param-last": "off",
+    "padding-line-between-statements": "off",
+    "no-eq-null": "off",
     "eqeqeq": [
-      2,
-      "allow-null"
+      "error",
+      "always",
+      {
+        "null": "ignore"
+      }
     ],
-    "no-eq-null": 0,
-    "max-params": "off"
-  }
+    "prettier/prettier": "error"
+  },
+  "plugins": ["prettier"]
 }

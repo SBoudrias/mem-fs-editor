@@ -40,7 +40,7 @@ describe('#write()', () => {
     expect(fs.store.get(filepath).state).toBe('modified');
   });
 
-  it('doesn\'t re-add an identical file that already exist in memory', () => {
+  it("doesn't re-add an identical file that already exist in memory", () => {
     const filepath = path.join(__dirname, 'fixtures/file-a.txt');
     const contents = 'some text';
     fs.write(filepath, contents);

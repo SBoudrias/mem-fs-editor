@@ -16,7 +16,7 @@ describe('#exists()', () => {
     fs = editor.create(store);
   });
 
-  it('file doesn\'t exist', () => {
+  it("file doesn't exist", () => {
     expect(fs.exists('something that doesnt exist')).toBeFalsy();
   });
 
@@ -25,7 +25,7 @@ describe('#exists()', () => {
     expect(fs.exists(fileA)).toBeTruthy();
   });
 
-  it('file doesn\'t exist after delete', () => {
+  it("file doesn't exist after delete", () => {
     fs.write(fileDelete, 'some content');
     fs.delete(fileDelete);
     expect(fs.exists(fileDelete)).toBeFalsy();

@@ -18,16 +18,21 @@ describe('#copyTpl()', () => {
   it('copy file and process contents as underscore template', () => {
     const filepath = path.join(__dirname, 'fixtures/file-tpl.txt');
     const newPath = '/new/path/file.txt';
-    fs.copyTpl(filepath, newPath, {name: 'new content'});
+    fs.copyTpl(filepath, newPath, { name: 'new content' });
     expect(fs.read(newPath)).toBe('new content' + os.EOL);
   });
 
   it('allow setting custom template delimiters', () => {
     const filepath = path.join(__dirname, 'fixtures/file-tpl-custom-delimiter.txt');
     const newPath = '/new/path/file.txt';
-    fs.copyTpl(filepath, newPath, {name: 'mustache'}, {
-      delimiter: '?',
-    });
+    fs.copyTpl(
+      filepath,
+      newPath,
+      { name: 'mustache' },
+      {
+        delimiter: '?',
+      }
+    );
     expect(fs.read(newPath)).toBe('mustache' + os.EOL);
   });
 
@@ -41,9 +46,11 @@ describe('#copyTpl()', () => {
   it('allow appending files', () => {
     const filepath = path.join(__dirname, 'fixtures/file-tpl.txt');
     const newPath = '/new/path/file-append.txt';
-    fs.copyTpl(filepath, newPath, {name: 'new content'});
+    fs.copyTpl(filepath, newPath, { name: 'new content' });
     expect(fs.read(newPath)).toBe('new content' + os.EOL);
-    fs.copyTpl(filepath, newPath, {name: 'new content'}, undefined, {append: true});
+    fs.copyTpl(filepath, newPath, { name: 'new content' }, undefined, {
+      append: true,
+    });
     expect(fs.read(newPath)).toBe('new content' + os.EOL + 'new content' + os.EOL);
   });
 
@@ -81,13 +88,18 @@ describe('#copyTpl()', () => {
 
   it('allow passing circular function context', () => {
     const b = {};
-    const a = {name: 'new content', b};
+    const a = { name: 'new content', b };
     b.a = a;
     const filepath = path.join(__dirname, 'fixtures/file-circular.txt');
     const newPath = '/new/path/file.txt';
-    fs.copyTpl(filepath, newPath, {}, {
-      context: {a},
-    });
+    fs.copyTpl(
+      filepath,
+      newPath,
+      {},
+      {
+        context: { a },
+      }
+    );
     expect(fs.read(newPath)).toBe('new content new content' + os.EOL);
   });
 
@@ -98,7 +110,7 @@ describe('#copyTpl()', () => {
     expect(fs.exists(path.join(newPath, 'file-ejs-extension.txt'))).toBeTruthy();
   });
 
-  it('doens\'t removes ejs extension when not globbing', () => {
+  it("doens't removes ejs extension when not globbing", () => {
     const filepath = path.join(__dirname, 'fixtures/ejs/file-ejs-extension.txt.ejs');
     const newPath = '/new/path/file-ejs-extension.txt.ejs';
     fs.copyTpl(filepath, newPath);

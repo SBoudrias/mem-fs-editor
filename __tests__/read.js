@@ -22,7 +22,7 @@ describe('#read()', () => {
   });
 
   it('get the buffer content of a file', () => {
-    const content = fs.read(fileA, {raw: true});
+    const content = fs.read(fileA, { raw: true });
     expect(content).toBeInstanceOf(Buffer);
     expect(content.toString()).toBe('foo' + os.EOL);
   });
@@ -37,12 +37,14 @@ describe('#read()', () => {
   });
 
   it('returns defaults as String if file does not exist and defaults is provided', () => {
-    const content = fs.read('file-who-does-not-exist.txt', {defaults: 'foo' + os.EOL});
+    const content = fs.read('file-who-does-not-exist.txt', {
+      defaults: 'foo' + os.EOL,
+    });
     expect(content).toBe('foo' + os.EOL);
   });
 
   it('returns defaults as String if file does not exist and defaults is provided as empty string', () => {
-    const content = fs.read('file-who-does-not-exist.txt', {defaults: ''});
+    const content = fs.read('file-who-does-not-exist.txt', { defaults: '' });
     expect(content).toBe('');
   });
 
@@ -57,12 +59,12 @@ describe('#read()', () => {
 
   it('returns defaults if file is deleted', () => {
     fs.delete(fileA);
-    const content = fs.read(fileA, {defaults: 'foo'});
+    const content = fs.read(fileA, { defaults: 'foo' });
     expect(content).toBe('foo');
   });
 
   it('allows defaults to be null', () => {
-    const content = fs.read('not-existing.file', {defaults: null});
+    const content = fs.read('not-existing.file', { defaults: null });
     expect(content).toBeNull();
   });
 });
