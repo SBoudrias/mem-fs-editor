@@ -20,7 +20,7 @@
     "deep-extend": "^0.6.0",
     "ejs": "^3.1.6",
     "globby": "^11.1.0",
-    "isbinaryfile": "^4.0.8",
+    "isbinaryfile": "^4.0.10",
     "minimatch": "^3.0.4",
     "multimatch": "^5.0.0",
     "normalize-path": "^3.0.0",
