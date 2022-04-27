@@ -24,7 +24,7 @@
     "minimatch": "^3.0.4",
     "multimatch": "^5.0.0",
     "normalize-path": "^3.0.0",
-    "textextensions": "^5.13.0"
+    "textextensions": "^5.15.0"
   },
   "peerDependencies": {
     "mem-fs": "^2.1.0"
