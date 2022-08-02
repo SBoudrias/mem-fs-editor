@@ -12,7 +12,7 @@ const rmSync = filesystem.rmSync || filesystem.rmdirSync;
 
 describe('#commit()', () => {
   const fixtureDir = path.join(os.tmpdir(), '/mem-fs-editor-test-fixture');
-  const output = path.join(os.tmpdir(), '/mem-fs-editor-test');
+  const output = path.join(os.tmpdir(), '/mem-fs-editor-test' + Math.random());
   const NUMBER_FILES = 100;
 
   let store;
