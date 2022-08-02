@@ -8,6 +8,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     strategy:
+      fail-fast: false
       matrix:
         node-version: [16.x, 14.x, 12.x]
         os: [ubuntu-latest, windows-latest, macos-latest]
@@ -23,6 +24,6 @@ jobs:
         npm ci
         npm test
     - name: Upload code coverage
-      uses: codecov/codecov-action@v2
+      uses: codecov/codecov-action@v3
       with:
-        file: ./coverage/clover.xml
+        file: ./coverage/coverage-final.json
