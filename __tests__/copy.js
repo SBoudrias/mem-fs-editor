@@ -183,4 +183,34 @@ describe('#copy()', () => {
     });
     expect(fs.read(newPath)).toBe('foo' + os.EOL);
   });
+
+  it('accepts fromBasePath', () => {
+    const outputDir = path.join(__dirname, '../test/output');
+    fs.copy(
+      [
+        path.join(__dirname, '/fixtures/file-a.txt'),
+        path.join(__dirname, '/fixtures/nested/file.txt'),
+      ],
+      outputDir,
+      { fromBasePath: __dirname, noGlob: true }
+    );
+    expect(fs.read(path.join(outputDir, '/fixtures/file-a.txt'))).toBe('foo' + os.EOL);
+    expect(fs.read(path.join(outputDir, '/fixtures/nested/file.txt'))).toBe(
+      'nested' + os.EOL
+    );
+  });
+
+  it('accepts detects fromBasePath from common', () => {
+    const outputDir = path.join(__dirname, '../test/output');
+    fs.copy(
+      [
+        path.join(__dirname, '/fixtures/file-a.txt'),
+        path.join(__dirname, '/fixtures/nested/file.txt'),
+      ],
+      outputDir,
+      { noGlob: true }
+    );
+    expect(fs.read(path.join(outputDir, '/file-a.txt'))).toBe('foo' + os.EOL);
+    expect(fs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
+  });
 });

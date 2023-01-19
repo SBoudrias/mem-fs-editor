@@ -75,7 +75,8 @@ Delete a file or a directory.
 
 ### `#copy(from, to, [options], context[, templateOptions ])`
 
-Copy a file from the `from` path to the `to` path.
+Copy file(s) from the `from` path to the `to` path.
+When passing array, you should pass `options.fromBasePath` to be used to calculate the `to` relative path. The common directory will be detected and used as `fromBasePath` otherwise.
 
 Optionally, pass an `options.process` function (`process(contents)`) returning a string or a buffer who'll become the new file content. The process function will take a single contents argument who is the copied file contents as a `Buffer`.
 
