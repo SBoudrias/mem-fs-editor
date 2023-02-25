@@ -31,11 +31,15 @@ Object {
 }
 `;
 
-exports[`#dump() with a glob pattern should match snapshot 1`] = `
+exports[`#dump() with a glob pattern should return files that matches the pattern and have state or stateCleared 1`] = `
 Object {
   "foo/committed": Object {
     "contents": "committed",
     "stateCleared": "modified",
+  },
+  "foo/not-committed": Object {
+    "contents": "not-committed",
+    "state": "modified",
   },
 }
 `;
