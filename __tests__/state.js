@@ -49,6 +49,34 @@ describe('state', () => {
     expect(file.isNew).toBe(true);
   });
 
+  it('resetFileCommitStates()', () => {
+    file.state = 'foo';
+    file.isNew = true;
+    file.stateCleared = 'bar';
+    file.committed = true;
+
+    state.resetFileCommitStates(file);
+
+    expect(file.state).toBe('foo');
+    expect(file.isNew).toBe(true);
+    expect(file.stateCleared).toBe(undefined);
+    expect(file.committed).toBe(undefined);
+  });
+
+  it('resetFile()', () => {
+    file.state = 'foo';
+    file.isNew = true;
+    file.stateCleared = 'bar';
+    file.committed = true;
+
+    state.resetFile(file);
+
+    expect(file.state).toBe(undefined);
+    expect(file.isNew).toBe(undefined);
+    expect(file.stateCleared).toBe(undefined);
+    expect(file.committed).toBe(undefined);
+  });
+
   it('clearFileState()', () => {
     file.state = 'foo';
     file.isNew = true;
