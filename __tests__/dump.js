@@ -44,8 +44,8 @@ describe('#dump()', () => {
   });
 
   describe('with a glob pattern', () => {
-    it('should match snapshot', () => {
-      expect(fs.dump(output, '**/committed')).toMatchSnapshot();
+    it('should return files that matches the pattern and have state or stateCleared', () => {
+      expect(fs.dump(output, '**/*committed')).toMatchSnapshot();
     });
   });
 });

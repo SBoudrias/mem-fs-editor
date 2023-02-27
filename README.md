@@ -152,4 +152,5 @@ If provided, `stream` is a stream of vinyl files.
 
 Dump files to compare expected result.
 Provide a `cwd` for relative path. Allows to omit temporary path.
-Provide a `filter` function or glob to focus on specific files.
+Provide a `filter` function or a pattern to focus on specific files.
+`dump` returns only modified (committed or not) files when no filter or a pattern is provided.
