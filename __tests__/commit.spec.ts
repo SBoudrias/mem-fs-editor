@@ -2,13 +2,11 @@ import { describe, beforeEach, it, expect, afterEach } from 'vitest';
 import filesystem from 'fs';
 import os from 'os';
 import path from 'path';
-import memFs from 'mem-fs';
+import { create as createMemFs } from 'mem-fs';
 import sinon from 'sinon';
-import editor from '../lib/index.js';
-import util from '../lib/util.js';
+import { MemFsEditor, create } from '../lib/index.js';
+import { createTransform } from '../lib/transform.js';
 import { getFixture } from './fixtures.js';
-
-const { createTransform } = util;
 
 const rmSync = filesystem.rmSync || filesystem.rmdirSync;
 
@@ -18,12 +16,12 @@ describe('#commit()', () => {
   const NUMBER_FILES = 100;
 
   let store;
-  let fs;
+  let fs: MemFsEditor;
 
   beforeEach(() => {
-    store = memFs.create();
-    fs = editor.create(store);
-    filesystem.mkdirSync(fixtureDir, { recursive: true, force: true });
+    store = createMemFs();
+    fs = create(store);
+    filesystem.mkdirSync(fixtureDir, { recursive: true });
 
     // Create a 100 files to exercise the stream high water mark
     let i = NUMBER_FILES;
@@ -111,7 +109,7 @@ describe('#commit()', () => {
 
   it('delete file from disk', async () => {
     const file = path.join(output, 'delete.txt');
-    filesystem.mkdirSync(output, { recursive: true, force: true });
+    filesystem.mkdirSync(output, { recursive: true });
     filesystem.writeFileSync(file, 'to delete');
 
     fs.delete(file);
@@ -122,10 +120,7 @@ describe('#commit()', () => {
 
   it('delete directories from disk', async () => {
     const file = path.join(output, 'nested/delete.txt');
-    filesystem.mkdirSync(path.join(output, 'nested'), {
-      recursive: true,
-      force: true,
-    });
+    filesystem.mkdirSync(path.join(output, 'nested'), { recursive: true });
     filesystem.writeFileSync(file, 'to delete');
 
     fs.delete(path.join(output, 'nested'));
@@ -163,11 +158,11 @@ describe('#copy() and #commit()', () => {
   const output = path.join(os.tmpdir(), '/mem-fs-editor-test');
 
   let store;
-  let fs;
+  let fs: MemFsEditor;
 
   beforeEach(() => {
-    store = memFs.create();
-    fs = editor.create(store);
+    store = createMemFs();
+    fs = create(store);
 
     fs.copy(getFixture('**'), output);
   });
@@ -186,13 +181,13 @@ describe('#copyTpl() and #commit()', () => {
   const output = path.join(os.tmpdir(), '/mem-fs-editor-test');
 
   let store;
-  let fs;
+  let fs: MemFsEditor;
 
   beforeEach(() => {
-    store = memFs.create();
-    fs = editor.create(store);
+    store = createMemFs();
+    fs = create(store);
 
-    const a = { name: 'foo' };
+    const a = { name: 'foo' } as any;
     const b = { a };
     a.b = b;
 

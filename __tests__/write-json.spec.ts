@@ -1,16 +1,16 @@
 import { describe, beforeEach, it, expect } from 'vitest';
 import sinon from 'sinon';
-import editor from '../lib/index.js';
-import memFs from 'mem-fs';
+import { type MemFsEditor, create } from '../lib/index.js';
+import { create as createMemFs } from 'mem-fs';
 import { getFixture } from './fixtures.js';
 
 describe('#writeJSON()', () => {
   let store;
-  let fs;
+  let fs: MemFsEditor;
 
   beforeEach(() => {
-    store = memFs.create();
-    fs = editor.create(store);
+    store = createMemFs();
+    fs = create(store);
   });
 
   it('stringify with optional arguments (for JSON.stringify)', () => {
@@ -53,11 +53,7 @@ describe('#writeJSON()', () => {
     const write = sinon.spy(fs, 'write');
     fs.writeJSON(filepath, contents);
     sinon.assert.calledOnce(write);
-    sinon.assert.calledWithMatch(
-      write,
-      filepath,
-      JSON.stringify(contents, null, 2) + '\n'
-    );
+    sinon.assert.calledWithMatch(write, filepath, JSON.stringify(contents, null, 2) + '\n');
     write.restore();
   });
 });

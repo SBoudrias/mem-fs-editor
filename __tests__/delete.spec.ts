@@ -1,16 +1,16 @@
 import { describe, beforeEach, it, expect } from 'vitest';
 import path from 'path';
-import editor from '../lib/index.js';
-import memFs from 'mem-fs';
+import { type MemFsEditor, create } from '../lib/index.js';
+import { create as createMemFs } from 'mem-fs';
 import { getFixture } from './fixtures.js';
 
 describe('#delete()', () => {
   let store;
-  let fs;
+  let fs: MemFsEditor;
 
   beforeEach(() => {
-    store = memFs.create();
-    fs = editor.create(store);
+    store = createMemFs();
+    fs = create(store);
   });
 
   it('deletes existing files', () => {

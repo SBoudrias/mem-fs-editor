@@ -1,16 +1,16 @@
 import { describe, beforeEach, it } from 'vitest';
 import sinon from 'sinon';
-import editor from '../lib/index.js';
-import memFs from 'mem-fs';
+import { type MemFsEditor, create } from '../lib/index.js';
+import { create as createMemFs } from 'mem-fs';
 import { getFixture } from './fixtures.js';
 
 describe('#extendJSON()', () => {
   let store;
-  let fs;
+  let fs: MemFsEditor;
 
   beforeEach(() => {
-    store = memFs.create();
-    fs = editor.create(store);
+    store = createMemFs();
+    fs = create(store);
   });
 
   it('extends content of existing JSON file', () => {
@@ -20,11 +20,7 @@ describe('#extendJSON()', () => {
     const read = sinon.stub(fs, 'readJSON').returns({ a: 'a', b: 'b' });
     fs.extendJSON(filepath, contents);
     sinon.assert.calledOnce(write);
-    sinon.assert.calledWithMatch(
-      write,
-      filepath,
-      JSON.stringify({ a: 'a', b: 2 }, null, 2) + '\n'
-    );
+    sinon.assert.calledWithMatch(write, filepath, JSON.stringify({ a: 'a', b: 2 }, null, 2) + '\n');
     write.restore();
     read.restore();
   });
@@ -35,11 +31,7 @@ describe('#extendJSON()', () => {
     const write = sinon.spy(fs, 'write');
     fs.extendJSON(filepath, contents);
     sinon.assert.calledOnce(write);
-    sinon.assert.calledWithMatch(
-      write,
-      filepath,
-      JSON.stringify({ foo: 'bar' }, null, 2) + '\n'
-    );
+    sinon.assert.calledWithMatch(write, filepath, JSON.stringify({ foo: 'bar' }, null, 2) + '\n');
     write.restore();
   });
 
@@ -47,9 +39,9 @@ describe('#extendJSON()', () => {
     const filepath = getFixture('does-not-exist.txt');
     const contents = { foo: 'bar' };
     const write = sinon.spy(fs, 'write');
-    fs.extendJSON(filepath, contents, '\n', 4);
+    fs.extendJSON(filepath, contents, ['\n'], 4);
     sinon.assert.calledOnce(write);
-    sinon.assert.calledWith(write, filepath, JSON.stringify(contents, '\n', 4) + '\n');
+    sinon.assert.calledWith(write, filepath, JSON.stringify(contents, ['\n'], 4) + '\n');
     write.restore();
   });
 });

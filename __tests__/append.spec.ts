@@ -1,15 +1,15 @@
 import { describe, beforeEach, it, expect } from 'vitest';
 import os from 'os';
-import editor from '../lib/index.js';
-import memFs from 'mem-fs';
+import { MemFsEditor, create } from '../lib/index.js';
+import { create as createMemFs } from 'mem-fs';
 
 describe('#write()', () => {
   let store;
-  let fs;
+  let fs: MemFsEditor;
 
   beforeEach(() => {
-    store = memFs.create();
-    fs = editor.create(store);
+    store = createMemFs();
+    fs = create(store);
   });
 
   it('appends new content to new file', () => {

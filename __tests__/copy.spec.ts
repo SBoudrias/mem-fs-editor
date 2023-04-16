@@ -3,8 +3,8 @@ import filesystem from 'fs';
 import os from 'os';
 import path, { dirname } from 'path';
 import sinon from 'sinon';
-import editor from '../lib/index.js';
-import memFs from 'mem-fs';
+import { type MemFsEditor, create } from '../lib/index.js';
+import { create as createMemFs } from 'mem-fs';
 import { getFixture } from './fixtures.js';
 import { fileURLToPath } from 'url';
 
@@ -12,11 +12,11 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 describe('#copy()', () => {
   let store;
-  let fs;
+  let fs: MemFsEditor;
 
   beforeEach(() => {
-    store = memFs.create();
-    fs = editor.create(store);
+    store = createMemFs();
+    fs = create(store);
   });
 
   it('copy file', () => {
@@ -181,9 +181,7 @@ describe('#copy()', () => {
       noGlob: true,
     });
     expect(fs.read(path.join(outputDir, '/fixtures/file-a.txt'))).toBe('foo' + os.EOL);
-    expect(fs.read(path.join(outputDir, '/fixtures/nested/file.txt'))).toBe(
-      'nested' + os.EOL
-    );
+    expect(fs.read(path.join(outputDir, '/fixtures/nested/file.txt'))).toBe('nested' + os.EOL);
   });
 
   it('accepts detects fromBasePath from common', () => {

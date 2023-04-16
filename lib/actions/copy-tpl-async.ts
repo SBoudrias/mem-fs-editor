@@ -1,9 +1,17 @@
-'use strict';
+import fs from 'fs/promises';
+import { isBinary, renderFile } from '../util.js';
+import type { MemFsEditor } from '../index.js';
+import { Data, Options } from 'ejs';
+import { CopyAsyncOptions } from './copy-async.js';
 
-const fs = require('fs').promises;
-const { isBinary, renderFile } = require('../util');
-
-module.exports = async function (from, to, context, tplSettings, options) {
+export default async function (
+  this: MemFsEditor,
+  from: string | string[],
+  to: string,
+  context?: Data,
+  tplSettings?: Options,
+  options?: CopyAsyncOptions
+) {
   context = context || {};
   tplSettings = tplSettings || {};
 
@@ -32,4 +40,4 @@ module.exports = async function (from, to, context, tplSettings, options) {
     context,
     tplSettings
   );
-};
+}

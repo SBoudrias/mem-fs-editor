@@ -1,17 +1,17 @@
 import { describe, beforeEach, it, expect } from 'vitest';
 import sinon from 'sinon';
-import editor from '../lib/index.js';
-import memFs from 'mem-fs';
+import { type MemFsEditor, create } from '../lib/index.js';
+import { create as createMemFs } from 'mem-fs';
 import escape from 'escape-regexp';
 import { getFixture } from './fixtures.js';
 
 describe('#readJSON()', () => {
   let store;
-  let fs;
+  let fs: MemFsEditor;
 
   beforeEach(() => {
-    store = memFs.create();
-    fs = editor.create(store);
+    store = createMemFs();
+    fs = create(store);
   });
 
   it('read the content of a file', () => {

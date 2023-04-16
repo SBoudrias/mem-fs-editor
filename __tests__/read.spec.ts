@@ -1,18 +1,18 @@
 import { describe, beforeEach, it, expect } from 'vitest';
 import os from 'os';
-import editor from '../lib/index.js';
-import memFs from 'mem-fs';
+import { type MemFsEditor, create } from '../lib/index.js';
+import { create as createMemFs } from 'mem-fs';
 import { getFixture } from './fixtures.js';
 
 const fileA = getFixture('file-a.txt');
 
 describe('#read()', () => {
   let store;
-  let fs;
+  let fs: MemFsEditor;
 
   beforeEach(() => {
-    store = memFs.create();
-    fs = editor.create(store);
+    store = createMemFs();
+    fs = create(store);
   });
 
   it('read the content of a file', () => {
@@ -21,7 +21,7 @@ describe('#read()', () => {
   });
 
   it('get the buffer content of a file', () => {
-    const content = fs.read(fileA, { raw: true });
+    const content = fs.read(fileA, { raw: true })!;
     expect(content).toBeInstanceOf(Buffer);
     expect(content.toString()).toBe('foo' + os.EOL);
   });
@@ -51,7 +51,7 @@ describe('#read()', () => {
     const content = fs.read('file-who-does-not-exist.txt', {
       defaults: Buffer.from('foo' + os.EOL),
       raw: true,
-    });
+    })!;
     expect(content).toBeInstanceOf(Buffer);
     expect(content.toString()).toBe('foo' + os.EOL);
   });

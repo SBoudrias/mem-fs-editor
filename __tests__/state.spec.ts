@@ -1,8 +1,20 @@
 import { describe, beforeEach, it, expect } from 'vitest';
 import { getFixture } from './fixtures.js';
-import Editor from '../lib/index.js';
-
-const state = Editor.State;
+import {
+  clearFileState,
+  hasClearedState,
+  isFileCommitted,
+  isFileNew,
+  isFilePending,
+  isFileStateDeleted,
+  isFileStateModified,
+  resetFile,
+  resetFileCommitStates,
+  resetFileState,
+  setCommittedFile,
+  setDeletedFileState,
+  setModifiedFileState,
+} from '../lib/state.js';
 
 describe('state', () => {
   let file;
@@ -12,39 +24,39 @@ describe('state', () => {
 
   it('setModifiedFileState()/isFileStateModified()', () => {
     expect(file.state).toBe(undefined);
-    expect(state.isFileStateModified(file)).toBe(false);
+    expect(isFileStateModified(file)).toBe(false);
 
-    state.setModifiedFileState(file);
+    setModifiedFileState(file);
 
     expect(file.state).toBe('modified');
-    expect(state.isFileStateModified(file)).toBe(true);
+    expect(isFileStateModified(file)).toBe(true);
   });
 
   it('setDeletedFileState()/isFileStateDeleted()', () => {
     expect(file.state).toBe(undefined);
-    expect(state.isFileStateDeleted(file)).toBe(false);
+    expect(isFileStateDeleted(file)).toBe(false);
 
-    state.setDeletedFileState(file);
+    setDeletedFileState(file);
 
     expect(file.state).toBe('deleted');
-    expect(state.isFileStateDeleted(file)).toBe(true);
+    expect(isFileStateDeleted(file)).toBe(true);
   });
 
   it('setCommittedFile()/fileStateIsCommitted()', () => {
     expect(file.committed).toBe(undefined);
-    expect(state.isFileCommitted(file)).toBe(false);
+    expect(isFileCommitted(file)).toBe(false);
 
-    state.setCommittedFile(file);
+    setCommittedFile(file);
 
     expect(file.committed).toBe(true);
-    expect(state.isFileCommitted(file)).toBe(true);
+    expect(isFileCommitted(file)).toBe(true);
   });
 
   it('resetFileState()', () => {
     file.state = 'foo';
     file.isNew = true;
 
-    state.resetFileState(file);
+    resetFileState(file);
 
     expect(file.state).toBe(undefined);
     expect(file.isNew).toBe(true);
@@ -56,7 +68,7 @@ describe('state', () => {
     file.stateCleared = 'bar';
     file.committed = true;
 
-    state.resetFileCommitStates(file);
+    resetFileCommitStates(file);
 
     expect(file.state).toBe('foo');
     expect(file.isNew).toBe(true);
@@ -70,7 +82,7 @@ describe('state', () => {
     file.stateCleared = 'bar';
     file.committed = true;
 
-    state.resetFile(file);
+    resetFile(file);
 
     expect(file.state).toBe(undefined);
     expect(file.isNew).toBe(undefined);
@@ -82,12 +94,12 @@ describe('state', () => {
     file.state = 'foo';
     file.isNew = true;
 
-    state.clearFileState(file);
+    clearFileState(file);
 
     expect(file.state).toBe(undefined);
     expect(file.clearedState).toBe(file.state);
     expect(file.isNew).toBe(undefined);
-    expect(state.hasClearedState(file)).toBe(true);
+    expect(hasClearedState(file)).toBe(true);
   });
 
   describe('isFileNew()', () => {
@@ -95,7 +107,7 @@ describe('state', () => {
       expect(file.isNew).toBe(undefined);
       file.path = 'foo';
 
-      expect(state.isFileNew(file)).toBe(true);
+      expect(isFileNew(file)).toBe(true);
       expect(file.isNew).toBe(true);
     });
 
@@ -103,31 +115,31 @@ describe('state', () => {
       expect(file.isNew).toBe(undefined);
       file.path = getFixture('file-a.txt');
 
-      expect(state.isFileNew(file)).toBe(false);
+      expect(isFileNew(file)).toBe(false);
       expect(file.isNew).toBe(false);
     });
   });
 
   describe('isFilePending()', () => {
     it('unkown state', () => {
-      expect(state.isFilePending(file)).toBe(false);
+      expect(isFilePending(file)).toBe(false);
     });
 
     it('modified state', () => {
-      state.setModifiedFileState(file);
-      expect(state.isFilePending(file)).toBe(true);
+      setModifiedFileState(file);
+      expect(isFilePending(file)).toBe(true);
     });
 
     it('delete state and new file', () => {
       file.path = 'foo';
-      state.setDeletedFileState(file);
-      expect(state.isFilePending(file)).toBe(false);
+      setDeletedFileState(file);
+      expect(isFilePending(file)).toBe(false);
     });
 
     it('delete state and existing file', () => {
       file.path = getFixture('file-a.txt');
-      state.setDeletedFileState(file);
-      expect(state.isFilePending(file)).toBe(true);
+      setDeletedFileState(file);
+      expect(isFilePending(file)).toBe(true);
     });
   });
 });

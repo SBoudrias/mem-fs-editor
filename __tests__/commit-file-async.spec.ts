@@ -2,12 +2,10 @@ import { describe, beforeEach, it, expect, afterEach } from 'vitest';
 import filesystem from 'fs';
 import os from 'os';
 import path from 'path';
-import memFs from 'mem-fs';
+import { create as createMemFs } from 'mem-fs';
 import sinon from 'sinon';
-import editor from '../lib/index.js';
-import State from '../lib/state.js';
+import { type MemFsEditor, type MemFsEditorFile, create } from '../lib/index.js';
 
-const { STATE, STATE_MODIFIED, STATE_DELETED } = State;
 const rmSync = filesystem.rmSync || filesystem.rmdirSync;
 
 // Permission mode are handled differently by windows.
@@ -22,22 +20,22 @@ describe('#commitFileAsync()', () => {
   const outputDir = path.join(outputRoot, 'output');
   const filename = path.join(outputDir, 'file.txt');
   const filenameNew = path.join(outputDir, 'file-new.txt');
-  let newFile;
+  let newFile: MemFsEditorFile;
 
   let store;
-  let fs;
+  let fs: MemFsEditor;
 
   beforeEach(() => {
-    store = memFs.create();
+    store = createMemFs();
     sinon.spy(store, 'add');
 
-    fs = editor.create(store);
+    fs = create(store);
     fs.write(filename, 'foo');
 
     newFile = {
       path: filenameNew,
       contents: Buffer.from('bar'),
-      [STATE]: STATE_MODIFIED,
+      state: 'modified',
     };
 
     expect(store.add.callCount).toEqual(1);
@@ -67,7 +65,7 @@ describe('#commitFileAsync()', () => {
   it("doesn't commit an unmodified file", async () => {
     await fs.commitFileAsync({
       ...newFile,
-      [STATE]: undefined,
+      state: undefined,
     });
     expect(filesystem.existsSync(filenameNew)).toBe(false);
   });
@@ -88,7 +86,7 @@ describe('#commitFileAsync()', () => {
     filesystem.writeFileSync(filenameNew, 'foo');
     await fs.commitFileAsync({
       ...newFile,
-      [STATE]: STATE_DELETED,
+      state: 'deleted',
     });
     expect(filesystem.existsSync(filenameNew)).toBe(false);
   });

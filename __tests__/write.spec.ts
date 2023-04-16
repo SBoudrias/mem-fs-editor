@@ -1,18 +1,18 @@
 import { describe, beforeEach, it, expect } from 'vitest';
 import sinon from 'sinon';
-import editor from '../lib/index.js';
-import memFs from 'mem-fs';
+import { type MemFsEditor, create } from '../lib/index.js';
+import { create as createMemFs } from 'mem-fs';
 import { getFixture } from './fixtures.js';
 
 describe('#write()', () => {
   let store;
-  let fs;
+  let fs: MemFsEditor;
 
   beforeEach(() => {
-    store = memFs.create();
+    store = createMemFs();
     sinon.spy(store, 'add');
 
-    fs = editor.create(store);
+    fs = create(store);
   });
 
   it('write string to a new file', () => {

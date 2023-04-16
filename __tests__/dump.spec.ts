@@ -2,8 +2,8 @@ import { describe, beforeEach, it, expect, afterEach } from 'vitest';
 import filesystem from 'fs';
 import os from 'os';
 import path from 'path';
-import memFs from 'mem-fs';
-import editor from '../lib/index.js';
+import { create as createMemFs } from 'mem-fs';
+import { type MemFsEditor, create } from '../lib/index.js';
 
 const rmSync = filesystem.rmSync || filesystem.rmdirSync;
 
@@ -11,11 +11,11 @@ describe('#dump()', () => {
   const output = path.join(os.tmpdir(), '/mem-fs-editor-test');
   const subdir = 'foo';
   let store;
-  let fs;
+  let fs: MemFsEditor;
 
   beforeEach(async () => {
-    store = memFs.create();
-    fs = editor.create(store);
+    store = createMemFs();
+    fs = create(store);
 
     fs.write(path.join(output, subdir, 'committed'), 'committed');
     fs.write(path.join(output, subdir, 'committed-delete'), 'committed-delete');

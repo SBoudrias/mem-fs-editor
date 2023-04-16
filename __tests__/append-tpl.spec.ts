@@ -1,23 +1,21 @@
 import { describe, beforeEach, it, expect } from 'vitest';
 import os from 'os';
-import editor from '../lib/index.js';
-import memFs from 'mem-fs';
+import { type MemFsEditor, create } from '../lib/index.js';
+import { create as createMemFs } from 'mem-fs';
 import { getFixture } from './fixtures.js';
 
 describe('#appendTpl()', () => {
-  let store;
-  let fs;
+  let fs: MemFsEditor;
 
   beforeEach(() => {
-    store = memFs.create();
-    fs = editor.create(store);
+    fs = create(createMemFs());
   });
 
   it('appends to file and processes contents as underscore template', () => {
     const filepath = getFixture('file-a.txt');
-    const orginalContent = fs.read(filepath).toString();
+    const orginalContent = fs.read(filepath)!.toString();
     const contentPath = getFixture('file-tpl.txt');
-    const contents = fs.read(contentPath);
+    const contents = fs.read(contentPath)!;
     fs.appendTpl(filepath, contents, {
       name: 'bar',
     });
@@ -26,9 +24,9 @@ describe('#appendTpl()', () => {
 
   it('allows setting custom template delimiters', () => {
     const filepath = getFixture('file-a.txt');
-    const orginalContent = fs.read(filepath).toString();
+    const orginalContent = fs.read(filepath)!.toString();
     const contentPath = getFixture('file-tpl-custom-delimiter.txt');
-    const contents = fs.read(contentPath);
+    const contents = fs.read(contentPath)!;
     fs.appendTpl(filepath, contents, { name: 'bar' }, { delimiter: '?' });
     expect(fs.read(filepath)).toBe(orginalContent + 'bar' + os.EOL);
   });
@@ -37,7 +35,7 @@ describe('#appendTpl()', () => {
     const f = () => {
       const filepath = getFixture('file-a.txt');
       const contentPath = getFixture('file-tpl.txt');
-      const contents = fs.read(contentPath);
+      const contents = fs.read(contentPath)!;
       fs.appendTpl(filepath, contents);
     };
 

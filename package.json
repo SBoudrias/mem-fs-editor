@@ -2,6 +2,7 @@
   "name": "mem-fs-editor",
   "version": "9.7.0",
   "description": "File edition helpers working on top of mem-fs",
+  "type": "module",
   "scripts": {
     "build": "tsc",
     "fix": "eslint . --fix",
@@ -13,23 +14,37 @@
   "author": "Simon Boudrias",
   "license": "MIT",
   "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./dist/index.js"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./state": {
+      "types": "./dist/state.d.ts",
+      "default": "./dist/state.js"
+    },
+    "./transform": {
+      "types": "./dist/transform.d.ts",
+      "default": "./dist/transform.js"
+    }
   },
   "files": [
     "lib"
   ],
   "dependencies": {
+    "@types/ejs": "^3.1.2",
     "binaryextensions": "^4.16.0",
     "commondir": "^1.0.1",
     "deep-extend": "^0.6.0",
     "ejs": "^3.1.9",
-    "globby": "^11.1.0",
+    "globby": "^13.1.4",
     "isbinaryfile": "^5.0.0",
-    "minimatch": "^7.4.3",
-    "multimatch": "^5.0.0",
+    "minimatch": "^9.0.0",
+    "multimatch": "^6.0.0",
     "normalize-path": "^3.0.0",
-    "textextensions": "^5.13.0"
+    "textextensions": "^5.13.0",
+    "vinyl": "^3.0.0"
   },
   "peerDependencies": {
     "mem-fs": "^2.1.0"
@@ -46,7 +61,7 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-config-xo": "^0.43.1",
     "eslint-plugin-prettier": "^4.0.0",
-    "mem-fs": "^2.3.0",
+    "mem-fs": "github:mshima/mem-fs#esm",
     "prettier": "^2.5.1",
     "sinon": "^15.0.1",
     "typescript": "^5.0.4",

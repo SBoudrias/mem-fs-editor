@@ -3,17 +3,17 @@ import filesystem from 'fs';
 import os from 'os';
 import path from 'path';
 import sinon from 'sinon';
-import editor from '../lib/index.js';
-import memFs from 'mem-fs';
+import { MemFsEditor, create } from '../lib/index.js';
+import { create as createMemFs } from 'mem-fs';
 import { getFixture } from './fixtures.js';
 
 describe('#copyAsync()', () => {
   let store;
-  let fs;
+  let fs: MemFsEditor;
 
   beforeEach(() => {
-    store = memFs.create();
-    fs = editor.create(store);
+    store = createMemFs();
+    fs = create(store);
   });
 
   it('copy file', async () => {
@@ -57,9 +57,9 @@ describe('#copyAsync()', () => {
       store.existsInMemory = undefined;
       const filepath = getFixture('file-a.txt');
       const newPath = '/new/path/file.txt';
-      expect(
-        fs.copyAsync(filepath, newPath, { append: true, processFile: () => '' })
-      ).rejects.toEqual(new Error('Current mem-fs is not compatible with append'));
+      expect(fs.copyAsync(filepath, newPath, { append: true, processFile: () => '' })).rejects.toEqual(
+        new Error('Current mem-fs is not compatible with append')
+      );
     });
   });
 
@@ -153,10 +153,9 @@ describe('#copyAsync()', () => {
 
     await fs.copyAsync(filename, copyname);
 
-    await fs.commit(() => {
-      const oldStat = filesystem.statSync(filename);
-      const newStat = filesystem.statSync(copyname);
-      expect(newStat.mode).toBe(oldStat.mode);
-    });
+    await fs.commit();
+    const oldStat = filesystem.statSync(filename);
+    const newStat = filesystem.statSync(copyname);
+    expect(newStat.mode).toBe(oldStat.mode);
   });
 });

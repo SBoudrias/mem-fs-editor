@@ -1,18 +1,19 @@
 import { describe, beforeEach, it, expect } from 'vitest';
 import os from 'os';
 import path from 'path';
-import editor from '../lib/index.js';
-import memFs from 'mem-fs';
+import { type MemFsEditor, create } from '../lib/index.js';
+import { create as createMemFs } from 'mem-fs';
 import normalize from 'normalize-path';
 import { getFixture } from './fixtures.js';
+import { CopyOptions } from '../lib/actions/copy.js';
 
 describe('#copyTpl()', () => {
   let store;
-  let fs;
+  let fs: MemFsEditor;
 
   beforeEach(() => {
-    store = memFs.create();
-    fs = editor.create(store);
+    store = createMemFs();
+    fs = create(store);
   });
 
   it('copy file and process contents as underscore template', () => {
@@ -56,7 +57,7 @@ describe('#copyTpl()', () => {
 
   it('allow including glob options', () => {
     const filenames = [getFixture('file-tpl-partial.txt'), getFixture('file-tpl.txt')];
-    const copyOptions = {
+    const copyOptions: CopyOptions = {
       globOptions: {
         ignore: [normalize(filenames[1])],
       },
@@ -84,7 +85,7 @@ describe('#copyTpl()', () => {
   });
 
   it('allow passing circular function context', () => {
-    const b = {};
+    const b = {} as any;
     const a = { name: 'new content', b };
     b.a = a;
     const filepath = getFixture('file-circular.txt');
