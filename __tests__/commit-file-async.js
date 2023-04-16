@@ -1,5 +1,3 @@
-'use strict';
-
 const filesystem = require('fs');
 const os = require('os');
 const path = require('path');

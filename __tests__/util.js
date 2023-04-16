@@ -1,5 +1,3 @@
-'use strict';
-
 const filesystem = require('fs');
 const path = require('path');
 const sinon = require('sinon');
