@@ -1,9 +1,10 @@
-const filesystem = require('fs');
-const os = require('os');
-const path = require('path');
-const sinon = require('sinon');
-const editor = require('..');
-const memFs = require('mem-fs');
+import filesystem from 'fs';
+import os from 'os';
+import path from 'path';
+import sinon from 'sinon';
+import editor from '../lib/index.js';
+import memFs from 'mem-fs';
+import { getFixture } from './fixtures.js';
 
 describe('#copyAsync()', () => {
   let store;
@@ -15,7 +16,7 @@ describe('#copyAsync()', () => {
   });
 
   it('copy file', async () => {
-    const filepath = path.join(__dirname, 'fixtures/file-a.txt');
+    const filepath = getFixture('file-a.txt');
     const initialContents = fs.read(filepath);
     const newPath = '/new/path/file.txt';
     await fs.copyAsync(filepath, newPath);
@@ -34,7 +35,7 @@ describe('#copyAsync()', () => {
     });
 
     it('should append file to file already loaded', async () => {
-      const filepath = path.join(__dirname, 'fixtures/file-a.txt');
+      const filepath = getFixture('file-a.txt');
       const initialContents = fs.read(filepath);
       const newPath = '/new/path/file.txt';
       await fs.copyAsync(filepath, newPath, { append: true });
@@ -53,7 +54,7 @@ describe('#copyAsync()', () => {
 
     it('should throw if mem-fs is not compatible', async () => {
       store.existsInMemory = undefined;
-      const filepath = path.join(__dirname, 'fixtures/file-a.txt');
+      const filepath = getFixture('file-a.txt');
       const newPath = '/new/path/file.txt';
       expect(
         fs.copyAsync(filepath, newPath, { append: true, processFile: () => '' })
@@ -62,8 +63,8 @@ describe('#copyAsync()', () => {
   });
 
   it('can copy directory not commited to disk', async () => {
-    const sourceDir = path.join(__dirname, '../test/foo');
-    const destDir = path.join(__dirname, '../test/bar');
+    const sourceDir = getFixture('../../test/foo');
+    const destDir = getFixture('../../test/bar');
     fs.write(path.join(sourceDir, 'file-a.txt'), 'a');
     fs.write(path.join(sourceDir, 'file-b.txt'), 'b');
 
@@ -74,15 +75,15 @@ describe('#copyAsync()', () => {
   });
 
   it('throws when trying to copy from a non-existing file', async () => {
-    const filepath = path.join(__dirname, 'fixtures/does-not-exits');
-    const newPath = path.join(__dirname, '../test/new/path/file.txt');
+    const filepath = getFixture('does-not-exits');
+    const newPath = getFixture('../../test/new/path/file.txt');
     expect(fs.copyAsync(filepath, newPath)).rejects.toThrow();
   });
 
   it('copy file and process contents', async () => {
-    const filepath = path.join(__dirname, 'fixtures/file-a.txt');
+    const filepath = getFixture('file-a.txt');
     const contents = 'some processed contents';
-    const newPath = path.join(__dirname, '../test/new/path/file.txt');
+    const newPath = getFixture('../../test/new/path/file.txt');
     await fs.copyAsync(filepath, newPath, {
       processFile(filename) {
         expect(filename).toEqual(filepath);
@@ -93,33 +94,33 @@ describe('#copyAsync()', () => {
   });
 
   it('copy by directory', async () => {
-    const outputDir = path.join(__dirname, '../test/output');
-    await fs.copyAsync(path.join(__dirname, '/fixtures'), outputDir);
+    const outputDir = getFixture('../../test/output');
+    await fs.copyAsync(getFixture(), outputDir);
     expect(fs.read(path.join(outputDir, 'file-a.txt'))).toBe('foo' + os.EOL);
     expect(fs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
   });
 
   it('copy by globbing', async () => {
-    const outputDir = path.join(__dirname, '../test/output');
-    await fs.copyAsync(path.join(__dirname, '/fixtures/**'), outputDir);
+    const outputDir = getFixture('../../test/output');
+    await fs.copyAsync(getFixture('**'), outputDir);
     expect(fs.read(path.join(outputDir, 'file-a.txt'))).toBe('foo' + os.EOL);
     expect(fs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
   });
 
   it('copy by globbing multiple patterns', async () => {
-    const outputDir = path.join(__dirname, '../test/output');
-    await fs.copyAsync([path.join(__dirname, '/fixtures/**'), '!**/*tpl*'], outputDir);
+    const outputDir = getFixture('../../test/output');
+    await fs.copyAsync([getFixture('**'), '!**/*tpl*'], outputDir);
     expect(fs.read(path.join(outputDir, 'file-a.txt'))).toBe('foo' + os.EOL);
     expect(fs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
     expect(fs.read.bind(fs, path.join(outputDir, 'file-tpl.txt'))).toThrow();
   });
 
   it('copy files by globbing and process contents', async () => {
-    const outputDir = path.join(__dirname, '../test/output');
+    const outputDir = getFixture('../../test/output');
     const processFile = sinon.stub().callsFake(function (from) {
       return this.store.get(from).contents;
     });
-    await fs.copyAsync(path.join(__dirname, '/fixtures/**'), outputDir, {
+    await fs.copyAsync(getFixture('**'), outputDir, {
       processFile,
     });
     sinon.assert.callCount(processFile, 13); // 10 total files under 'fixtures', not counting folders
@@ -128,30 +129,20 @@ describe('#copyAsync()', () => {
   });
 
   it('accepts directory name with "."', async () => {
-    const outputDir = path.join(__dirname, '../test/out.put');
-    await fs.copyAsync(path.join(__dirname, '/fixtures/**'), outputDir);
+    const outputDir = getFixture('../../test/out.put');
+    await fs.copyAsync(getFixture('**'), outputDir);
     expect(fs.read(path.join(outputDir, 'file-a.txt'))).toBe('foo' + os.EOL);
     expect(fs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
   });
 
   it('accepts template paths', async () => {
-    const outputFile = path.join(__dirname, 'test/<%= category %>/file-a.txt');
-    await fs.copyAsync(
-      path.join(__dirname, '/fixtures/file-a.txt'),
-      outputFile,
-      {},
-      { category: 'foo' }
-    );
-    expect(fs.read(path.join(__dirname, 'test/foo/file-a.txt'))).toBe('foo' + os.EOL);
+    const outputFile = getFixture('test/<%= category %>/file-a.txt');
+    await fs.copyAsync(getFixture('file-a.txt'), outputFile, {}, { category: 'foo' });
+    expect(fs.read(getFixture('test/foo/file-a.txt'))).toBe('foo' + os.EOL);
   });
 
   it('requires destination directory when globbing', async () => {
-    expect(
-      fs.copyAsync(
-        path.join(__dirname, '/fixtures/**'),
-        path.join(__dirname, '/fixtures/file-a.txt')
-      )
-    ).rejects.toThrow();
+    expect(fs.copyAsync(getFixture('**'), getFixture('file-a.txt'))).rejects.toThrow();
   });
 
   it('preserve permissions', async () => {

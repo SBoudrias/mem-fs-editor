@@ -1,6 +1,6 @@
-const os = require('os');
-const editor = require('..');
-const memFs = require('mem-fs');
+import os from 'os';
+import editor from '../lib/index.js';
+import memFs from 'mem-fs';
 
 describe('#write()', () => {
   let store;

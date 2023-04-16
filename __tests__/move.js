@@ -1,7 +1,8 @@
-const os = require('os');
-const path = require('path');
-const editor = require('..');
-const memFs = require('mem-fs');
+import os from 'os';
+import path from 'path';
+import editor from '../lib/index.js';
+import memFs from 'mem-fs';
+import { getFixture } from './fixtures.js';
 
 describe('#move()', () => {
   let store;
@@ -13,7 +14,7 @@ describe('#move()', () => {
   });
 
   it('move file', () => {
-    const filepath = path.join(__dirname, 'fixtures/file-a.txt');
+    const filepath = getFixture('file-a.txt');
     const initialContents = fs.read(filepath);
     const newpath = '/new/path/file.txt';
     fs.move(filepath, newpath);
@@ -23,7 +24,7 @@ describe('#move()', () => {
 
   it('move directory', () => {
     const filename = 'file.txt';
-    const dirpath = path.join(__dirname, 'fixtures/nested');
+    const dirpath = getFixture('nested');
     const filepath = path.join(dirpath, filename);
     const newdirpath = '/new/path';
     const newfilepath = path.join(newdirpath, filename);
@@ -33,19 +34,19 @@ describe('#move()', () => {
   });
 
   it('move file to an existing `to` path', () => {
-    const filepath = path.join(__dirname, 'fixtures/file-a.txt');
+    const filepath = getFixture('file-a.txt');
     const initialContents = fs.read(filepath);
-    const newpath = path.join(__dirname, 'fixtures/nested/file.txt');
+    const newpath = getFixture('nested/file.txt');
     fs.move(filepath, newpath);
     expect(fs.read(newpath)).toBe(initialContents);
     expect(fs.read.bind(fs, filepath)).toThrow();
   });
 
   it('move directory to an existing `to` path (as a directory)', () => {
-    const dirpath = path.join(__dirname, 'fixtures/other');
-    const filepath = path.join(__dirname, 'another.txt');
+    const dirpath = getFixture('other');
+    const filepath = getFixture('another.txt');
     const contents = 'another';
-    const fromdir = path.join(__dirname, 'fixtures/nested');
+    const fromdir = getFixture('nested');
 
     fs.write(filepath, contents);
     fs.move(fromdir, dirpath);
@@ -56,8 +57,8 @@ describe('#move()', () => {
   });
 
   it('throws when moving directory to an existing `to` path (as a file)', () => {
-    const filepath = path.join(__dirname, 'fixtures/file-a.txt');
-    const frompath = path.join(__dirname, 'fixtures/nested');
+    const filepath = getFixture('file-a.txt');
+    const frompath = getFixture('nested');
 
     expect(fs.move.bind(fs, frompath, filepath)).toThrow();
   });

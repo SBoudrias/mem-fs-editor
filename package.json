@@ -50,11 +50,6 @@
     "sinon": "^15.0.1",
     "typescript": "^5.0.4"
   },
-  "jest": {
-    "collectCoverage": true,
-    "coverageDirectory": "coverage",
-    "testEnvironment": "node"
-  },
   "engines": {
     "node": ">=12.10.0"
   }

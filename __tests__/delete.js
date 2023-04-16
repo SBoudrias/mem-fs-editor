@@ -1,6 +1,7 @@
-const path = require('path');
-const editor = require('..');
-const memFs = require('mem-fs');
+import path from 'path';
+import editor from '../lib/index.js';
+import memFs from 'mem-fs';
+import { getFixture } from './fixtures.js';
 
 describe('#delete()', () => {
   let store;
@@ -12,7 +13,7 @@ describe('#delete()', () => {
   });
 
   it('deletes existing files', () => {
-    const filepath = path.join(__dirname, 'fixtures/file-a.txt');
+    const filepath = getFixture('file-a.txt');
     fs.delete(filepath);
     expect(fs.read.bind(fs, filepath)).toThrow();
 
@@ -22,7 +23,7 @@ describe('#delete()', () => {
   });
 
   it('deletes a directory with existing files', () => {
-    const dirpath = path.join(__dirname, 'fixtures/nested');
+    const dirpath = getFixture('nested');
     const nestedFile = path.join(dirpath, 'file.txt');
     fs.delete(dirpath);
 

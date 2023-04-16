@@ -1,8 +1,8 @@
-const filesystem = require('fs');
-const os = require('os');
-const path = require('path');
-const memFs = require('mem-fs');
-const editor = require('..');
+import filesystem from 'fs';
+import os from 'os';
+import path from 'path';
+import memFs from 'mem-fs';
+import editor from '../lib/index.js';
 
 const rmSync = filesystem.rmSync || filesystem.rmdirSync;
 

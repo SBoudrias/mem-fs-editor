@@ -1,8 +1,9 @@
-const os = require('os');
-const path = require('path');
-const editor = require('..');
-const memFs = require('mem-fs');
-const normalize = require('normalize-path');
+import os from 'os';
+import path from 'path';
+import editor from '../lib/index.js';
+import memFs from 'mem-fs';
+import normalize from 'normalize-path';
+import { getFixture } from './fixtures.js';
 
 describe('#copyTpl()', () => {
   let store;
@@ -14,14 +15,14 @@ describe('#copyTpl()', () => {
   });
 
   it('copy file and process contents as underscore template', async () => {
-    const filepath = path.join(__dirname, 'fixtures/file-tpl.txt');
+    const filepath = getFixture('file-tpl.txt');
     const newPath = '/new/path/file.txt';
     await fs.copyTplAsync(filepath, newPath, { name: 'new content' });
     expect(fs.read(newPath)).toBe('new content' + os.EOL);
   });
 
   it('fallback to memory file', async () => {
-    const filepath = path.join(__dirname, 'fixtures/file-tpl.txt');
+    const filepath = getFixture('file-tpl.txt');
     await fs.copyAsync(filepath, filepath + '.mem');
     const newPath = '/new/path/file.txt';
     await fs.copyTplAsync(filepath + '.mem', newPath, { name: 'new content' });
@@ -29,7 +30,7 @@ describe('#copyTpl()', () => {
   });
 
   it('allow setting custom template delimiters', async () => {
-    const filepath = path.join(__dirname, 'fixtures/file-tpl-custom-delimiter.txt');
+    const filepath = getFixture('file-tpl-custom-delimiter.txt');
     const newPath = '/new/path/file.txt';
     await fs.copyTplAsync(
       filepath,
@@ -43,14 +44,14 @@ describe('#copyTpl()', () => {
   });
 
   it('allow including partials', async () => {
-    const filepath = path.join(__dirname, 'fixtures/file-tpl-include.txt');
+    const filepath = getFixture('file-tpl-include.txt');
     const newPath = '/new/path/file.txt';
     await fs.copyTplAsync(filepath, newPath);
     expect(fs.read(newPath)).toBe('partial' + os.EOL + os.EOL);
   });
 
   it('allow appending files', async () => {
-    const filepath = path.join(__dirname, 'fixtures/file-tpl.txt');
+    const filepath = getFixture('file-tpl.txt');
     const newPath = '/new/path/file-append.txt';
     await fs.copyTplAsync(filepath, newPath, { name: 'new content' });
     expect(fs.read(newPath)).toBe('new content' + os.EOL);
@@ -61,10 +62,7 @@ describe('#copyTpl()', () => {
   });
 
   it('allow including glob options', async () => {
-    const filenames = [
-      path.join(__dirname, 'fixtures/file-tpl-partial.txt'),
-      path.join(__dirname, 'fixtures/file-tpl.txt'),
-    ];
+    const filenames = [getFixture('file-tpl-partial.txt'), getFixture('file-tpl.txt')];
     const copyOptions = {
       globOptions: {
         ignore: [normalize(filenames[1])],
@@ -77,7 +75,7 @@ describe('#copyTpl()', () => {
   });
 
   it('perform no substitution on binary files', async () => {
-    const filepath = path.join(__dirname, 'fixtures/file-binary.bin');
+    const filepath = getFixture('file-binary.bin');
     const newPath = '/new/path/file.bin';
     await fs.copyTplAsync(filepath, newPath);
     expect(fs.read(newPath)).toBe(fs.read(filepath));
@@ -87,7 +85,7 @@ describe('#copyTpl()', () => {
     const b = {};
     const a = { name: 'new content', b };
     b.a = a;
-    const filepath = path.join(__dirname, 'fixtures/file-circular.txt');
+    const filepath = getFixture('file-circular.txt');
     const newPath = '/new/path/file.txt';
     await fs.copyTplAsync(
       filepath,
@@ -101,14 +99,14 @@ describe('#copyTpl()', () => {
   });
 
   it('removes ejs extension when globbing', async () => {
-    const filepath = path.join(__dirname, 'fixtures/ejs');
+    const filepath = getFixture('ejs');
     const newPath = '/new/path/';
     await fs.copyTplAsync(filepath, newPath);
     expect(fs.exists(path.join(newPath, 'file-ejs-extension.txt'))).toBeTruthy();
   });
 
   it("doens't removes ejs extension when not globbing", async () => {
-    const filepath = path.join(__dirname, 'fixtures/ejs/file-ejs-extension.txt.ejs');
+    const filepath = getFixture('ejs/file-ejs-extension.txt.ejs');
     const newPath = '/new/path/file-ejs-extension.txt.ejs';
     await fs.copyTplAsync(filepath, newPath);
     expect(fs.exists(newPath)).toBeTruthy();

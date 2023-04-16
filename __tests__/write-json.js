@@ -1,7 +1,7 @@
-const path = require('path');
-const sinon = require('sinon');
-const editor = require('..');
-const memFs = require('mem-fs');
+import sinon from 'sinon';
+import editor from '../lib/index.js';
+import memFs from 'mem-fs';
+import { getFixture } from './fixtures.js';
 
 describe('#writeJSON()', () => {
   let store;
@@ -13,7 +13,7 @@ describe('#writeJSON()', () => {
   });
 
   it('stringify with optional arguments (for JSON.stringify)', () => {
-    const filepath = path.join(__dirname, 'fixtures/does-not-exist.txt');
+    const filepath = getFixture('does-not-exist.txt');
     const contents = { foo: 'bar' };
     const write = sinon.spy(fs, 'write');
     fs.writeJSON(filepath, contents, null, 2);
@@ -23,7 +23,7 @@ describe('#writeJSON()', () => {
   });
 
   it('defaults indentation to 2 if stringify argument is not provided', () => {
-    const filepath = path.join(__dirname, 'fixtures/does-not-exist.txt');
+    const filepath = getFixture('does-not-exist.txt');
     const contents = { foo: 'bar' };
     const write = sinon.spy(fs, 'write');
     fs.writeJSON(filepath, contents);
@@ -33,21 +33,21 @@ describe('#writeJSON()', () => {
   });
 
   it('write json object to a new file', () => {
-    const filepath = path.join(__dirname, 'fixtures/does-not-exist.txt');
+    const filepath = getFixture('does-not-exist.txt');
     const contents = { foo: 'bar' };
     fs.writeJSON(filepath, contents);
     expect(fs.read(filepath)).toBe(JSON.stringify(contents, null, 2) + '\n');
   });
 
   it('write json object to an existing file', () => {
-    const filepath = path.join(__dirname, 'fixtures/file.json');
+    const filepath = getFixture('file.json');
     const contents = { bar: 'foo' };
     fs.writeJSON(filepath, contents);
     expect(fs.read(filepath)).toBe(JSON.stringify(contents, null, 2) + '\n');
   });
 
   it('calls write() with stringified JSON object', () => {
-    const filepath = path.join(__dirname, 'fixtures/does-not-exist.txt');
+    const filepath = getFixture('does-not-exist.txt');
     const contents = { foo: 'bar' };
     const write = sinon.spy(fs, 'write');
     fs.writeJSON(filepath, contents);

@@ -1,7 +1,7 @@
-const path = require('path');
-const sinon = require('sinon');
-const editor = require('..');
-const memFs = require('mem-fs');
+import sinon from 'sinon';
+import editor from '../lib/index.js';
+import memFs from 'mem-fs';
+import { getFixture } from './fixtures.js';
 
 describe('#extendJSON()', () => {
   let store;
@@ -13,7 +13,7 @@ describe('#extendJSON()', () => {
   });
 
   it('extends content of existing JSON file', () => {
-    const filepath = path.join(__dirname, 'fixtures/does-not-exist.txt');
+    const filepath = getFixture('does-not-exist.txt');
     const contents = { b: 2 };
     const write = sinon.spy(fs, 'write');
     const read = sinon.stub(fs, 'readJSON').returns({ a: 'a', b: 'b' });
@@ -29,7 +29,7 @@ describe('#extendJSON()', () => {
   });
 
   it('writes to unexisting JSON file', () => {
-    const filepath = path.join(__dirname, 'fixtures/does-not-exist.txt');
+    const filepath = getFixture('does-not-exist.txt');
     const contents = { foo: 'bar' };
     const write = sinon.spy(fs, 'write');
     fs.extendJSON(filepath, contents);
@@ -43,7 +43,7 @@ describe('#extendJSON()', () => {
   });
 
   it('stringify with optional arguments (for JSON.stringify)', () => {
-    const filepath = path.join(__dirname, 'fixtures/does-not-exist.txt');
+    const filepath = getFixture('does-not-exist.txt');
     const contents = { foo: 'bar' };
     const write = sinon.spy(fs, 'write');
     fs.extendJSON(filepath, contents, '\n', 4);

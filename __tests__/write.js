@@ -1,7 +1,7 @@
-const path = require('path');
-const sinon = require('sinon');
-const editor = require('..');
-const memFs = require('mem-fs');
+import sinon from 'sinon';
+import editor from '../lib/index.js';
+import memFs from 'mem-fs';
+import { getFixture } from './fixtures.js';
 
 describe('#write()', () => {
   let store;
@@ -15,7 +15,7 @@ describe('#write()', () => {
   });
 
   it('write string to a new file', () => {
-    const filepath = path.join(__dirname, 'fixtures/does-not-exist.txt');
+    const filepath = getFixture('does-not-exist.txt');
     const contents = 'some text';
     fs.write(filepath, contents);
     expect(fs.read(filepath)).toBe(contents);
@@ -23,7 +23,7 @@ describe('#write()', () => {
   });
 
   it('write buffer to a new file', () => {
-    const filepath = path.join(__dirname, 'fixtures/does-not-exist.txt');
+    const filepath = getFixture('does-not-exist.txt');
     const contents = Buffer.from('omg!', 'base64');
     fs.write(filepath, contents);
     expect(fs.read(filepath)).toBe(contents.toString());
@@ -31,7 +31,7 @@ describe('#write()', () => {
   });
 
   it('write an existing file', () => {
-    const filepath = path.join(__dirname, 'fixtures/file-a.txt');
+    const filepath = getFixture('file-a.txt');
     const contents = 'some text';
     fs.write(filepath, contents);
     expect(fs.read(filepath)).toBe(contents);
@@ -39,7 +39,7 @@ describe('#write()', () => {
   });
 
   it("doesn't re-add an identical file that already exist in memory", () => {
-    const filepath = path.join(__dirname, 'fixtures/file-a.txt');
+    const filepath = getFixture('file-a.txt');
     const contents = 'some text';
     fs.write(filepath, contents);
     expect(store.add.callCount).toBe(1);

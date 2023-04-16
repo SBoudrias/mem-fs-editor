@@ -1,11 +1,12 @@
-const filesystem = require('fs');
-const os = require('os');
-const path = require('path');
-const memFs = require('mem-fs');
-const sinon = require('sinon');
-const editor = require('..');
-const { STATE, STATE_MODIFIED, STATE_DELETED } = require('../lib/state');
+import filesystem from 'fs';
+import os from 'os';
+import path from 'path';
+import memFs from 'mem-fs';
+import sinon from 'sinon';
+import editor from '../lib/index.js';
+import State from '../lib/state.js';
 
+const { STATE, STATE_MODIFIED, STATE_DELETED } = State;
 const rmSync = filesystem.rmSync || filesystem.rmdirSync;
 
 // Permission mode are handled differently by windows.

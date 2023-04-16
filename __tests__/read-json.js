@@ -1,8 +1,8 @@
-const path = require('path');
-const sinon = require('sinon');
-const editor = require('..');
-const memFs = require('mem-fs');
-const escape = require('escape-regexp');
+import sinon from 'sinon';
+import editor from '../lib/index.js';
+import memFs from 'mem-fs';
+import escape from 'escape-regexp';
+import { getFixture } from './fixtures.js';
 
 describe('#readJSON()', () => {
   let store;
@@ -14,13 +14,13 @@ describe('#readJSON()', () => {
   });
 
   it('read the content of a file', () => {
-    const obj = fs.readJSON(path.join(__dirname, 'fixtures/file.json'));
+    const obj = fs.readJSON(getFixture('file.json'));
     expect(obj.foo).toBe('bar');
   });
 
   it('calls read() with path', () => {
     const read = sinon.spy(fs, 'read');
-    const file = path.join(__dirname, 'fixtures/file.json');
+    const file = getFixture('file.json');
     fs.readJSON(file);
     sinon.assert.calledOnce(read);
     sinon.assert.calledWith(read, file);
@@ -28,7 +28,7 @@ describe('#readJSON()', () => {
   });
 
   it('return defaults if file does not exist and defaults is provided', () => {
-    const obj = fs.readJSON(path.join(__dirname, 'no-such-file.json'), {
+    const obj = fs.readJSON(getFixture('no-such-file.json'), {
       foo: 'bar',
     });
     expect(obj.foo).toBe('bar');
@@ -36,14 +36,14 @@ describe('#readJSON()', () => {
 
   it('throw error if file could not be parsed as JSON, even if defaults is provided', () => {
     expect(
-      fs.readJSON.bind(fs, path.join(__dirname, 'fixtures/file-tpl.txt'), {
+      fs.readJSON.bind(fs, getFixture('file-tpl.txt'), {
         foo: 'bar',
       })
     ).toThrow();
   });
 
   it('throw error with file path info', () => {
-    const filePath = path.join(__dirname, 'fixtures/file-tpl.txt');
+    const filePath = getFixture('file-tpl.txt');
     expect(fs.readJSON.bind(fs, new RegExp(escape(filePath)))).toThrow();
   });
 });

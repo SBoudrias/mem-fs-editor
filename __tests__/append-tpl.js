@@ -1,7 +1,7 @@
-const os = require('os');
-const path = require('path');
-const editor = require('..');
-const memFs = require('mem-fs');
+import os from 'os';
+import editor from '../lib/index.js';
+import memFs from 'mem-fs';
+import { getFixture } from './fixtures.js';
 
 describe('#appendTpl()', () => {
   let store;
@@ -13,9 +13,9 @@ describe('#appendTpl()', () => {
   });
 
   it('appends to file and processes contents as underscore template', () => {
-    const filepath = path.join(__dirname, 'fixtures/file-a.txt');
+    const filepath = getFixture('file-a.txt');
     const orginalContent = fs.read(filepath).toString();
-    const contentPath = path.join(__dirname, 'fixtures/file-tpl.txt');
+    const contentPath = getFixture('file-tpl.txt');
     const contents = fs.read(contentPath);
     fs.appendTpl(filepath, contents, {
       name: 'bar',
@@ -24,9 +24,9 @@ describe('#appendTpl()', () => {
   });
 
   it('allows setting custom template delimiters', () => {
-    const filepath = path.join(__dirname, 'fixtures/file-a.txt');
+    const filepath = getFixture('file-a.txt');
     const orginalContent = fs.read(filepath).toString();
-    const contentPath = path.join(__dirname, 'fixtures/file-tpl-custom-delimiter.txt');
+    const contentPath = getFixture('file-tpl-custom-delimiter.txt');
     const contents = fs.read(contentPath);
     fs.appendTpl(filepath, contents, { name: 'bar' }, { delimiter: '?' });
     expect(fs.read(filepath)).toBe(orginalContent + 'bar' + os.EOL);
@@ -34,8 +34,8 @@ describe('#appendTpl()', () => {
 
   it('throws an exception when no template data passed', () => {
     const f = () => {
-      const filepath = path.join(__dirname, 'fixtures/file-a.txt');
-      const contentPath = path.join(__dirname, 'fixtures/file-tpl.txt');
+      const filepath = getFixture('file-a.txt');
+      const contentPath = getFixture('file-tpl.txt');
       const contents = fs.read(contentPath);
       fs.appendTpl(filepath, contents);
     };

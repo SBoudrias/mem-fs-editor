@@ -1,9 +1,13 @@
-const filesystem = require('fs');
-const os = require('os');
-const path = require('path');
-const sinon = require('sinon');
-const editor = require('..');
-const memFs = require('mem-fs');
+import filesystem from 'fs';
+import os from 'os';
+import path, { dirname } from 'path';
+import sinon from 'sinon';
+import editor from '../lib/index.js';
+import memFs from 'mem-fs';
+import { getFixture } from './fixtures.js';
+import { fileURLToPath } from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 describe('#copy()', () => {
   let store;
@@ -15,7 +19,7 @@ describe('#copy()', () => {
   });
 
   it('copy file', () => {
-    const filepath = path.join(__dirname, 'fixtures/file-a.txt');
+    const filepath = getFixture('file-a.txt');
     const initialContents = fs.read(filepath);
     const newPath = '/new/path/file.txt';
     fs.copy(filepath, newPath);
@@ -34,7 +38,7 @@ describe('#copy()', () => {
     });
 
     it('should append file to file already loaded', () => {
-      const filepath = path.join(__dirname, 'fixtures/file-a.txt');
+      const filepath = getFixture('file-a.txt');
       const initialContents = fs.read(filepath);
       const newPath = '/new/path/file.txt';
       fs.copy(filepath, newPath, { append: true });
@@ -53,15 +57,15 @@ describe('#copy()', () => {
 
     it('should throw if mem-fs is not compatible', () => {
       store.existsInMemory = undefined;
-      const filepath = path.join(__dirname, 'fixtures/file-a.txt');
+      const filepath = getFixture('file-a.txt');
       const newPath = '/new/path/file.txt';
       expect(() => fs.copy(filepath, newPath, { append: true })).toThrow();
     });
   });
 
   it('can copy directory not commited to disk', () => {
-    const sourceDir = path.join(__dirname, '../test/foo');
-    const destDir = path.join(__dirname, '../test/bar');
+    const sourceDir = getFixture('../../test/foo');
+    const destDir = getFixture('../../test/bar');
     fs.write(path.join(sourceDir, 'file-a.txt'), 'a');
     fs.write(path.join(sourceDir, 'file-b.txt'), 'b');
 
@@ -72,16 +76,16 @@ describe('#copy()', () => {
   });
 
   it('throws when trying to copy from a non-existing file', () => {
-    const filepath = path.join(__dirname, 'fixtures/does-not-exits');
-    const newPath = path.join(__dirname, '../test/new/path/file.txt');
+    const filepath = getFixture('does-not-exits');
+    const newPath = getFixture('../../test/new/path/file.txt');
     expect(fs.copy.bind(fs, filepath, newPath)).toThrow();
   });
 
   it('copy file and process contents', () => {
-    const filepath = path.join(__dirname, 'fixtures/file-a.txt');
+    const filepath = getFixture('file-a.txt');
     const initialContents = fs.read(filepath);
     const contents = 'some processed contents';
-    const newPath = path.join(__dirname, '../test/new/path/file.txt');
+    const newPath = getFixture('../../test/new/path/file.txt');
     fs.copy(filepath, newPath, {
       process(contentsArg) {
         expect(contentsArg).toBeInstanceOf(Buffer);
@@ -93,62 +97,51 @@ describe('#copy()', () => {
   });
 
   it('copy by directory', () => {
-    const outputDir = path.join(__dirname, '../test/output');
-    fs.copy(path.join(__dirname, '/fixtures'), outputDir);
+    const outputDir = getFixture('../../test/output');
+    fs.copy(getFixture(), outputDir);
     expect(fs.read(path.join(outputDir, 'file-a.txt'))).toBe('foo' + os.EOL);
     expect(fs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
   });
 
   it('copy by globbing', () => {
-    const outputDir = path.join(__dirname, '../test/output');
-    fs.copy(path.join(__dirname, '/fixtures/**'), outputDir);
+    const outputDir = getFixture('../../test/output');
+    fs.copy(getFixture('**'), outputDir);
     expect(fs.read(path.join(outputDir, 'file-a.txt'))).toBe('foo' + os.EOL);
     expect(fs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
   });
 
   it('copy by globbing multiple patterns', () => {
-    const outputDir = path.join(__dirname, '../test/output');
-    fs.copy([path.join(__dirname, '/fixtures/**'), '!**/*tpl*'], outputDir);
+    const outputDir = getFixture('../../test/output');
+    fs.copy([getFixture('**'), '!**/*tpl*'], outputDir);
     expect(fs.read(path.join(outputDir, 'file-a.txt'))).toBe('foo' + os.EOL);
     expect(fs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
     expect(fs.read.bind(fs, path.join(outputDir, 'file-tpl.txt'))).toThrow();
   });
 
   it('copy files by globbing and process contents', () => {
-    const outputDir = path.join(__dirname, '../test/output');
+    const outputDir = getFixture('../../test/output');
     const process = sinon.stub().returnsArg(0);
-    fs.copy(path.join(__dirname, '/fixtures/**'), outputDir, { process });
+    fs.copy(getFixture('**'), outputDir, { process });
     sinon.assert.callCount(process, 13); // 10 total files under 'fixtures', not counting folders
     expect(fs.read(path.join(outputDir, 'file-a.txt'))).toBe('foo' + os.EOL);
     expect(fs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
   });
 
   it('accepts directory name with "."', () => {
-    const outputDir = path.join(__dirname, '../test/out.put');
-    fs.copy(path.join(__dirname, '/fixtures/**'), outputDir);
+    const outputDir = getFixture('../../test/out.put');
+    fs.copy(getFixture('**'), outputDir);
     expect(fs.read(path.join(outputDir, 'file-a.txt'))).toBe('foo' + os.EOL);
     expect(fs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
   });
 
   it('accepts template paths', () => {
-    const outputFile = path.join(__dirname, 'test/<%= category %>/file-a.txt');
-    fs.copy(
-      path.join(__dirname, '/fixtures/file-a.txt'),
-      outputFile,
-      {},
-      { category: 'foo' }
-    );
-    expect(fs.read(path.join(__dirname, 'test/foo/file-a.txt'))).toBe('foo' + os.EOL);
+    const outputFile = getFixture('test/<%= category %>/file-a.txt');
+    fs.copy(getFixture('file-a.txt'), outputFile, {}, { category: 'foo' });
+    expect(fs.read(getFixture('test/foo/file-a.txt'))).toBe('foo' + os.EOL);
   });
 
   it('requires destination directory when globbing', () => {
-    expect(
-      fs.copy.bind(
-        fs,
-        path.join(__dirname, '/fixtures/**'),
-        path.join(__dirname, '/fixtures/file-a.txt')
-      )
-    ).toThrow();
+    expect(fs.copy.bind(fs, getFixture('**'), getFixture('file-a.txt'))).toThrow();
   });
 
   it('preserve permissions', (done) => {
@@ -167,31 +160,27 @@ describe('#copy()', () => {
   });
 
   it('copy with globbing disabled', () => {
-    const newPath = path.join(__dirname, '../test/output', 'file.txt');
-    fs.copy(path.join(__dirname, '/fixtures/file-(specia!-char$).txt'), newPath, {
+    const newPath = getFixture('../../test/output', 'file.txt');
+    fs.copy(getFixture('file-(specia!-char$).txt'), newPath, {
       noGlob: true,
     });
     expect(fs.read(newPath)).toBe('special' + os.EOL);
   });
 
   it('copy glob like file when noGlob', () => {
-    const newPath = path.join(__dirname, '../test/output', 'file.txt');
-    fs.copy(path.join(__dirname, '/fixtures/[file].txt'), newPath, {
+    const newPath = getFixture('../../test/output', 'file.txt');
+    fs.copy(getFixture('[file].txt'), newPath, {
       noGlob: true,
     });
     expect(fs.read(newPath)).toBe('foo' + os.EOL);
   });
 
   it('accepts fromBasePath', () => {
-    const outputDir = path.join(__dirname, '../test/output');
-    fs.copy(
-      [
-        path.join(__dirname, '/fixtures/file-a.txt'),
-        path.join(__dirname, '/fixtures/nested/file.txt'),
-      ],
-      outputDir,
-      { fromBasePath: __dirname, noGlob: true }
-    );
+    const outputDir = getFixture('../../test/output');
+    fs.copy([getFixture('file-a.txt'), getFixture('nested/file.txt')], outputDir, {
+      fromBasePath: __dirname,
+      noGlob: true,
+    });
     expect(fs.read(path.join(outputDir, '/fixtures/file-a.txt'))).toBe('foo' + os.EOL);
     expect(fs.read(path.join(outputDir, '/fixtures/nested/file.txt'))).toBe(
       'nested' + os.EOL
@@ -199,15 +188,10 @@ describe('#copy()', () => {
   });
 
   it('accepts detects fromBasePath from common', () => {
-    const outputDir = path.join(__dirname, '../test/output');
-    fs.copy(
-      [
-        path.join(__dirname, '/fixtures/file-a.txt'),
-        path.join(__dirname, '/fixtures/nested/file.txt'),
-      ],
-      outputDir,
-      { noGlob: true }
-    );
+    const outputDir = getFixture('../../test/output');
+    fs.copy([getFixture('file-a.txt'), getFixture('nested/file.txt')], outputDir, {
+      noGlob: true,
+    });
     expect(fs.read(path.join(outputDir, '/file-a.txt'))).toBe('foo' + os.EOL);
     expect(fs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
   });

@@ -1,9 +1,9 @@
-const os = require('os');
-const path = require('path');
-const editor = require('..');
-const memFs = require('mem-fs');
+import os from 'os';
+import editor from '../lib/index.js';
+import memFs from 'mem-fs';
+import { getFixture } from './fixtures.js';
 
-const fileA = path.join(__dirname, 'fixtures/file-a.txt');
+const fileA = getFixture('file-a.txt');
 
 describe('#read()', () => {
   let store;

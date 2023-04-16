@@ -1,22 +1,23 @@
-const filesystem = require('fs');
-const path = require('path');
-const sinon = require('sinon');
-const util = require('../lib/util');
-const normalize = require('normalize-path');
+import filesystem from 'fs';
+import path from 'path';
+import sinon from 'sinon';
+import util from '../lib/util.js';
+import normalize from 'normalize-path';
+import { getFixture } from './fixtures.js';
 
 describe('util.getCommonPath()', () => {
   it('find the common root of /a/b/c, where /a/b/c is an existing directory', () => {
-    const filePath = path.resolve(__dirname, 'fixtures');
+    const filePath = getFixture();
     expect(util.getCommonPath(filePath)).toBe(filePath);
   });
 
   it('find the common root of /a/b/c, where /a/b/c is an existing file', () => {
-    const filePath = path.resolve(__dirname, 'fixtures');
+    const filePath = getFixture();
     expect(util.getCommonPath(path.join(filePath, 'file-a.txt'))).toBe(filePath);
   });
 
   it('find the common root of /a/b/c, where /a/b/c is a non-existing file', () => {
-    const filePath = path.resolve(__dirname, 'fixtures');
+    const filePath = getFixture();
     expect(util.getCommonPath(path.join(filePath, 'does-not-exists.txt'))).toBe(filePath);
   });
 
@@ -39,7 +40,7 @@ describe('util.getCommonPath()', () => {
 
 describe('util.globify()', () => {
   it('returns path for file path', () => {
-    const filePath = path.resolve(__dirname, 'fixtures/file-a.txt');
+    const filePath = getFixture('file-a.txt');
     expect(util.globify(filePath)).toBe(normalize(filePath));
   });
 
@@ -52,15 +53,15 @@ describe('util.globify()', () => {
   });
 
   it('returns glob for glob path', () => {
-    const filePath = path.resolve(__dirname, 'fixtures/*.txt');
+    const filePath = getFixture('*.txt');
     expect(util.globify(filePath)).toBe(normalize(filePath));
 
-    const filePath2 = path.resolve(__dirname, 'fixtures/file-{a,b}.txt');
+    const filePath2 = getFixture('file-{a,b}.txt');
     expect(util.globify(filePath2)).toBe(normalize(filePath2));
   });
 
   it('returns globified path for directory path', () => {
-    const filePath = path.resolve(__dirname, 'fixtures/nested');
+    const filePath = getFixture('nested');
     expect(util.globify(filePath)).toBe(normalize(path.join(filePath, '**')));
   });
 
@@ -70,7 +71,7 @@ describe('util.globify()', () => {
       isDirectory: () => false,
     });
 
-    const filePath = path.resolve(__dirname, 'fixtures/file-a.txt');
+    const filePath = getFixture('file-a.txt');
     expect(util.globify.bind(util, filePath)).toThrow();
 
     filesystem.statSync.restore();

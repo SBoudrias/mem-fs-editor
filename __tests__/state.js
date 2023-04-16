@@ -1,5 +1,7 @@
-const path = require('path');
-const state = require('..').State;
+import { getFixture } from './fixtures.js';
+import Editor from '../lib/index.js';
+
+const state = Editor.State;
 
 describe('state', () => {
   let file;
@@ -98,7 +100,7 @@ describe('state', () => {
 
     it('with existing file', () => {
       expect(file.isNew).toBe(undefined);
-      file.path = path.join(__dirname, 'fixtures/file-a.txt');
+      file.path = getFixture('file-a.txt');
 
       expect(state.isFileNew(file)).toBe(false);
       expect(file.isNew).toBe(false);
@@ -122,7 +124,7 @@ describe('state', () => {
     });
 
     it('delete state and existing file', () => {
-      file.path = path.join(__dirname, 'fixtures/file-a.txt');
+      file.path = getFixture('file-a.txt');
       state.setDeletedFileState(file);
       expect(state.isFilePending(file)).toBe(true);
     });

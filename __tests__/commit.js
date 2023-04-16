@@ -1,10 +1,13 @@
-const filesystem = require('fs');
-const os = require('os');
-const path = require('path');
-const memFs = require('mem-fs');
-const sinon = require('sinon');
-const editor = require('..');
-const { createTransform } = require('../lib/util');
+import filesystem from 'fs';
+import os from 'os';
+import path from 'path';
+import memFs from 'mem-fs';
+import sinon from 'sinon';
+import editor from '../lib/index.js';
+import util from '../lib/util.js';
+import { getFixture } from './fixtures.js';
+
+const { createTransform } = util;
 
 const rmSync = filesystem.rmSync || filesystem.rmdirSync;
 
@@ -167,7 +170,7 @@ describe('#commit()', () => {
   it('does not commit files who are deleted before being commited', (done) => {
     fs.write('to-delete', 'foo');
     fs.delete('to-delete');
-    fs.copy(path.join(__dirname, 'fixtures/file-a.txt'), 'copy-to-delete');
+    fs.copy(getFixture('file-a.txt'), 'copy-to-delete');
     fs.delete('copy-to-delete');
     fs.store.get('to-delete');
 
@@ -200,7 +203,7 @@ describe('#copy() and #commit()', () => {
     store = memFs.create();
     fs = editor.create(store);
 
-    fs.copy(path.join(__dirname, 'fixtures', '**'), output);
+    fs.copy(getFixture('**'), output);
   });
 
   afterEach(() => {
@@ -229,12 +232,7 @@ describe('#copyTpl() and #commit()', () => {
     const b = { a };
     a.b = b;
 
-    fs.copyTpl(
-      path.join(__dirname, 'fixtures', '**'),
-      output,
-      { name: 'bar' },
-      { context: { a } }
-    );
+    fs.copyTpl(getFixture('**'), output, { name: 'bar' }, { context: { a } });
   });
 
   afterEach(() => {

@@ -1,9 +1,9 @@
-const path = require('path');
-const editor = require('..');
-const memFs = require('mem-fs');
+import editor from '../lib/index.js';
+import memFs from 'mem-fs';
+import { getFixture } from './fixtures.js';
 
-const fileA = path.join(__dirname, 'fixtures/file-a.txt');
-const fileDelete = path.join(__dirname, 'fixtures/deleteAfter');
+const fileA = getFixture('file-a.txt');
+const fileDelete = getFixture('deleteAfter');
 
 describe('#exists()', () => {
   let store;
