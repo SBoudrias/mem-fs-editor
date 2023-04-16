@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`#dump() should match snapshot 1`] = `
+exports[`#dump() > should match snapshot 1`] = `
 {
   "foo/committed": {
     "contents": "committed",
@@ -31,7 +31,7 @@ exports[`#dump() should match snapshot 1`] = `
 }
 `;
 
-exports[`#dump() with a glob pattern should return files that matches the pattern and have state or stateCleared 1`] = `
+exports[`#dump() > with a glob pattern > should return files that matches the pattern and have state or stateCleared 1`] = `
 {
   "foo/committed": {
     "contents": "committed",

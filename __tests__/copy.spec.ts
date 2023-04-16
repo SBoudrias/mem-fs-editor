@@ -1,3 +1,4 @@
+import { describe, beforeEach, it, expect, afterEach } from 'vitest';
 import filesystem from 'fs';
 import os from 'os';
 import path, { dirname } from 'path';
@@ -144,19 +145,17 @@ describe('#copy()', () => {
     expect(fs.copy.bind(fs, getFixture('**'), getFixture('file-a.txt'))).toThrow();
   });
 
-  it('preserve permissions', (done) => {
+  it('preserve permissions', async () => {
     const filename = path.join(os.tmpdir(), 'perm.txt');
     const copyname = path.join(os.tmpdir(), 'copy-perm.txt');
     filesystem.writeFileSync(filename, 'foo', { mode: parseInt(733, 8) });
 
     fs.copy(filename, copyname);
 
-    fs.commit(() => {
-      const oldStat = filesystem.statSync(filename);
-      const newStat = filesystem.statSync(copyname);
-      expect(newStat.mode).toBe(oldStat.mode);
-      done();
-    });
+    await fs.commit();
+    const oldStat = filesystem.statSync(filename);
+    const newStat = filesystem.statSync(copyname);
+    expect(newStat.mode).toBe(oldStat.mode);
   });
 
   it('copy with globbing disabled', () => {

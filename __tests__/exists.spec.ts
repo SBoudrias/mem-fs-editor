@@ -1,3 +1,4 @@
+import { describe, beforeEach, it, expect } from 'vitest';
 import editor from '../lib/index.js';
 import memFs from 'mem-fs';
 import { getFixture } from './fixtures.js';

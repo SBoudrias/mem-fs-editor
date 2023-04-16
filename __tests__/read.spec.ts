@@ -1,3 +1,4 @@
+import { describe, beforeEach, it, expect } from 'vitest';
 import os from 'os';
 import editor from '../lib/index.js';
 import memFs from 'mem-fs';

@@ -1,3 +1,4 @@
+import { describe, beforeEach, it, expect } from 'vitest';
 import { getFixture } from './fixtures.js';
 import Editor from '../lib/index.js';
 

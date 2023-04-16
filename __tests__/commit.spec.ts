@@ -1,3 +1,4 @@
+import { describe, beforeEach, it, expect, afterEach } from 'vitest';
 import filesystem from 'fs';
 import os from 'os';
 import path from 'path';
@@ -38,18 +39,12 @@ describe('#commit()', () => {
     rmSync(output, { recursive: true, force: true });
   });
 
-  it('triggers callback when done', (done) => {
-    fs.commit(done);
+  it('should match snapshot', async () => {
+    await fs.commit();
+    expect(fs.dump(output)).toMatchSnapshot();
   });
 
-  it('should match snapshot', (done) => {
-    fs.commit((error) => {
-      expect(fs.dump(output)).toMatchSnapshot();
-      done(error);
-    });
-  });
-
-  it('call filters and trigger callback on error', (done) => {
+  it('call filters and trigger callback on error', async () => {
     let called = 0;
 
     const filter = createTransform((file, enc, cb) => {
@@ -57,14 +52,10 @@ describe('#commit()', () => {
       cb(new Error(`error ${called}`));
     });
 
-    fs.commit([filter], (error) => {
-      expect(called).toBe(1);
-      expect(error.message).toBe('error 1');
-      done();
-    });
+    await expect(fs.commit([filter])).rejects.toMatch(/error 1/);
   });
 
-  it('call filters and update memory model', (done) => {
+  it('call filters and update memory model', async () => {
     let called = 0;
 
     const filter = createTransform(function (file, enc, cb) {
@@ -74,14 +65,12 @@ describe('#commit()', () => {
       cb();
     });
 
-    fs.commit([filter], () => {
-      expect(called).toBe(100);
-      expect(fs.read(path.join(output, 'file-1.txt'))).toBe('modified');
-      done();
-    });
+    await fs.commit([filter]);
+    expect(called).toBe(100);
+    expect(fs.read(path.join(output, 'file-1.txt'))).toBe('modified');
   });
 
-  it('call filters, update memory model and commit selected files', (done) => {
+  it('call filters, update memory model and commit selected files', async () => {
     let called = 0;
 
     const filter = createTransform(function (file, enc, cb) {
@@ -99,53 +88,39 @@ describe('#commit()', () => {
       cb();
     });
 
-    fs.commit([filter], store.stream().pipe(beforeFilter), () => {
-      expect(called).toBe(10);
-      expect(fs.read(path.join(output, 'file-1.txt'))).toBe('modified');
-      expect(fs.read(path.join(output, 'file-2.txt'))).not.toBe('modified');
-      expect(store.get(path.join(output, 'file-1.txt')).committed).toBeTruthy();
-      expect(store.get(path.join(output, 'file-2.txt')).result).toBe(undefined);
-      done();
-    });
+    await fs.commit([filter], store.stream().pipe(beforeFilter));
+    expect(called).toBe(10);
+    expect(fs.read(path.join(output, 'file-1.txt'))).toBe('modified');
+    expect(fs.read(path.join(output, 'file-2.txt'))).not.toBe('modified');
+    expect(store.get(path.join(output, 'file-1.txt')).committed).toBeTruthy();
+    expect(store.get(path.join(output, 'file-2.txt')).result).toBe(undefined);
   });
 
-  it('write file to disk', (done) => {
-    fs.commit((error) => {
-      expect(filesystem.existsSync(path.join(output, 'file-1.txt'))).toBeTruthy();
-      expect(filesystem.existsSync(path.join(output, 'file-1.txt'))).toBeTruthy();
-      expect(filesystem.existsSync(path.join(output, 'file-50.txt'))).toBeTruthy();
-      expect(filesystem.existsSync(path.join(output, 'file-99.txt'))).toBeTruthy();
-      done(error);
-    });
+  it('write file to disk', async () => {
+    await fs.commit();
+    expect(filesystem.existsSync(path.join(output, 'file-1.txt'))).toBeTruthy();
+    expect(filesystem.existsSync(path.join(output, 'file-1.txt'))).toBeTruthy();
+    expect(filesystem.existsSync(path.join(output, 'file-50.txt'))).toBeTruthy();
+    expect(filesystem.existsSync(path.join(output, 'file-99.txt'))).toBeTruthy();
   }, 10000);
 
-  it('handle error when write fails', (done) => {
+  it('handle error when write fails', async () => {
     filesystem.writeFileSync(output, 'foo');
-    fs.commit(async (error) => {
-      filesystem.unlinkSync(output);
-      if (error) {
-        done();
-        return;
-      }
-
-      done(new Error('should not happen'));
-    });
+    await expect(fs.commit()).rejects.toMatch(/is not a directory/);
   });
 
-  it('delete file from disk', (done) => {
+  it('delete file from disk', async () => {
     const file = path.join(output, 'delete.txt');
     filesystem.mkdirSync(output, { recursive: true, force: true });
     filesystem.writeFileSync(file, 'to delete');
 
     fs.delete(file);
-    fs.commit(() => {
-      expect(filesystem.existsSync(file)).toBeFalsy();
-      expect(store.get(file).committed).toBeTruthy();
-      done();
-    });
+    await fs.commit();
+    expect(filesystem.existsSync(file)).toBeFalsy();
+    expect(store.get(file).committed).toBeTruthy();
   });
 
-  it('delete directories from disk', (done) => {
+  it('delete directories from disk', async () => {
     const file = path.join(output, 'nested/delete.txt');
     filesystem.mkdirSync(path.join(output, 'nested'), {
       recursive: true,
@@ -154,20 +129,16 @@ describe('#commit()', () => {
     filesystem.writeFileSync(file, 'to delete');
 
     fs.delete(path.join(output, 'nested'));
-    fs.commit(() => {
-      expect(filesystem.existsSync(file)).toBeFalsy();
-      done();
-    });
+    await fs.commit();
+    expect(filesystem.existsSync(file)).toBeFalsy();
   });
 
-  it('reset file status after commiting', (done) => {
-    fs.commit(() => {
-      expect(fs.store.get(path.join(output, '/file-a.txt')).state).toBeUndefined();
-      done();
-    });
+  it('reset file status after commiting', async () => {
+    await fs.commit();
+    expect(fs.store.get(path.join(output, '/file-a.txt')).state).toBeUndefined();
   });
 
-  it('does not commit files who are deleted before being commited', (done) => {
+  it('does not commit files who are deleted before being commited', async () => {
     fs.write('to-delete', 'foo');
     fs.delete('to-delete');
     fs.copy(getFixture('file-a.txt'), 'copy-to-delete');
@@ -175,21 +146,16 @@ describe('#commit()', () => {
     fs.store.get('to-delete');
 
     fs.commitFileAsync = sinon.stub().returns(Promise.resolve());
-    fs.commit(
-      [
-        createTransform(function (file, enc, cb) {
-          expect(file.path).not.toEqual(path.resolve('to-delete'));
-          expect(file.path).not.toEqual(path.resolve('copy-to-delete'));
+    await fs.commit([
+      createTransform(function (file, enc, cb) {
+        expect(file.path).not.toEqual(path.resolve('to-delete'));
+        expect(file.path).not.toEqual(path.resolve('copy-to-delete'));
 
-          this.push(file);
-          cb();
-        }),
-      ],
-      () => {
-        expect(fs.commitFileAsync.callCount).toBe(NUMBER_FILES);
-        done();
-      }
-    );
+        this.push(file);
+        cb();
+      }),
+    ]);
+    expect(fs.commitFileAsync.callCount).toBe(NUMBER_FILES);
   });
 });
 
@@ -210,11 +176,9 @@ describe('#copy() and #commit()', () => {
     rmSync(output, { recursive: true, force: true });
   });
 
-  it('should match snapshot', (done) => {
-    fs.commit((error) => {
-      expect(fs.dump(output)).toMatchSnapshot();
-      done(error);
-    });
+  it('should match snapshot', async () => {
+    await fs.commit();
+    expect(fs.dump(output)).toMatchSnapshot();
   });
 });
 
@@ -239,10 +203,8 @@ describe('#copyTpl() and #commit()', () => {
     rmSync(output, { recursive: true, force: true });
   });
 
-  it('should match snapshot', (done) => {
-    fs.commit((error) => {
-      expect(fs.dump(output)).toMatchSnapshot();
-      done(error);
-    });
+  it('should match snapshot', async () => {
+    await fs.commit();
+    expect(fs.dump(output)).toMatchSnapshot();
   });
 });
