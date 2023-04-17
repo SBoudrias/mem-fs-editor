@@ -1,0 +1,45 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`#dump() > should match snapshot 1`] = `
+{
+  "foo/committed": {
+    "contents": "committed",
+    "stateCleared": "modified",
+  },
+  "foo/committed-changed": {
+    "contents": "committed-changed",
+    "state": "modified",
+    "stateCleared": "modified",
+  },
+  "foo/committed-delete": {
+    "contents": null,
+    "stateCleared": "deleted",
+  },
+  "foo/committed-delete-changed": {
+    "contents": null,
+    "state": "deleted",
+    "stateCleared": "modified",
+  },
+  "foo/not-committed": {
+    "contents": "not-committed",
+    "state": "modified",
+  },
+  "foo/not-committed-delete": {
+    "contents": null,
+    "state": "deleted",
+  },
+}
+`;
+
+exports[`#dump() > with a glob pattern > should return files that matches the pattern and have state or stateCleared 1`] = `
+{
+  "foo/committed": {
+    "contents": "committed",
+    "stateCleared": "modified",
+  },
+  "foo/not-committed": {
+    "contents": "not-committed",
+    "state": "modified",
+  },
+}
+`;
