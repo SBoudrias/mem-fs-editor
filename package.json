@@ -30,7 +30,7 @@
     }
   },
   "files": [
-    "lib"
+    "dist"
   ],
   "dependencies": {
     "@types/ejs": "^3.1.2",
@@ -47,7 +47,7 @@
     "vinyl": "^3.0.0"
   },
   "peerDependencies": {
-    "mem-fs": "^2.1.0"
+    "mem-fs": ">=2.1.0"
   },
   "peerDependenciesMeta": {
     "mem-fs": {
