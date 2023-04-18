@@ -1,6 +1,6 @@
 import { describe, beforeEach, it, expect } from 'vitest';
 import os from 'os';
-import { MemFsEditor, create } from '../lib/index.js';
+import { MemFsEditor, create } from '../src/index.js';
 import { create as createMemFs } from 'mem-fs';
 
 describe('#write()', () => {

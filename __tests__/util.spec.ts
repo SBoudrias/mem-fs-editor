@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import filesystem from 'fs';
 import path from 'path';
 import sinon from 'sinon';
-import { getCommonPath, globify } from '../lib/util.js';
+import { getCommonPath, globify } from '../src/util.js';
 import normalize from 'normalize-path';
 import { getFixture } from './fixtures.js';
 

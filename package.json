@@ -30,7 +30,7 @@
     }
   },
   "files": [
-    "lib"
+    "dist"
   ],
   "dependencies": {
     "@types/ejs": "^3.1.2",
@@ -40,19 +40,12 @@
     "ejs": "^3.1.9",
     "globby": "^13.1.4",
     "isbinaryfile": "^5.0.0",
+    "mem-fs": "^3.0.0",
     "minimatch": "^9.0.0",
     "multimatch": "^6.0.0",
     "normalize-path": "^3.0.0",
     "textextensions": "^5.13.0",
     "vinyl": "^3.0.0"
-  },
-  "peerDependencies": {
-    "mem-fs": "^2.1.0"
-  },
-  "peerDependenciesMeta": {
-    "mem-fs": {
-      "optional": true
-    }
   },
   "devDependencies": {
     "coveralls": "^3.0.3",

@@ -1,11 +1,11 @@
 import { describe, beforeEach, it, expect } from 'vitest';
 import os from 'os';
 import path from 'path';
-import { type MemFsEditor, create } from '../lib/index.js';
+import { type MemFsEditor, create } from '../src/index.js';
 import { create as createMemFs } from 'mem-fs';
 import normalize from 'normalize-path';
 import { getFixture } from './fixtures.js';
-import { CopyOptions } from '../lib/actions/copy.js';
+import { CopyOptions } from '../src/actions/copy.js';
 
 describe('#copyTpl()', () => {
   let store;
