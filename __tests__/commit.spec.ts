@@ -4,8 +4,8 @@ import os from 'os';
 import path from 'path';
 import { create as createMemFs } from 'mem-fs';
 import sinon from 'sinon';
-import { MemFsEditor, create } from '../lib/index.js';
-import { createTransform } from '../lib/transform.js';
+import { MemFsEditor, create } from '../src/index.js';
+import { createTransform } from '../src/transform.js';
 import { getFixture } from './fixtures.js';
 
 const rmSync = filesystem.rmSync || filesystem.rmdirSync;

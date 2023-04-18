@@ -1,5 +1,5 @@
 {
-  "include": ["lib/**/*"],
+  "include": ["src/**/*"],
   "compilerOptions": {
     /* Language and Environment */
     "target": "ES2022" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
@@ -10,7 +10,7 @@
 
     /* Modules */
     "module": "node16" /* Specify what module code is generated. */,
-    "rootDir": "./lib" /* Specify the root folder within your source files. */,
+    "rootDir": "./src" /* Specify the root folder within your source files. */,
     "resolveJsonModule": true,
 
     /* JavaScript Support */

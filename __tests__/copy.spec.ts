@@ -3,7 +3,7 @@ import filesystem from 'fs';
 import os from 'os';
 import path, { dirname } from 'path';
 import sinon from 'sinon';
-import { type MemFsEditor, create } from '../lib/index.js';
+import { type MemFsEditor, create } from '../src/index.js';
 import { create as createMemFs } from 'mem-fs';
 import { getFixture } from './fixtures.js';
 import { fileURLToPath } from 'url';

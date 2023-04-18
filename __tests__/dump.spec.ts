@@ -3,7 +3,7 @@ import filesystem from 'fs';
 import os from 'os';
 import path from 'path';
 import { create as createMemFs } from 'mem-fs';
-import { type MemFsEditor, create } from '../lib/index.js';
+import { type MemFsEditor, create } from '../src/index.js';
 
 const rmSync = filesystem.rmSync || filesystem.rmdirSync;
 

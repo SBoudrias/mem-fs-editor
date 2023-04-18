@@ -14,7 +14,7 @@ import {
   setCommittedFile,
   setDeletedFileState,
   setModifiedFileState,
-} from '../lib/state.js';
+} from '../src/state.js';
 
 describe('state', () => {
   let file;
