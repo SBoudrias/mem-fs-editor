@@ -42,6 +42,12 @@ describe('#dump()', () => {
     expect(fs.dump(output)).toMatchSnapshot();
   });
 
+  describe('with custom filter', () => {
+    it('should match snapshot', () => {
+      expect(fs.dump(output, file => file.path.endsWith('not-committed'))).toMatchSnapshot();
+    });
+  });
+
   describe('with a glob pattern', () => {
     it('should return files that matches the pattern and have state or stateCleared', () => {
       expect(fs.dump(output, '**/*committed')).toMatchSnapshot();

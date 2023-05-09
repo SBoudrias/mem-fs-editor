@@ -43,3 +43,12 @@ exports[`#dump() > with a glob pattern > should return files that matches the pa
   },
 }
 `;
+
+exports[`#dump() > with custom filter > should match snapshot 1`] = `
+{
+  "foo/not-committed": {
+    "contents": "not-committed",
+    "state": "modified",
+  },
+}
+`;

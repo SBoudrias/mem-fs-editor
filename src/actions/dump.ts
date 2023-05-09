@@ -21,7 +21,7 @@ export default function <EditorFile extends MemFsEditorFile>(
   const filterFile: (file: EditorFile, cwd: string) => boolean =
     typeof filter === 'string'
       ? (file: MemFsEditorFile) => defaultDumpFilter(file) && minimatch(file.path, filter)
-      : defaultDumpFilter;
+      : filter ?? defaultDumpFilter;
 
   return Object.fromEntries(
     this.store
