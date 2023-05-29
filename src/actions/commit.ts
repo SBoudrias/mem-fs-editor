@@ -1,8 +1,9 @@
-import { promisify } from 'util';
-import { pipeline as _pipeline, PipelineSource } from 'stream';
+import type { PipelineSource } from 'stream';
+import type { pipeline as pipelineType } from 'stream/promises';
+import readableStream from 'readable-stream';
 import type { MemFsEditor, MemFsEditorFile } from '../index.js';
 
-const pipeline = promisify(_pipeline);
+const pipeline = readableStream.Stream.promises.pipeline as typeof pipelineType;
 
 import { createPendingFilesPassthrough, createCommitTransform } from '../transform.js';
 import { isFilePending } from '../state.js';
