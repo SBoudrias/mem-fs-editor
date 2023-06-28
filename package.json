@@ -45,7 +45,7 @@
     "minimatch": "^9.0.0",
     "multimatch": "^6.0.0",
     "normalize-path": "^3.0.0",
-    "textextensions": "^5.13.0",
+    "textextensions": "^5.16.0",
     "vinyl": "^3.0.0"
   },
   "devDependencies": {
