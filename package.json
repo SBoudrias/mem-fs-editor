@@ -42,7 +42,7 @@
     "globby": "^13.1.4",
     "isbinaryfile": "^5.0.0",
     "mem-fs": "^3.0.0",
-    "minimatch": "^9.0.0",
+    "minimatch": "^9.0.1",
     "multimatch": "^6.0.0",
     "normalize-path": "^3.0.0",
     "textextensions": "^5.13.0",
