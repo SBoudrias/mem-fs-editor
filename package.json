@@ -39,7 +39,7 @@
     "commondir": "^1.0.1",
     "deep-extend": "^0.6.0",
     "ejs": "^3.1.9",
-    "globby": "^13.1.4",
+    "globby": "^13.2.0",
     "isbinaryfile": "^5.0.0",
     "mem-fs": "^3.0.0",
     "minimatch": "^9.0.0",
