@@ -58,7 +58,7 @@ describe('#copyAsync()', () => {
       const filepath = getFixture('file-a.txt');
       const newPath = '/new/path/file.txt';
       expect(fs.copyAsync(filepath, newPath, { append: true, processFile: () => '' })).rejects.toEqual(
-        new Error('Current mem-fs is not compatible with append')
+        new Error('Current mem-fs is not compatible with append'),
       );
     });
   });

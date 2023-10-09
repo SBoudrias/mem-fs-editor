@@ -16,7 +16,7 @@ export type MemFsEditorFileDump = {
 export default function <EditorFile extends MemFsEditorFile>(
   this: MemFsEditor<EditorFile>,
   cwd = process.cwd(),
-  filter?: string | ((file: EditorFile, cwd: string) => boolean)
+  filter?: string | ((file: EditorFile, cwd: string) => boolean),
 ) {
   const filterFile: (file: EditorFile, cwd: string) => boolean =
     typeof filter === 'string'
@@ -41,6 +41,6 @@ export default function <EditorFile extends MemFsEditorFile>(
         }
 
         return [filePath, fileDump];
-      })
+      }),
   );
 }

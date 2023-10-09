@@ -45,8 +45,10 @@ describe('#commit()', () => {
   it('call filters and trigger callback on error', async () => {
     let called = 0;
 
+    // eslint-disable-next-line require-yield
     const filter = Duplex.from(async function* (generator: AsyncGenerator<MemFsEditorFile>) {
-      for await (const file of generator) {
+      // eslint-disable-next-line no-unreachable-loop, @typescript-eslint/no-unused-vars
+      for await (const _file of generator) {
         called++;
         throw new Error(`error ${called}`);
       }
@@ -65,7 +67,7 @@ describe('#commit()', () => {
           file.contents = Buffer.from('modified');
           yield file;
         }
-      })
+      }),
     );
 
     expect(called).toBe(100);
@@ -83,7 +85,7 @@ describe('#commit()', () => {
           file.contents = Buffer.from('modified');
           yield file;
         }
-      })
+      }),
     );
     expect(called).toBe(10);
     expect(fs.read(path.join(output, 'file-1.txt'))).toBe('modified');
@@ -160,7 +162,7 @@ describe('#commit()', () => {
           expect(file.path).not.toEqual(path.resolve('copy-to-delete'));
           yield file;
         }
-      })
+      }),
     );
   });
 });

@@ -13,7 +13,7 @@ function applyProcessingFunc(
   process: (contents: string | Buffer, filepath: string, destination: string) => string | Buffer,
   contents: string | Buffer,
   filename: string,
-  destination: string
+  destination: string,
 ) {
   const output = process(contents, filename, destination);
   return Buffer.isBuffer(output) ? output : Buffer.from(output);
@@ -33,7 +33,7 @@ export function copy(
   to: string,
   options?: CopyOptions,
   context?: Data,
-  tplSettings?: Options
+  tplSettings?: Options,
 ) {
   to = path.resolve(to);
   options = options || {};
@@ -65,7 +65,7 @@ export function copy(
   if (Array.isArray(from) || !this.exists(from) || (isDynamicPattern(normalize(from)) && !options.noGlob)) {
     assert(
       !this.exists(to) || fs.statSync(to).isDirectory(),
-      'When copying multiple files, provide a directory as destination'
+      'When copying multiple files, provide a directory as destination',
     );
 
     const processDestinationPath = options.processDestinationPath || ((path) => path);

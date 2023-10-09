@@ -6,7 +6,7 @@ export default function extendJSON(
   filepath: string,
   contents?: Record<string, unknown>,
   replacer?: ((this: any, key: string, value: any) => any) | (number | string)[] | null,
-  space?: string | number
+  space?: string | number,
 ) {
   const originalContent = this.readJSON(filepath, {});
   const newContent = extend({}, originalContent, contents);

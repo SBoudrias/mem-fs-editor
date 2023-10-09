@@ -17,7 +17,7 @@ function deleteFile(path: string, store: Store<MemFsEditorFile>) {
 export default function deleteAction(
   this: MemFsEditor,
   paths: string | string[],
-  options?: { globOptions?: GlobbyOptions }
+  options?: { globOptions?: GlobbyOptions },
 ) {
   if (!Array.isArray(paths)) {
     paths = [paths];

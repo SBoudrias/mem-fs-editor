@@ -7,7 +7,7 @@ export default function writeJSON(
   filepath: string,
   contents: any,
   replacer?: ((this: any, key: string, value: any) => any) | (number | string)[] | null,
-  space?: string | number
+  space?: string | number,
 ) {
   let jsonStr;
   if (typeof replacer === 'function') {

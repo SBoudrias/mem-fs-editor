@@ -9,7 +9,7 @@ export default function appendTpl(
   contents: string | Buffer,
   context?: Data,
   tplSettings?: Options,
-  options?: AppendOptions
+  options?: AppendOptions,
 ) {
   this.append(to, render(contents.toString(), context, tplSettings), options);
 }
