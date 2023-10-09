@@ -52,11 +52,6 @@ describe('#commitFileAsync()', () => {
     expect(filesystem.readFileSync(filename).toString()).toEqual('foo');
   });
 
-  it('adds non existing file to store', async () => {
-    await fs.commitFileAsync(newFile);
-    expect(store.add.callCount).toEqual(2);
-  });
-
   it('writes non existing file to disk', async () => {
     await fs.commitFileAsync(newFile);
     expect(filesystem.existsSync(filenameNew)).toBe(true);

@@ -41,11 +41,6 @@ export default async function commitFileAsync<EditorFile extends MemFsEditorFile
   this: MemFsEditor<EditorFile>,
   file: EditorFile
 ) {
-  const existingFile = this.store.get(file.path);
-  if (!existingFile || existingFile !== file) {
-    this.store.add(file);
-  }
-
   if (isFileStateModified(file)) {
     setCommittedFile(file);
     await write(file);

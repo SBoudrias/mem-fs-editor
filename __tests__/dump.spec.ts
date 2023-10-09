@@ -44,7 +44,7 @@ describe('#dump()', () => {
 
   describe('with custom filter', () => {
     it('should match snapshot', () => {
-      expect(fs.dump(output, file => file.path.endsWith('not-committed'))).toMatchSnapshot();
+      expect(fs.dump(output, (file) => file.path.endsWith('not-committed'))).toMatchSnapshot();
     });
   });
 

@@ -18,11 +18,13 @@ import move from './actions/move.js';
 import commit from './actions/commit.js';
 import commitFileAsync from './actions/commit-file-async.js';
 import dump from './actions/dump.js';
+import pipeline from './actions/pipeline.js';
 
 export type { AppendOptions } from './actions/append.js';
 export type { CopyOptions } from './actions/copy.js';
 export type { CopyAsyncOptions } from './actions/copy-async.js';
 export type { MemFsEditorFileDump } from './actions/dump.js';
+export type { PipelineOptions, FileTransform } from './actions/pipeline.js';
 
 export interface MemFsEditorFile {
   path: string;
@@ -64,6 +66,7 @@ export interface MemFsEditor<EditorFile extends MemFsEditorFile = VinylMemFsEdit
   _copySingleAsync: typeof _copySingleAsync;
   copyTplAsync: typeof copyTplAsync;
   move: typeof move;
+  pipeline: typeof pipeline<EditorFile>;
   commit: typeof commit<EditorFile>;
   commitFileAsync: typeof commitFileAsync<EditorFile>;
   dump: typeof dump<EditorFile>;
@@ -86,6 +89,7 @@ MemFsEditor.prototype.copyAsync = copyAsync;
 MemFsEditor.prototype._copySingleAsync = _copySingleAsync;
 MemFsEditor.prototype.copyTplAsync = copyTplAsync;
 MemFsEditor.prototype.move = move;
+MemFsEditor.prototype.pipeline = pipeline;
 MemFsEditor.prototype.commit = commit;
 MemFsEditor.prototype.commitFileAsync = commitFileAsync;
 MemFsEditor.prototype.dump = dump;
