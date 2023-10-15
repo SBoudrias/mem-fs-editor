@@ -3,17 +3,17 @@ import type { MemFsEditor } from '../index.js';
 function read(
   this: MemFsEditor,
   filepath: string,
-  options?: { raw?: boolean; defaults?: string | null }
+  options?: { raw?: boolean; defaults?: string | null },
 ): string | null;
 function read(
   this: MemFsEditor,
   filepath: string,
-  options: { raw?: true; defaults?: Buffer | null }
+  options: { raw?: true; defaults?: Buffer | null },
 ): Buffer | string | null;
 function read(
   this: MemFsEditor,
   filepath: string,
-  options?: { raw?: boolean; defaults?: string | Buffer | null }
+  options?: { raw?: boolean; defaults?: string | Buffer | null },
 ): Buffer | string | null {
   options = options || { raw: false };
   const file = this.store.get(filepath);

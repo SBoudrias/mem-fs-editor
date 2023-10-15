@@ -39,6 +39,7 @@ export interface MemFsEditorFile {
 // We don't support StreamFile and stat is not guaranteed to be a fs.Stat instance
 export interface VinylMemFsEditorFile extends Omit<Vinyl, 'contents' | 'stat'>, MemFsEditorFile {}
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export class MemFsEditor<EditorFile extends MemFsEditorFile = VinylMemFsEditorFile> {
   store: Store<EditorFile>;
 

@@ -16,7 +16,7 @@ export function _processTpl(
     destination?: string;
     context?: Data;
     tplSettings?: Options;
-  }
+  },
 ) {
   if (isBinary(filename, contents)) {
     return contents;
@@ -36,7 +36,7 @@ export function copyTpl(
   to: string,
   context?: Data,
   tplSettings?: Options,
-  options?: CopySingleOptions
+  options?: CopySingleOptions,
 ) {
   context = context || {};
   tplSettings = tplSettings || {};
@@ -50,6 +50,6 @@ export function copyTpl(
       process: (contents, filename) => this._processTpl({ contents, filename, context, tplSettings }),
     },
     context,
-    tplSettings
+    tplSettings,
   );
 }

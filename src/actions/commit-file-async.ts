@@ -1,13 +1,6 @@
 import fs from 'fs/promises';
 import path from 'path';
-import {
-  clearFileState,
-  isFileStateModified,
-  isFileStateDeleted,
-  setCommittedFile,
-  isFilePending,
-  isFileNew,
-} from '../state.js';
+import { clearFileState, isFileStateModified, isFileStateDeleted, setCommittedFile, isFileNew } from '../state.js';
 import type { MemFsEditorFile } from '../index.js';
 
 async function write(file: MemFsEditorFile) {

@@ -7,7 +7,7 @@ export default function write(
   this: MemFsEditor,
   filepath: string,
   contents: string | Buffer,
-  stat?: { mode?: number } | null
+  stat?: { mode?: number } | null,
 ) {
   assert(typeof contents === 'string' || Buffer.isBuffer(contents), 'Expected `contents` to be a String or a Buffer');
 

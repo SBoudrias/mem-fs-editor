@@ -39,7 +39,7 @@ describe('#readJSON()', () => {
     expect(
       fs.readJSON.bind(fs, getFixture('file-tpl.txt'), {
         foo: 'bar',
-      })
+      }),
     ).toThrow();
   });
 

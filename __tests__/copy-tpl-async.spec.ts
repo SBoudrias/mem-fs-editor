@@ -39,7 +39,7 @@ describe('#copyTpl()', () => {
       { name: 'mustache' },
       {
         delimiter: '?',
-      }
+      },
     );
     expect(fs.read(newPath)).toBe('mustache' + os.EOL);
   });
@@ -94,7 +94,7 @@ describe('#copyTpl()', () => {
       {},
       {
         context: { a },
-      }
+      },
     );
     expect(fs.read(newPath)).toBe('new content new content' + os.EOL);
   });

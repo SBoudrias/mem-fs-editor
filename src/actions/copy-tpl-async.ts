@@ -10,7 +10,7 @@ export default async function (
   to: string,
   context?: Data,
   tplSettings?: Options,
-  options?: CopyAsyncOptions
+  options?: CopyAsyncOptions,
 ) {
   context = context || {};
   tplSettings = tplSettings || {};
@@ -38,6 +38,6 @@ export default async function (
         }),
     },
     context,
-    tplSettings
+    tplSettings,
   );
 }

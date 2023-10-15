@@ -14,7 +14,7 @@ import { CopySingleOptions } from './copy.js';
 async function applyProcessingFileFunc(
   this: MemFsEditor,
   processFile: CopySingleAsyncOptions['processFile'],
-  filename: string
+  filename: string,
 ) {
   const output = await Promise.resolve(processFile!.call(this, filename));
   return Buffer.isBuffer(output) ? output : Buffer.from(output);
@@ -58,7 +58,7 @@ export async function copyAsync(
   to: string,
   options?: CopyAsyncOptions,
   context?: Data,
-  tplSettings?: Options
+  tplSettings?: Options,
 ) {
   to = path.resolve(to);
   options = options || {};
@@ -87,7 +87,7 @@ export async function copyAsync(
   if (Array.isArray(from) || !this.exists(from) || isDynamicPattern(normalize(from))) {
     assert(
       !this.exists(to) || fs.statSync(to).isDirectory(),
-      'When copying multiple files, provide a directory as destination'
+      'When copying multiple files, provide a directory as destination',
     );
 
     const processDestinationPath = options.processDestinationPath || ((path) => path);
@@ -101,15 +101,15 @@ export async function copyAsync(
   // Sanity checks: Makes sure we copy at least one file.
   assert(
     options.ignoreNoMatch || diskFiles.length > 0 || storeFiles.length > 0,
-    'Trying to copy from a source that does not exist: ' + from
+    'Trying to copy from a source that does not exist: ' + from,
   );
 
   await Promise.all([
     ...diskFiles.map((file) =>
-      this._copySingleAsync(file, renderFilepath(generateDestination(file), context, tplSettings), options)
+      this._copySingleAsync(file, renderFilepath(generateDestination(file), context, tplSettings), options),
     ),
     ...storeFiles.map((file) =>
-      Promise.resolve(this._copySingle(file, renderFilepath(generateDestination(file), context, tplSettings), options))
+      Promise.resolve(this._copySingle(file, renderFilepath(generateDestination(file), context, tplSettings), options)),
     ),
   ]);
 }
@@ -124,7 +124,7 @@ export async function _copySingleAsync(
   this: MemFsEditor,
   from: string,
   to: string,
-  options: CopySingleAsyncOptions = {}
+  options: CopySingleAsyncOptions = {},
 ) {
   if (!options.processFile) {
     return this._copySingle(from, to, options);
