@@ -1,7 +1,14 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { clearFileState, isFileStateModified, isFileStateDeleted, setCommittedFile } from '../state.js';
-import type { MemFsEditor, MemFsEditorFile } from '../index.js';
+import {
+  clearFileState,
+  isFileStateModified,
+  isFileStateDeleted,
+  setCommittedFile,
+  isFilePending,
+  isFileNew,
+} from '../state.js';
+import type { MemFsEditorFile } from '../index.js';
 
 async function write(file: MemFsEditorFile) {
   if (!file.contents) {
@@ -37,19 +44,11 @@ async function remove(file: MemFsEditorFile) {
   await remove(file.path, { recursive: true });
 }
 
-export default async function commitFileAsync<EditorFile extends MemFsEditorFile>(
-  this: MemFsEditor<EditorFile>,
-  file: EditorFile
-) {
-  const existingFile = this.store.get(file.path);
-  if (!existingFile || existingFile !== file) {
-    this.store.add(file);
-  }
-
+export default async function commitFileAsync<EditorFile extends MemFsEditorFile>(file: EditorFile) {
   if (isFileStateModified(file)) {
     setCommittedFile(file);
     await write(file);
-  } else if (isFileStateDeleted(file)) {
+  } else if (isFileStateDeleted(file) && !isFileNew(file)) {
     setCommittedFile(file);
     await remove(file);
   }

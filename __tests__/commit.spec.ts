@@ -1,12 +1,12 @@
-import { describe, beforeEach, it, expect, afterEach } from 'vitest';
 import filesystem from 'fs';
+import path, { resolve } from 'path';
+import { Duplex } from 'stream';
 import os from 'os';
-import path from 'path';
+import { describe, beforeEach, it, expect, afterEach, vi } from 'vitest';
 import { create as createMemFs } from 'mem-fs';
-import sinon from 'sinon';
-import { MemFsEditor, create } from '../src/index.js';
-import { createTransform } from '../src/transform.js';
+import { MemFsEditor, MemFsEditorFile, create } from '../src/index.js';
 import { getFixture } from './fixtures.js';
+import { isFilePending } from '../src/state.js';
 
 const rmSync = filesystem.rmSync || filesystem.rmdirSync;
 
@@ -45,25 +45,29 @@ describe('#commit()', () => {
   it('call filters and trigger callback on error', async () => {
     let called = 0;
 
-    const filter = createTransform((file, enc, cb) => {
-      called++;
-      cb(new Error(`error ${called}`));
+    const filter = Duplex.from(async function* (generator: AsyncGenerator<MemFsEditorFile>) {
+      for await (const file of generator) {
+        called++;
+        throw new Error(`error ${called}`);
+      }
     });
 
-    await expect(fs.commit([filter])).rejects.toMatch(/error 1/);
+    await expect(fs.commit(filter)).rejects.toMatch(/error 1/);
   });
 
   it('call filters and update memory model', async () => {
     let called = 0;
 
-    const filter = createTransform(function (file, enc, cb) {
-      called++;
-      file.contents = Buffer.from('modified');
-      this.push(file);
-      cb();
-    });
+    await fs.commit(
+      Duplex.from(async function* (generator: AsyncGenerator<MemFsEditorFile>) {
+        for await (const file of generator) {
+          called++;
+          file.contents = Buffer.from('modified');
+          yield file;
+        }
+      })
+    );
 
-    await fs.commit([filter]);
     expect(called).toBe(100);
     expect(fs.read(path.join(output, 'file-1.txt'))).toBe('modified');
   });
@@ -71,22 +75,16 @@ describe('#commit()', () => {
   it('call filters, update memory model and commit selected files', async () => {
     let called = 0;
 
-    const filter = createTransform(function (file, enc, cb) {
-      called++;
-      file.contents = Buffer.from('modified');
-      this.push(file);
-      cb();
-    });
-
-    const beforeFilter = createTransform(function (file, enc, cb) {
-      if (file.path.endsWith('1.txt')) {
-        this.push(file);
-      }
-
-      cb();
-    });
-
-    await fs.commit([filter], store.stream().pipe(beforeFilter));
+    await fs.commit(
+      { filter: (file) => file.path.endsWith('1.txt') && isFilePending(file) },
+      Duplex.from(async function* (generator: AsyncGenerator<MemFsEditorFile>) {
+        for await (const file of generator) {
+          called++;
+          file.contents = Buffer.from('modified');
+          yield file;
+        }
+      })
+    );
     expect(called).toBe(10);
     expect(fs.read(path.join(output, 'file-1.txt'))).toBe('modified');
     expect(fs.read(path.join(output, 'file-2.txt'))).not.toBe('modified');
@@ -140,17 +138,30 @@ describe('#commit()', () => {
     fs.delete('copy-to-delete');
     fs.store.get('to-delete');
 
-    fs.commitFileAsync = sinon.stub().returns(Promise.resolve());
-    await fs.commit([
-      createTransform(function (file, enc, cb) {
-        expect(file.path).not.toEqual(path.resolve('to-delete'));
-        expect(file.path).not.toEqual(path.resolve('copy-to-delete'));
+    const writeFile = vi.spyOn(filesystem.promises, 'writeFile');
 
-        this.push(file);
-        cb();
-      }),
-    ]);
-    expect(fs.commitFileAsync.callCount).toBe(NUMBER_FILES);
+    await fs.commit({ filter: () => true });
+
+    expect(writeFile).toHaveBeenCalled();
+    expect(writeFile).not.toBeCalledWith(resolve('to-delete'), expect.anything(), expect.anything());
+  });
+
+  it('does not pass files who are deleted before being commited through the pipeline', async () => {
+    fs.write('to-delete', 'foo');
+    fs.delete('to-delete');
+    fs.copy(getFixture('file-a.txt'), 'copy-to-delete');
+    fs.delete('copy-to-delete');
+    fs.store.get('to-delete');
+
+    await fs.commit(
+      Duplex.from(async function* (generator: AsyncGenerator<MemFsEditorFile>) {
+        for await (const file of generator) {
+          expect(file.path).not.toEqual(path.resolve('to-delete'));
+          expect(file.path).not.toEqual(path.resolve('copy-to-delete'));
+          yield file;
+        }
+      })
+    );
   });
 });
 

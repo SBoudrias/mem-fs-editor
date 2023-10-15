@@ -1,6 +1,8 @@
 import type { Store } from 'mem-fs';
 import type Vinyl from 'vinyl';
 
+export type { PipelineOptions, FileTransform } from 'mem-fs';
+
 import read from './actions/read.js';
 import readJSON from './actions/read-json.js';
 import exists from './actions/exists.js';
@@ -16,7 +18,6 @@ import { copyAsync, _copySingleAsync } from './actions/copy-async.js';
 import copyTplAsync from './actions/copy-tpl-async.js';
 import move from './actions/move.js';
 import commit from './actions/commit.js';
-import commitFileAsync from './actions/commit-file-async.js';
 import dump from './actions/dump.js';
 
 export type { AppendOptions } from './actions/append.js';
@@ -65,7 +66,6 @@ export interface MemFsEditor<EditorFile extends MemFsEditorFile = VinylMemFsEdit
   copyTplAsync: typeof copyTplAsync;
   move: typeof move;
   commit: typeof commit<EditorFile>;
-  commitFileAsync: typeof commitFileAsync<EditorFile>;
   dump: typeof dump<EditorFile>;
 }
 
@@ -87,7 +87,6 @@ MemFsEditor.prototype._copySingleAsync = _copySingleAsync;
 MemFsEditor.prototype.copyTplAsync = copyTplAsync;
 MemFsEditor.prototype.move = move;
 MemFsEditor.prototype.commit = commit;
-MemFsEditor.prototype.commitFileAsync = commitFileAsync;
 MemFsEditor.prototype.dump = dump;
 
 export function create(store) {

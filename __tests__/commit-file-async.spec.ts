@@ -5,6 +5,7 @@ import path from 'path';
 import { create as createMemFs } from 'mem-fs';
 import sinon from 'sinon';
 import { type MemFsEditor, type MemFsEditorFile, create } from '../src/index.js';
+import commitFileAsync from '../src/actions/commit-file-async.js';
 
 const rmSync = filesystem.rmSync || filesystem.rmdirSync;
 
@@ -48,22 +49,17 @@ describe('#commitFileAsync()', () => {
   });
 
   it('writes a modified file to disk', async () => {
-    await fs.commitFileAsync(store.get(filename));
+    await commitFileAsync(store.get(filename));
     expect(filesystem.readFileSync(filename).toString()).toEqual('foo');
   });
 
-  it('adds non existing file to store', async () => {
-    await fs.commitFileAsync(newFile);
-    expect(store.add.callCount).toEqual(2);
-  });
-
   it('writes non existing file to disk', async () => {
-    await fs.commitFileAsync(newFile);
+    await commitFileAsync(newFile);
     expect(filesystem.existsSync(filenameNew)).toBe(true);
   });
 
   it("doesn't commit an unmodified file", async () => {
-    await fs.commitFileAsync({
+    await commitFileAsync({
       ...newFile,
       state: undefined,
     });
@@ -72,19 +68,19 @@ describe('#commitFileAsync()', () => {
 
   it('throws if the file is a directory', async () => {
     filesystem.mkdirSync(filenameNew, { recursive: true });
-    await expect(fs.commitFileAsync(newFile)).rejects.toThrow();
+    await expect(commitFileAsync(newFile)).rejects.toThrow();
   });
 
   it('throws if the directory is a file', async () => {
     filesystem.mkdirSync(outputRoot, { recursive: true });
     filesystem.writeFileSync(path.dirname(filenameNew), 'foo');
-    await expect(fs.commitFileAsync(newFile)).rejects.toThrow();
+    await expect(commitFileAsync(newFile)).rejects.toThrow();
   });
 
   it('deletes a file', async () => {
     filesystem.mkdirSync(path.dirname(filenameNew), { recursive: true });
     filesystem.writeFileSync(filenameNew, 'foo');
-    await fs.commitFileAsync({
+    await commitFileAsync({
       ...newFile,
       state: 'deleted',
     });
@@ -92,7 +88,7 @@ describe('#commitFileAsync()', () => {
   });
 
   it('sets file permission', async () => {
-    await fs.commitFileAsync({
+    await commitFileAsync({
       ...newFile,
       stat: { mode: READ_ONLY_MODE },
     });
@@ -101,12 +97,12 @@ describe('#commitFileAsync()', () => {
   });
 
   it('updates file permission', async () => {
-    await fs.commitFileAsync({
+    await commitFileAsync({
       ...newFile,
       stat: { mode: READ_WRITE_MODE },
     });
 
-    await fs.commitFileAsync({
+    await commitFileAsync({
       ...newFile,
       stat: { mode: READ_ONLY_MODE },
     });
@@ -116,7 +112,7 @@ describe('#commitFileAsync()', () => {
   });
 
   it("doesn't readd same file to store", async () => {
-    await fs.commitFileAsync(store.get(filename));
+    await commitFileAsync(store.get(filename));
     expect(store.add.callCount).toEqual(1);
   });
 });

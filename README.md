@@ -104,7 +104,7 @@ Copy the `from` file and, if it is not a binary file, parse its content as an [e
 
 You can optionally pass a `templateOptions` object. `mem-fs-editor` automatically setup the filename option so you can easily use partials.
 
-You can also optionally pass a `copyOptions` object (see [copy() documentation for more details](#copyfrom-to-options)).
+You can also optionally pass a `copyOptions` object (see [copy() documentation for more details](#copyfrom-to-options-context-templateoptions-)).
 
 Templates syntax looks like this:
 
@@ -139,14 +139,17 @@ Move/rename a file from the `from` path to the `to` path.
 
 Returns `true` if a file exists. Returns `false` if the file is not found or deleted.
 
-### `#commit([filters,] [stream,])`
+### `#commit([options,] [...transforms])`
 
-Persist every changes made to files in the mem-fs store to disk.
+Pass stored files through a pipeline and persist every changes made to files in the mem-fs store to disk.
 
-If provided, `filters` is an array of TransformStream to be applied on a stream of vinyl files (like gulp plugins).
-If provided, `stream` is a stream of vinyl files.
+If provided, `options` is the pipeline options.
+By default only modified files are passed through the pipeline.
+Pass a custom filter `options.filter` to customize files passed through the pipeline.
+If provided, `...transforms` is a vararg of TransformStream to be applied on a stream of vinyl files (like gulp plugins).
+`commitTransform` is appended to `transforms` and persists modified files to disk, non modified files are passed through.
 
-returns promise that is resolved once the files are updated on disk.
+returns promise that is resolved once the pipeline is finished.
 
 ### `#dump([cwd,] [filter])`
 
