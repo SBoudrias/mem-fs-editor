@@ -10,12 +10,13 @@ File edition helpers working on top of [mem-fs](https://github.com/SBoudrias/mem
 
 ```js
 import { create as createMemFs } from 'mem-fs';
-import editor from 'mem-fs-editor';
+import * as editor from 'mem-fs-editor';
 
 const store = createMemFs();
 const fs = editor.create(store);
 
 fs.write('somefile.js', 'var a = 1;');
+fs.commit()
 ```
 
 ### `#read(filepath, [options])`
