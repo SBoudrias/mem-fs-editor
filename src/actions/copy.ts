@@ -36,7 +36,13 @@ export function copy(
   tplSettings?: Options,
 ) {
   to = path.resolve(to);
-  options = options || {};
+  options = options ?? {};
+
+  const { fromBasePath } = options;
+  if (fromBasePath) {
+    const applyBasePath = (from: string) => (path.isAbsolute(from) ? from : path.resolve(fromBasePath, from));
+    from = Array.isArray(from) ? from.map(applyBasePath) : applyBasePath(from);
+  }
 
   let files: string[] = [];
   if (options.noGlob) {
@@ -69,7 +75,7 @@ export function copy(
     );
 
     const processDestinationPath = options.processDestinationPath || ((path) => path);
-    const root = options.fromBasePath || getCommonPath(from);
+    const root = fromBasePath ?? getCommonPath(from);
     generateDestination = (filepath) => {
       const toFile = path.relative(root, filepath);
       return processDestinationPath(path.join(to, toFile));
