@@ -176,12 +176,12 @@ describe('#copy()', () => {
 
   it('accepts fromBasePath', () => {
     const outputDir = getFixture('../../test/output');
-    fs.copy([getFixture('file-a.txt'), getFixture('nested/file.txt')], outputDir, {
-      fromBasePath: __dirname,
+    fs.copy(['file-a.txt', 'nested/file.txt'], outputDir, {
+      fromBasePath: path.join(__dirname, 'fixtures'),
       noGlob: true,
     });
-    expect(fs.read(path.join(outputDir, '/fixtures/file-a.txt'))).toBe('foo' + os.EOL);
-    expect(fs.read(path.join(outputDir, '/fixtures/nested/file.txt'))).toBe('nested' + os.EOL);
+    expect(fs.read(path.join(outputDir, '/file-a.txt'))).toBe('foo' + os.EOL);
+    expect(fs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
   });
 
   it('accepts detects fromBasePath from common', () => {
