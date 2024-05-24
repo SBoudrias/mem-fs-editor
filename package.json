@@ -1,6 +1,6 @@
 {
   "name": "mem-fs-editor",
-  "version": "11.0.0",
+  "version": "11.0.1",
   "description": "File edition helpers working on top of mem-fs",
   "type": "module",
   "scripts": {
