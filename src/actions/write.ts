@@ -19,9 +19,9 @@ export function _write<EditorFile extends MemFsEditorFile>(this: MemFsEditor<Edi
     // Backward compatibility, keep behavior for existing files, custom properties may have been added
     const existingFile = this.store.get(file.path);
     if (!isFileStateModified(existingFile) || !isMemFsEditorFileEqual(existingFile, file)) {
-      const { contents, stat = existingFile.stat } = file;
+      const { contents, stat } = file;
       setModifiedFileState(existingFile);
-      Object.assign(existingFile, { contents, stat });
+      Object.assign(existingFile, { contents, stat: stat ?? existingFile.stat });
       this.store.add(existingFile);
     }
   } else {
