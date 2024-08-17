@@ -6,7 +6,7 @@ export type { PipelineOptions, FileTransform } from 'mem-fs';
 import read from './actions/read.js';
 import readJSON from './actions/read-json.js';
 import exists from './actions/exists.js';
-import write from './actions/write.js';
+import write, { _write } from './actions/write.js';
 import writeJSON from './actions/write-json.js';
 import extendJSON from './actions/extend-json.js';
 import append from './actions/append.js';
@@ -52,6 +52,7 @@ export interface MemFsEditor<EditorFile extends MemFsEditorFile = VinylMemFsEdit
   read: typeof read;
   readJSON: typeof readJSON;
   exists: typeof exists;
+  _write: typeof _write<EditorFile>;
   write: typeof write;
   writeJSON: typeof writeJSON;
   extendJSON: typeof extendJSON;
@@ -73,6 +74,7 @@ export interface MemFsEditor<EditorFile extends MemFsEditorFile = VinylMemFsEdit
 MemFsEditor.prototype.read = read;
 MemFsEditor.prototype.readJSON = readJSON;
 MemFsEditor.prototype.exists = exists;
+MemFsEditor.prototype._write = _write;
 MemFsEditor.prototype.write = write;
 MemFsEditor.prototype.writeJSON = writeJSON;
 MemFsEditor.prototype.extendJSON = extendJSON;

@@ -1,6 +1,6 @@
 import { describe, beforeEach, it, expect } from 'vitest';
 import os from 'os';
-import path from 'path';
+import path, { resolve } from 'path';
 import { type MemFsEditor, create } from '../src/index.js';
 import { create as createMemFs } from 'mem-fs';
 import normalize from 'normalize-path';
@@ -111,5 +111,12 @@ describe('#copyTpl()', () => {
     const newPath = '/new/path/file-ejs-extension.txt.ejs';
     await fs.copyTplAsync(filepath, newPath);
     expect(fs.exists(newPath)).toBeTruthy();
+  });
+
+  it('keeps template path in file history', async () => {
+    const filepath = getFixture('file-tpl.txt');
+    const newPath = '/new/path/file.txt';
+    await fs.copyTplAsync(filepath, newPath, { name: 'new content' });
+    expect(fs.store.get(newPath).history).toMatchObject([resolve(filepath), resolve(newPath)]);
   });
 });
