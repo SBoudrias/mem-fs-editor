@@ -44,7 +44,7 @@
     "minimatch": "^9.0.3",
     "multimatch": "^7.0.0",
     "normalize-path": "^3.0.0",
-    "textextensions": "^5.16.0",
+    "textextensions": "^6.11.0",
     "vinyl": "^3.0.0"
   },
   "peerDependencies": {
