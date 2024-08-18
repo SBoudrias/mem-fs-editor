@@ -74,10 +74,11 @@ export async function copyAsync(
   const diskFiles = globbySync(fromGlob, globOptions).map((filepath) => path.resolve(filepath));
   const storeFiles: string[] = [];
   this.store.each((file) => {
+    const normalizedFilepath = normalize(file.path);
     // The store may have a glob path and when we try to copy it will fail because not real file
     if (
-      !isDynamicPattern(normalize(file.path)) &&
-      multimatch([file.path], fromGlob).length !== 0 &&
+      !isDynamicPattern(normalizedFilepath) &&
+      multimatch([normalizedFilepath], fromGlob).length !== 0 &&
       !diskFiles.includes(file.path)
     ) {
       storeFiles.push(file.path);
