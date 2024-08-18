@@ -1,6 +1,7 @@
 import path from 'path';
 import { globbySync, type Options as GlobbyOptions } from 'globby';
 import multimatch from 'multimatch';
+import normalize from 'normalize-path';
 
 import type { MemFsEditor, MemFsEditorFile } from '../index.js';
 import type { Store } from 'mem-fs';
@@ -34,7 +35,7 @@ export default function deleteAction(
   });
 
   this.store.each((file) => {
-    if (multimatch([file.path], paths).length !== 0) {
+    if (multimatch([normalize(file.path)], paths).length !== 0) {
       deleteFile(file.path, this.store);
     }
   });

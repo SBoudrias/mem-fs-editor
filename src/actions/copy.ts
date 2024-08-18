@@ -56,11 +56,12 @@ export function copy(
 
     const storeFiles: string[] = [];
     this.store.each((file) => {
+      const normalizedFilepath = normalize(file.path);
       // The store may have a glob path and when we try to copy it will fail because not real file
       if (
         !diskFiles.includes(file.path) &&
-        !isDynamicPattern(normalize(file.path)) &&
-        multimatch([file.path], fromGlob).length !== 0
+        !isDynamicPattern(normalizedFilepath) &&
+        multimatch([normalizedFilepath], fromGlob).length !== 0
       ) {
         storeFiles.push(file.path);
       }
