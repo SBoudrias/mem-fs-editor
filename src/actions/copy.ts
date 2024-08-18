@@ -5,7 +5,7 @@ import { globbySync, isDynamicPattern, type Options as GlobbyOptions } from 'glo
 import multimatch from 'multimatch';
 import { Data, Options } from 'ejs';
 import normalize from 'normalize-path';
-import File, { isVinyl } from 'vinyl';
+import File from 'vinyl';
 
 import type { MemFsEditor } from '../index.js';
 import { getCommonPath, globify, render } from '../util.js';
@@ -127,7 +127,7 @@ export function _copySingle(this: MemFsEditor, from: string, to: string, options
     }
   }
 
-  if (isVinyl(file)) {
+  if (File.isVinyl(file)) {
     this._write(
       Object.assign(file.clone({ contents: false, deep: false }), {
         contents,
