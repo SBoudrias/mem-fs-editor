@@ -1,0 +1,18 @@
+version: 2
+updates:
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: '@types/node'
+        versions: ['>=18']
+      - dependency-name: '*'
+        update-types: ['version-update:semver-minor', 'version-update:semver-patch']
+
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 5
