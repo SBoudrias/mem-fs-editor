@@ -31,10 +31,10 @@ describe('#copy()', () => {
   describe('using append option', () => {
     beforeEach(() => {
       sinon.spy(fs, 'append');
-      sinon.spy(fs, 'write');
+      sinon.spy(fs, '_write');
     });
     afterEach(() => {
-      fs.write.restore();
+      fs._write.restore();
       fs.append.restore();
     });
 
@@ -44,14 +44,14 @@ describe('#copy()', () => {
       const newPath = '/new/path/file.txt';
       fs.copy(filepath, newPath, { append: true });
 
-      expect(fs.write.callCount).toBe(1);
+      expect(fs._write.callCount).toBe(1);
       expect(fs.append.callCount).toBe(0);
       expect(fs.read(newPath)).toBe(initialContents);
       expect(fs.store.get(newPath).state).toBe('modified');
 
       fs.copy(filepath, newPath, { append: true });
 
-      expect(fs.write.callCount).toBe(2);
+      expect(fs._write.callCount).toBe(2);
       expect(fs.append.callCount).toBe(1);
       expect(fs.read(newPath)).toBe(initialContents + initialContents);
     });

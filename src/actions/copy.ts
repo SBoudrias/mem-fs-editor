@@ -1,10 +1,11 @@
 import assert from 'assert';
 import fs from 'fs';
-import path from 'path';
+import path, { resolve } from 'path';
 import { globbySync, isDynamicPattern, type Options as GlobbyOptions } from 'globby';
 import multimatch from 'multimatch';
 import { Data, Options } from 'ejs';
 import normalize from 'normalize-path';
+import File, { isVinyl } from 'vinyl';
 
 import type { MemFsEditor } from '../index.js';
 import { getCommonPath, globify, render } from '../util.js';
@@ -104,6 +105,7 @@ export function _copySingle(this: MemFsEditor, from: string, to: string, options
   assert(this.exists(from), 'Trying to copy from a source that does not exist: ' + from);
 
   const file = this.store.get(from);
+  to = resolve(to);
 
   let { contents } = file;
   if (!contents) {
@@ -124,5 +126,21 @@ export function _copySingle(this: MemFsEditor, from: string, to: string, options
     }
   }
 
-  this.write(to, contents, file.stat);
+  if (isVinyl(file)) {
+    this._write(
+      Object.assign(file.clone({ contents: false, deep: false }), {
+        contents,
+        path: to,
+      }),
+    );
+  } else {
+    this._write(
+      new File({
+        contents,
+        stat: (file.stat as any) ?? fs.statSync(file.path),
+        path: to,
+        history: [file.path],
+      }),
+    );
+  }
 }

@@ -1,14 +1,15 @@
 import assert from 'assert';
 import fs from 'fs';
 import fsPromises from 'fs/promises';
-import path from 'path';
+import path, { resolve } from 'path';
+import type { Data, Options } from 'ejs';
 import { globbySync, isDynamicPattern, type Options as GlobbyOptions } from 'globby';
 import multimatch from 'multimatch';
 import { render, globify, getCommonPath } from '../util.js';
 import normalize from 'normalize-path';
+import File from 'vinyl';
 import type { MemFsEditor } from '../index.js';
 import { AppendOptions } from './append.js';
-import { Data, Options } from 'ejs';
 import { CopySingleOptions } from './copy.js';
 
 async function applyProcessingFileFunc(
@@ -129,6 +130,7 @@ export async function _copySingleAsync(
   if (!options.processFile) {
     return this._copySingle(from, to, options);
   }
+  from = resolve(from);
 
   const contents = await applyProcessingFileFunc.call(this, options.processFile, from);
 
@@ -143,6 +145,12 @@ export async function _copySingleAsync(
     }
   }
 
-  const stat = await fsPromises.stat(from);
-  this.write(to, contents, stat);
+  this._write(
+    new File({
+      contents,
+      stat: await fsPromises.stat(from),
+      path: to,
+      history: [from],
+    }),
+  );
 }
