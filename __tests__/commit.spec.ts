@@ -54,7 +54,7 @@ describe('#commit()', () => {
       }
     });
 
-    await expect(fs.commit(filter)).rejects.toMatch(/error 1/);
+    await expect(fs.commit(filter)).rejects.toThrow(/error 1/);
   });
 
   it('call filters and update memory model', async () => {
@@ -104,7 +104,7 @@ describe('#commit()', () => {
 
   it('handle error when write fails', async () => {
     filesystem.writeFileSync(output, 'foo');
-    await expect(fs.commit()).rejects.toMatch(/is not a directory/);
+    await expect(fs.commit()).rejects.toThrow(/is not a directory/);
   });
 
   it('delete file from disk', async () => {
