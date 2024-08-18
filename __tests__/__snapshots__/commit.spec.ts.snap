@@ -461,7 +461,7 @@ exports[`#copy() and #commit() > should match snapshot 1`] = `
   },
   "file.json": {
     "contents": "{
-  \\"foo\\": \\"bar\\"
+  "foo": "bar"
 }
 ",
     "stateCleared": "modified",
@@ -531,7 +531,7 @@ exports[`#copyTpl() and #commit() > should match snapshot 1`] = `
   },
   "file.json": {
     "contents": "{
-  \\"foo\\": \\"bar\\"
+  "foo": "bar"
 }
 ",
     "stateCleared": "modified",
