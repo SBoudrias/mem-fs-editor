@@ -41,7 +41,7 @@
     "ejs": "^3.1.10",
     "globby": "^14.0.2",
     "isbinaryfile": "5.0.2",
-    "minimatch": "^9.0.3",
+    "minimatch": "^10.0.1",
     "multimatch": "^7.0.0",
     "normalize-path": "^3.0.0",
     "textextensions": "^6.11.0",
