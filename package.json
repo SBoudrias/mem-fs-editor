@@ -34,7 +34,7 @@
   ],
   "dependencies": {
     "@types/ejs": "^3.1.4",
-    "@types/node": "^18.18.5",
+    "@types/node": "^18.19.46",
     "binaryextensions": "^6.11.0",
     "commondir": "^1.0.1",
     "deep-extend": "^0.6.0",
