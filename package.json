@@ -40,7 +40,7 @@
     "deep-extend": "^0.6.0",
     "ejs": "^3.1.10",
     "globby": "^14.0.2",
-    "isbinaryfile": "5.0.2",
+    "isbinaryfile": "5.0.3",
     "minimatch": "^9.0.3",
     "multimatch": "^7.0.0",
     "normalize-path": "^3.0.0",
@@ -49,6 +49,9 @@
   },
   "peerDependencies": {
     "mem-fs": "^4.0.0"
+  },
+  "acceptDependencies": {
+    "isbinaryfile": "^5.0.3"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^7.18.0",
