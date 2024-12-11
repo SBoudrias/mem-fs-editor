@@ -16,7 +16,7 @@ const store = createMemFs();
 const fs = createEditor(store);
 
 fs.write('somefile.js', 'var a = 1;');
-await fs.commit()
+await fs.commit();
 ```
 
 ### `#read(filepath, [options])`
