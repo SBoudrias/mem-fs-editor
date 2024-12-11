@@ -1,11 +1,14 @@
-import { Duplex } from 'stream';
+import { Transform } from 'stream';
 import commitFileAsync from './actions/commit-file-async.js';
 import type { MemFsEditorFile } from './index.js';
 
-export const createCommitTransform = <EditorFile extends MemFsEditorFile = MemFsEditorFile>() =>
-  Duplex.from(async function* (generator: AsyncGenerator<EditorFile>) {
-    for await (const file of generator) {
-      await commitFileAsync(file);
-      yield file;
-    }
+export const createCommitTransform = () =>
+  new Transform({
+    objectMode: true,
+    transform(file: MemFsEditorFile, _encoding, callback) {
+      commitFileAsync(file).then(
+        () => callback(null, file),
+        (error) => callback(error),
+      );
+    },
   });
