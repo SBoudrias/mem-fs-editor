@@ -10,7 +10,7 @@ async function write(file: MemFsEditorFile) {
   const dir = path.dirname(file.path);
   try {
     if (!(await fs.stat(dir)).isDirectory()) {
-      throw new Error(`${file.path} is not a directory`);
+      throw new Error(`${dir} is not a directory`);
     }
   } catch (error) {
     if ((error as any).code === 'ENOENT') {
