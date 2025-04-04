@@ -3,7 +3,7 @@ import fs from 'fs';
 import fsPromises from 'fs/promises';
 import path from 'path';
 import type { Data, Options } from 'ejs';
-import { globbySync, isDynamicPattern, type Options as GlobbyOptions } from 'globby';
+import { globSync, isDynamicPattern } from 'tinyglobby';
 import multimatch from 'multimatch';
 import { render, globify, getCommonPath } from '../util.js';
 import normalize from 'normalize-path';
@@ -49,7 +49,7 @@ async function getOneFile(from: string | string[]) {
 }
 
 export type CopyAsyncOptions = CopySingleAsyncOptions & {
-  globOptions?: GlobbyOptions;
+  globOptions?: Omit<Parameters<typeof globSync>[0], 'patterns'>;
   processDestinationPath?: (string) => string;
   ignoreNoMatch?: boolean;
 };
@@ -72,7 +72,7 @@ export async function copyAsync(
   const fromGlob = globify(from);
 
   const globOptions = { ...options.globOptions, nodir: true };
-  const diskFiles = globbySync(fromGlob, globOptions).map((filepath) => path.resolve(filepath));
+  const diskFiles = globSync(fromGlob, globOptions).map((filepath) => path.resolve(filepath));
   const storeFiles: string[] = [];
   this.store.each((file) => {
     const normalizedFilepath = normalize(file.path);

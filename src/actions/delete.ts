@@ -1,5 +1,5 @@
 import path from 'path';
-import { globbySync, type Options as GlobbyOptions } from 'globby';
+import { globSync } from 'tinyglobby';
 import multimatch from 'multimatch';
 import normalize from 'normalize-path';
 
@@ -18,7 +18,7 @@ function deleteFile(path: string, store: Store<MemFsEditorFile>) {
 export default function deleteAction(
   this: MemFsEditor,
   paths: string | string[],
-  options?: { globOptions?: GlobbyOptions },
+  options?: { globOptions?: Omit<Parameters<typeof globSync>[0], 'patterns'> },
 ) {
   if (!Array.isArray(paths)) {
     paths = [paths];
@@ -29,7 +29,7 @@ export default function deleteAction(
   options ||= {};
 
   const globOptions = options.globOptions || {};
-  const files = globbySync(paths, globOptions);
+  const files = globSync(paths, globOptions);
   files.forEach((file) => {
     deleteFile(file, this.store);
   });
