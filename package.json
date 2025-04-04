@@ -46,6 +46,7 @@
     "multimatch": "^7.0.0",
     "normalize-path": "^3.0.0",
     "textextensions": "^6.11.0",
+    "tinyglobby": "^0.2.14",
     "vinyl": "^3.0.1"
   },
   "devDependencies": {

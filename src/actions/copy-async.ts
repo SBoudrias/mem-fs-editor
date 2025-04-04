@@ -4,7 +4,7 @@ import fsPromises from 'fs/promises';
 import path from 'path';
 import createDebug from 'debug';
 import type { Data, Options } from 'ejs';
-import { globby, isDynamicPattern, type Options as GlobbyOptions } from 'globby';
+import { glob, isDynamicPattern } from 'tinyglobby';
 import multimatch from 'multimatch';
 import normalize from 'normalize-path';
 import File from 'vinyl';
@@ -46,7 +46,7 @@ async function getOneFile(filepath: string) {
 }
 
 export type CopyAsyncOptions = CopySingleAsyncOptions & {
-  globOptions?: GlobbyOptions;
+  globOptions?: Omit<Parameters<typeof glob>[0], 'patterns'>;
   processDestinationPath?: (string) => string;
   ignoreNoMatch?: boolean;
 };
@@ -99,7 +99,7 @@ export async function copyAsync(
   let diskFiles: string[] = [];
   if (globResolved.length > 0) {
     const patterns = globResolved.map((file) => globify(file.from)).flat();
-    diskFiles = await globby(patterns, { ...options.globOptions, absolute: true, onlyFiles: true });
+    diskFiles = await glob(patterns, { ...options.globOptions, absolute: true, onlyFiles: true });
     this.store.each((file) => {
       const normalizedFilepath = normalize(file.path);
       // The store may have a glob path and when we try to copy it will fail because not real file
