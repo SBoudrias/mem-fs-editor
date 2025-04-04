@@ -57,7 +57,7 @@ describe('#copyAsync()', () => {
       store.existsInMemory = undefined;
       const filepath = getFixture('file-a.txt');
       const newPath = '/new/path/file.txt';
-      expect(fs.copyAsync(filepath, newPath, { append: true, processFile: () => '' })).rejects.toEqual(
+      await expect(fs.copyAsync(filepath, newPath, { append: true, processFile: () => '' })).rejects.toEqual(
         new Error('Current mem-fs is not compatible with append'),
       );
     });
@@ -78,7 +78,7 @@ describe('#copyAsync()', () => {
   it('throws when trying to copy from a non-existing file', async () => {
     const filepath = getFixture('does-not-exits');
     const newPath = getFixture('../../test/new/path/file.txt');
-    expect(fs.copyAsync(filepath, newPath)).rejects.toThrow();
+    await expect(fs.copyAsync(filepath, newPath)).rejects.toThrow();
   });
 
   it('copy file and process contents', async () => {
@@ -143,7 +143,7 @@ describe('#copyAsync()', () => {
   });
 
   it('requires destination directory when globbing', async () => {
-    expect(fs.copyAsync(getFixture('**'), getFixture('file-a.txt'))).rejects.toThrow();
+    await expect(fs.copyAsync(getFixture('**'), getFixture('file-a.txt'))).rejects.toThrow();
   });
 
   it('preserve permissions', async () => {
