@@ -71,7 +71,7 @@ export function copy(
   }
 
   let generateDestination: (string) => string = () => to;
-  if ((from as string[]).length > 1 || !this.exists(from) || (isDynamicPattern(normalize(from)) && !options.noGlob)) {
+  if ((from as string[]).length > 1 || !this.exists(from[0]) || (isDynamicPattern(from[0]) && !options.noGlob)) {
     assert(
       !this.exists(to) || fs.statSync(to).isDirectory(),
       'When copying multiple files, provide a directory as destination',
@@ -86,7 +86,7 @@ export function copy(
   }
 
   // Sanity checks: Makes sure we copy at least one file.
-  assert(options.ignoreNoMatch || files.length > 0, 'Trying to copy from a source that does not exist: ' + from);
+  assert(options.ignoreNoMatch || files.length > 0, 'Trying to copy from a source that does not exist: ' + from[0]);
 
   files.forEach((file) => {
     let toFile = generateDestination(file);
