@@ -36,7 +36,7 @@ export function copy(
   context?: Data,
   tplSettings?: Options,
 ) {
-  from = (Array.isArray(from) ? from : [from]).map(from => normalize(from));
+  from = (Array.isArray(from) ? from : [from]).map((from) => normalize(from));
   to = path.resolve(normalize(to));
   options = options ?? {};
 
