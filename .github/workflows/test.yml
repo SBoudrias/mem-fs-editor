@@ -22,8 +22,5 @@ jobs:
         run: |
           node --version
           npm ci
-          npm test
-      - name: Upload code coverage
-        uses: codecov/codecov-action@v5
-        with:
-          file: ./coverage/coverage-final.json
+          npx vitest --run --coverage
+      - uses: codecov/codecov-action@v5
