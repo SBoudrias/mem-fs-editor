@@ -71,7 +71,7 @@ export function copy(
   }
 
   let generateDestination: (string) => string = () => to;
-  if (from.length > 1 || !this.exists(from) || (isDynamicPattern(normalize(from)) && !options.noGlob)) {
+  if ((from as string[]).length > 1 || !this.exists(from) || (isDynamicPattern(normalize(from)) && !options.noGlob)) {
     assert(
       !this.exists(to) || fs.statSync(to).isDirectory(),
       'When copying multiple files, provide a directory as destination',
