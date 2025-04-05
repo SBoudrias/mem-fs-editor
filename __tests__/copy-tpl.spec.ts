@@ -1,7 +1,7 @@
 import { describe, beforeEach, it, expect } from 'vitest';
 import os from 'os';
 import path, { resolve } from 'path';
-import { type MemFsEditor, create } from '../src/index.js';
+import { type MemFsEditor, MemFsEditorFile, create } from '../src/index.js';
 import { create as createMemFs } from 'mem-fs';
 import normalize from 'normalize-path';
 import { getFixture } from './fixtures.js';
@@ -11,7 +11,7 @@ describe('#copyTpl()', () => {
   let memFs: MemFsEditor;
 
   beforeEach(() => {
-    memFs = create(createMemFs());
+    memFs = create(createMemFs<MemFsEditorFile>());
   });
 
   it('copy file and process contents as underscore template', () => {

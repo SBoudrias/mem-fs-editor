@@ -45,6 +45,20 @@ export default tseslint.config([
     },
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
+
+      // TODO: Need to fix the code to allow those rules
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/no-non-null-assertion': 'off',
+    },
+  },
+  {
+    files: ['__tests__/**'],
+    rules: {
+      '@typescript-eslint/unbound-method': 'off',
     },
   },
   eslintPluginPrettierRecommended,

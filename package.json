@@ -50,6 +50,10 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.24.0",
+    "@types/commondir": "^1.0.2",
+    "@types/deep-extend": "^0.6.2",
+    "@types/escape-regexp": "^0.0.3",
+    "@types/normalize-path": "^3.0.2",
     "@typescript-eslint/eslint-plugin": "^8.29.0",
     "@typescript-eslint/parser": "^8.29.0",
     "@vitest/coverage-v8": "^3.0.4",

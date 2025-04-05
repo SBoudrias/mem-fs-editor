@@ -4,13 +4,13 @@ import type { MemFsEditor } from '../index.js';
 export type AppendOptions = { create?: boolean; trimEnd?: boolean; separator?: string };
 
 export default function append(this: MemFsEditor, to: string, contents: string | Buffer, options?: AppendOptions) {
-  options = {
+  const opts = {
     trimEnd: true,
     separator: EOL,
     ...options,
   };
 
-  if (!this.exists(to) && options.create) {
+  if (!this.exists(to) && opts.create) {
     this.write(to, contents);
     return;
   }
@@ -20,9 +20,9 @@ export default function append(this: MemFsEditor, to: string, contents: string |
     throw new Error(`Error appending to ${to}, file is empty.`);
   }
 
-  if (currentContents && options.trimEnd) {
+  if (currentContents && opts.trimEnd) {
     currentContents = currentContents.replace(/\s+$/, '');
   }
 
-  this.write(to, currentContents + options.separator + contents.toString());
+  this.write(to, currentContents + opts.separator + contents.toString());
 }

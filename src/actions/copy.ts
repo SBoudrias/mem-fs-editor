@@ -69,7 +69,7 @@ export function copy(
     files = diskFiles.concat(storeFiles);
   }
 
-  let generateDestination: (string) => string = () => to;
+  let generateDestination: (string: string) => string = () => to;
   if (Array.isArray(from) || !this.exists(from) || (isDynamicPattern(normalize(from)) && !options.noGlob)) {
     assert(
       !this.exists(to) || fs.statSync(to).isDirectory(),
@@ -85,7 +85,10 @@ export function copy(
   }
 
   // Sanity checks: Makes sure we copy at least one file.
-  assert(options.ignoreNoMatch || files.length > 0, 'Trying to copy from a source that does not exist: ' + from);
+  assert(
+    options.ignoreNoMatch || files.length > 0,
+    'Trying to copy from a source that does not exist: ' + String(from),
+  );
 
   files.forEach((file) => {
     let toFile = generateDestination(file);
@@ -118,6 +121,8 @@ export function _copySingle(this: MemFsEditor, from: string, to: string, options
   }
 
   if (options.append) {
+    // Safety check against legacy API
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (!this.store.existsInMemory) {
       throw new Error('Current mem-fs is not compatible with append');
     }

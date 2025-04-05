@@ -1,6 +1,6 @@
 import { describe, beforeEach, it, expect } from 'vitest';
 import os from 'os';
-import { type MemFsEditor, create } from '../src/index.js';
+import { type MemFsEditor, MemFsEditorFile, create } from '../src/index.js';
 import { create as createMemFs } from 'mem-fs';
 import { getFixture } from './fixtures.js';
 
@@ -10,7 +10,7 @@ describe('#read()', () => {
   let memFs: MemFsEditor;
 
   beforeEach(() => {
-    memFs = create(createMemFs());
+    memFs = create(createMemFs<MemFsEditorFile>());
   });
 
   it('read the content of a file', () => {

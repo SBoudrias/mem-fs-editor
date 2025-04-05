@@ -2,7 +2,7 @@ import { describe, beforeEach, it, expect, vi } from 'vitest';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { MemFsEditor, create } from '../src/index.js';
+import { MemFsEditor, MemFsEditorFile, create } from '../src/index.js';
 import { create as createMemFs } from 'mem-fs';
 import { getFixture } from './fixtures.js';
 
@@ -10,7 +10,7 @@ describe('#copyAsync()', () => {
   let memFs: MemFsEditor;
 
   beforeEach(() => {
-    memFs = create(createMemFs());
+    memFs = create(createMemFs<MemFsEditorFile>());
   });
 
   it('copy file', async () => {
@@ -30,7 +30,7 @@ describe('#copyAsync()', () => {
 
     it('should append file to file already loaded', async () => {
       const filepath = getFixture('file-a.txt');
-      const initialContents = memFs.read(filepath);
+      const initialContents = memFs.read(filepath) ?? '';
       const newPath = '/new/path/file.txt';
       await memFs.copyAsync(filepath, newPath, { append: true });
 
@@ -47,6 +47,7 @@ describe('#copyAsync()', () => {
     });
 
     it('should throw if mem-fs is not compatible', async () => {
+      // @ts-expect-error - This is a legacy API
       memFs.store.existsInMemory = undefined;
       const filepath = getFixture('file-a.txt');
       const newPath = '/new/path/file.txt';
@@ -112,7 +113,7 @@ describe('#copyAsync()', () => {
   it('copy files by globbing and process contents', async () => {
     const outputDir = getFixture('../../test/output');
     const processFile = vi.fn().mockImplementation(function (from) {
-      return this.store.get(from).contents;
+      return memFs.store.get(from).contents;
     });
     await memFs.copyAsync(getFixture('**'), outputDir, {
       processFile,
@@ -142,7 +143,7 @@ describe('#copyAsync()', () => {
   it('preserve permissions', async () => {
     const filename = path.join(os.tmpdir(), 'perm.txt');
     const copyname = path.join(os.tmpdir(), 'copy-perm.txt');
-    fs.writeFileSync(filename, 'foo', { mode: parseInt(733, 8) });
+    fs.writeFileSync(filename, 'foo', { mode: 0o733 });
 
     await memFs.copyAsync(filename, copyname);
 

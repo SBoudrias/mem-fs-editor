@@ -22,7 +22,7 @@ export default async function (
       processDestinationPath: (path) => path.replace(/.ejs$/, ''),
       ...options,
       async processFile(filename) {
-        if (isBinary(filename, null)) {
+        if (isBinary(filename)) {
           return fs.readFile(filename);
         }
 

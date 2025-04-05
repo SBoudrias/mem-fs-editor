@@ -1,5 +1,5 @@
 import { describe, beforeEach, it, expect, vi } from 'vitest';
-import { type MemFsEditor, create } from '../src/index.js';
+import { type MemFsEditor, MemFsEditorFile, create } from '../src/index.js';
 import { create as createMemFs } from 'mem-fs';
 import { getFixture } from './fixtures.js';
 
@@ -7,7 +7,7 @@ describe('#extendJSON()', () => {
   let memFs: MemFsEditor;
 
   beforeEach(() => {
-    memFs = create(createMemFs());
+    memFs = create(createMemFs<MemFsEditorFile>());
   });
 
   it('extends content of existing JSON file', () => {

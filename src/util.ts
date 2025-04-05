@@ -9,33 +9,35 @@ import { isBinaryFileSync } from 'isbinaryfile';
 import textextensions from 'textextensions';
 import binaryextensions from 'binaryextensions';
 
-function notNullOrExclusion(file) {
+function notNullOrExclusion(file?: string) {
   return file != null && file.charAt(0) !== '!';
 }
 
-export const getCommonPath = function (filePath: string | string[]): string {
+export function getCommonPath(filePath: string | string[]): string {
   if (Array.isArray(filePath)) {
-    filePath = filePath.filter(notNullOrExclusion).map(getCommonPath);
+    const paths = filePath.filter(notNullOrExclusion).map(getCommonPath);
 
-    return commondir(filePath);
+    return commondir(paths);
   }
 
   const globStartIndex = filePath.indexOf('*');
   if (globStartIndex !== -1) {
-    filePath = filePath.substring(0, globStartIndex + 1);
-  } else if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {
+    return path.dirname(filePath.substring(0, globStartIndex + 1));
+  }
+
+  if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {
     return filePath;
   }
 
   return path.dirname(filePath);
-};
+}
 
-export const globify = function (filePath: string | string[]): string | string[] {
-  if (Array.isArray(filePath)) {
-    return filePath.reduce<string[]>((memo, pattern) => memo.concat(globify(pattern)), []);
+export function globify(inputFilePath: string | string[]): string | string[] {
+  if (Array.isArray(inputFilePath)) {
+    return inputFilePath.reduce<string[]>((memo, pattern) => memo.concat(globify(pattern)), []);
   }
 
-  filePath = normalize(filePath) as string;
+  const filePath = normalize(inputFilePath);
 
   if (isDynamicPattern(filePath)) {
     return filePath;
@@ -44,7 +46,7 @@ export const globify = function (filePath: string | string[]): string | string[]
   if (!fs.existsSync(filePath)) {
     // The target of a pattern who's not a glob and doesn't match an existing
     // entity on the disk is ambiguous. As such, match both files and directories.
-    return [filePath, normalize(path.join(filePath, '**')) as string];
+    return [filePath, normalize(path.join(filePath, '**'))];
   }
 
   const fsStats = fs.statSync(filePath);
@@ -53,13 +55,13 @@ export const globify = function (filePath: string | string[]): string | string[]
   }
 
   if (fsStats.isDirectory()) {
-    return normalize(path.join(filePath, '**')) as string;
+    return normalize(path.join(filePath, '**'));
   }
 
   throw new Error('Only file path or directory path are supported.');
-};
+}
 
-export const isBinary = (filePath, newFileContents) => {
+export function isBinary(filePath: string, newFileContents?: string | Buffer) {
   const extension = path.extname(filePath).replace(/^\./, '') || path.basename(filePath);
   if (binaryextensions.includes(extension)) {
     return true;
@@ -74,12 +76,12 @@ export const isBinary = (filePath, newFileContents) => {
     (newFileContents &&
       isBinaryFileSync(Buffer.isBuffer(newFileContents) ? newFileContents : Buffer.from(newFileContents)))
   );
-};
+}
 
-export const render = function (template: string, data?: ejs.Data, options?: ejs.Options): string {
+export function render(template: string, data?: ejs.Data, options?: ejs.Options): string {
   return ejs.render(template, data, { cache: false, ...options }) as string;
-};
+}
 
-export const renderFile = function (template: string, data?: ejs.Data, options?: ejs.Options): Promise<string> {
+export function renderFile(template: string, data?: ejs.Data, options?: ejs.Options): Promise<string> {
   return ejs.renderFile(template, data, { cache: true, ...options });
-};
+}
