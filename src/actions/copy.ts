@@ -37,7 +37,7 @@ export function copy(
   tplSettings?: Options,
 ) {
   to = path.resolve(to);
-  options = options ?? {};
+  options ??= {};
 
   const { fromBasePath } = options;
   if (fromBasePath) {
@@ -112,6 +112,7 @@ export function _copySingle(this: MemFsEditor, from: string, to: string, options
   if (!contents) {
     throw new Error(`Cannot copy empty file ${from}`);
   }
+
   if (options.process) {
     contents = applyProcessingFunc(options.process, contents, file.path, to);
   }

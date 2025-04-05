@@ -26,7 +26,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p tsconfig.build.json",
     "fix": "eslint . --fix",
     "prepare": "npm run build",
     "pretest": "eslint .",
@@ -48,17 +48,21 @@
     "vinyl": "^3.0.0"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^7.18.0",
-    "@typescript-eslint/parser": "^7.18.0",
+    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/js": "^9.24.0",
+    "@typescript-eslint/eslint-plugin": "^8.29.0",
+    "@typescript-eslint/parser": "^8.29.0",
     "@vitest/coverage-v8": "^3.0.4",
     "escape-regexp": "0.0.1",
-    "eslint": "^8.51.0",
+    "eslint": "^9.24.0",
     "eslint-config-prettier": "^10.0.1",
-    "eslint-config-xo": "^0.43.1",
+    "eslint-config-xo": "^0.46.0",
     "eslint-plugin-prettier": "^5.0.1",
+    "globals": "^16.0.0",
     "prettier": "^3.0.3",
     "prettier-plugin-packagejson": "^2.4.6",
     "typescript": "^5.2.2",
+    "typescript-eslint": "^8.29.0",
     "vitest": "^3.0.4"
   },
   "peerDependencies": {

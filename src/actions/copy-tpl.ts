@@ -38,8 +38,8 @@ export function copyTpl(
   tplSettings?: Options,
   options?: CopySingleOptions,
 ) {
-  context = context || {};
-  tplSettings = tplSettings || {};
+  context ||= {};
+  tplSettings ||= {};
 
   this.copy(
     from,

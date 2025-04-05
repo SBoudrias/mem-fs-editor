@@ -62,7 +62,7 @@ export async function copyAsync(
   tplSettings?: Options,
 ) {
   to = path.resolve(to);
-  options = options || {};
+  options ||= {};
   const oneFile = await getOneFile(from);
   if (oneFile) {
     return this._copySingleAsync(oneFile, renderFilepath(to, context, tplSettings), options);
@@ -129,8 +129,10 @@ export async function _copySingleAsync(
   options: CopySingleAsyncOptions = {},
 ) {
   if (!options.processFile) {
-    return this._copySingle(from, to, options);
+    this._copySingle(from, to, options);
+    return;
   }
+
   from = path.resolve(from);
 
   const contents = await applyProcessingFileFunc.call(this, options.processFile, from);

@@ -53,7 +53,9 @@ describe('#copy()', () => {
       memFs.store.existsInMemory = undefined;
       const filepath = getFixture('file-a.txt');
       const newPath = '/new/path/file.txt';
-      expect(() => memFs.copy(filepath, newPath, { append: true })).toThrow();
+      expect(() => {
+        memFs.copy(filepath, newPath, { append: true });
+      }).toThrow();
     });
   });
 

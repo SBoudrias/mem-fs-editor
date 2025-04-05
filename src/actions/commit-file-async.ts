@@ -7,6 +7,7 @@ async function write(file: MemFsEditorFile) {
   if (!file.contents) {
     throw new Error(`${file.path} cannot write an empty file`);
   }
+
   const dir = path.dirname(file.path);
   try {
     if (!(await fs.stat(dir)).isDirectory()) {

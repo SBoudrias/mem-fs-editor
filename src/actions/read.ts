@@ -15,7 +15,7 @@ function read(
   filepath: string,
   options?: { raw?: boolean; defaults?: string | Buffer | null },
 ): Buffer | string | null {
-  options = options || { raw: false };
+  options ||= { raw: false };
   const file = this.store.get(filepath);
 
   if (file.contents === null) {
@@ -26,7 +26,7 @@ function read(
     throw new Error(filepath + " doesn't exist");
   }
 
-  return options.raw ? file.contents : file.contents?.toString() || null;
+  return options.raw ? file.contents : file.contents.toString() || null;
 }
 
 export default read;

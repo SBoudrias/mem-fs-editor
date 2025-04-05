@@ -25,11 +25,15 @@ export const isFileNew = (file: MemFsEditorFile) => {
 
 export const isFileStateModified = (file: MemFsEditorFile) => file[STATE] === STATE_MODIFIED;
 
-export const setModifiedFileState = (file: MemFsEditorFile) => setFileState(file, STATE_MODIFIED);
+export const setModifiedFileState = (file: MemFsEditorFile) => {
+  setFileState(file, STATE_MODIFIED);
+};
 
 export const isFileStateDeleted = (file: MemFsEditorFile) => file[STATE] === STATE_DELETED;
 
-export const setDeletedFileState = (file: MemFsEditorFile) => setFileState(file, STATE_DELETED);
+export const setDeletedFileState = (file: MemFsEditorFile) => {
+  setFileState(file, STATE_DELETED);
+};
 
 export const isFilePending = (file: MemFsEditorFile) =>
   isFileStateModified(file) || (isFileStateDeleted(file) && !isFileNew(file));

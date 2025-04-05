@@ -12,8 +12,8 @@ export default async function (
   tplSettings?: Options,
   options?: CopyAsyncOptions,
 ) {
-  context = context || {};
-  tplSettings = tplSettings || {};
+  context ||= {};
+  tplSettings ||= {};
 
   await this.copyAsync(
     from,

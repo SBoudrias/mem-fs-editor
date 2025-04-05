@@ -11,6 +11,7 @@ export const isMemFsEditorFileEqual = (a: CompareFile, b: CompareFile) => {
   if (a.stat?.mode !== b.stat?.mode) {
     return false;
   }
+
   return a.contents === b.contents || a.contents?.equals(b.contents!);
 };
 

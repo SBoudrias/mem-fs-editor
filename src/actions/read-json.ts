@@ -7,6 +7,7 @@ export default function readJSON(this: MemFsEditor, filepath: string, defaults?:
       if (!content) {
         throw new Error(`${filepath} has no content`);
       }
+
       return JSON.parse(content);
     } catch (error) {
       throw new Error('Could not parse JSON in file: ' + filepath + '. Detail: ' + (error as Error).message);

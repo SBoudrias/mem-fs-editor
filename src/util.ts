@@ -32,7 +32,7 @@ export const getCommonPath = function (filePath: string | string[]): string {
 
 export const globify = function (filePath: string | string[]): string | string[] {
   if (Array.isArray(filePath)) {
-    return filePath.reduce((memo, pattern) => memo.concat(globify(pattern as string)), [] as string[]);
+    return filePath.reduce<string[]>((memo, pattern) => memo.concat(globify(pattern)), []);
   }
 
   filePath = normalize(filePath) as string;
