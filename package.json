@@ -59,7 +59,6 @@
     "eslint-plugin-prettier": "^5.0.1",
     "prettier": "^3.0.3",
     "prettier-plugin-packagejson": "^2.4.6",
-    "sinon": "^20.0.0",
     "typescript": "^5.2.2",
     "vitest": "^3.0.4"
   },

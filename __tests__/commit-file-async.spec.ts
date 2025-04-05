@@ -1,9 +1,8 @@
-import { describe, beforeEach, it, expect, afterEach } from 'vitest';
+import { describe, beforeEach, it, expect, afterEach, vi } from 'vitest';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { create as createMemFs } from 'mem-fs';
-import sinon from 'sinon';
 import { type MemFsEditor, type MemFsEditorFile, create } from '../src/index.js';
 import commitFileAsync from '../src/actions/commit-file-async.js';
 
@@ -27,7 +26,7 @@ describe('#commitFileAsync()', () => {
 
   beforeEach(() => {
     const store = createMemFs();
-    sinon.spy(store, 'add');
+    vi.spyOn(store, 'add');
 
     memFs = create(store);
     memFs.write(filename, 'foo');
@@ -38,13 +37,11 @@ describe('#commitFileAsync()', () => {
       state: 'modified',
     };
 
-    expect(store.add.callCount).toEqual(1);
+    expect(store.add).toHaveBeenCalledTimes(1);
   });
 
   afterEach(() => {
-    if (fs.existsSync(outputRoot)) {
-      rmSync(outputRoot, { recursive: true });
-    }
+    rmSync(outputRoot, { recursive: true, force: true });
   });
 
   it('writes a modified file to disk', async () => {
@@ -112,6 +109,6 @@ describe('#commitFileAsync()', () => {
 
   it("doesn't readd same file to store", async () => {
     await commitFileAsync(memFs.store.get(filename));
-    expect(memFs.store.add.callCount).toEqual(1);
+    expect(memFs.store.add).toHaveBeenCalledTimes(1);
   });
 });

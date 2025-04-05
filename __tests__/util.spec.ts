@@ -1,7 +1,6 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import fs from 'fs';
 import path from 'path';
-import sinon from 'sinon';
 import { getCommonPath, globify } from '../src/util.js';
 import normalize from 'normalize-path';
 import { getFixture } from './fixtures.js';
@@ -64,14 +63,12 @@ describe('globify()', () => {
   });
 
   it('throws if target path is neither a file or a directory', () => {
-    sinon.stub(fs, 'statSync').returns({
+    vi.spyOn(fs, 'statSync').mockReturnValue({
       isFile: () => false,
       isDirectory: () => false,
-    });
+    } as fs.Stats);
 
     const filePath = getFixture('file-a.txt');
     expect(() => globify(filePath)).toThrow();
-
-    fs.statSync.restore();
   });
 });

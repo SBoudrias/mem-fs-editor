@@ -1,5 +1,4 @@
-import { describe, beforeEach, it, expect } from 'vitest';
-import sinon from 'sinon';
+import { describe, beforeEach, it, expect, vi } from 'vitest';
 import { type MemFsEditor, create } from '../src/index.js';
 import { create as createMemFs } from 'mem-fs';
 import { getFixture } from './fixtures.js';
@@ -14,21 +13,19 @@ describe('#writeJSON()', () => {
   it('stringify with optional arguments (for JSON.stringify)', () => {
     const filepath = getFixture('does-not-exist.txt');
     const contents = { foo: 'bar' };
-    const write = sinon.spy(memFs, 'write');
+    vi.spyOn(memFs, 'write');
     memFs.writeJSON(filepath, contents, null, 2);
-    sinon.assert.calledOnce(write);
-    sinon.assert.calledWith(write, filepath, JSON.stringify(contents, null, 2) + '\n');
-    write.restore();
+    expect(memFs.write).toHaveBeenCalledTimes(1);
+    expect(memFs.write).toHaveBeenCalledWith(filepath, JSON.stringify(contents, null, 2) + '\n');
   });
 
   it('defaults indentation to 2 if stringify argument is not provided', () => {
     const filepath = getFixture('does-not-exist.txt');
     const contents = { foo: 'bar' };
-    const write = sinon.spy(memFs, 'write');
+    vi.spyOn(memFs, 'write');
     memFs.writeJSON(filepath, contents);
-    sinon.assert.calledOnce(write);
-    sinon.assert.calledWith(write, filepath, JSON.stringify(contents, null, 2) + '\n');
-    write.restore();
+    expect(memFs.write).toHaveBeenCalledTimes(1);
+    expect(memFs.write).toHaveBeenCalledWith(filepath, JSON.stringify(contents, null, 2) + '\n');
   });
 
   it('write json object to a new file', () => {
@@ -48,10 +45,9 @@ describe('#writeJSON()', () => {
   it('calls write() with stringified JSON object', () => {
     const filepath = getFixture('does-not-exist.txt');
     const contents = { foo: 'bar' };
-    const write = sinon.spy(memFs, 'write');
+    vi.spyOn(memFs, 'write');
     memFs.writeJSON(filepath, contents);
-    sinon.assert.calledOnce(write);
-    sinon.assert.calledWithMatch(write, filepath, JSON.stringify(contents, null, 2) + '\n');
-    write.restore();
+    expect(memFs.write).toHaveBeenCalledTimes(1);
+    expect(memFs.write).toHaveBeenCalledWith(filepath, JSON.stringify(contents, null, 2) + '\n');
   });
 });

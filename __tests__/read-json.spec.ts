@@ -1,5 +1,4 @@
-import { describe, beforeEach, it, expect } from 'vitest';
-import sinon from 'sinon';
+import { describe, beforeEach, it, expect, vi } from 'vitest';
 import { type MemFsEditor, create } from '../src/index.js';
 import { create as createMemFs } from 'mem-fs';
 import escape from 'escape-regexp';
@@ -18,12 +17,12 @@ describe('#readJSON()', () => {
   });
 
   it('calls read() with path', () => {
-    const read = sinon.spy(memFs, 'read');
+    vi.spyOn(memFs, 'read');
+
     const file = getFixture('file.json');
     memFs.readJSON(file);
-    sinon.assert.calledOnce(read);
-    sinon.assert.calledWith(read, file);
-    read.restore();
+    expect(memFs.read).toHaveBeenCalledTimes(1);
+    expect(memFs.read).toHaveBeenCalledWith(file);
   });
 
   it('return defaults if file does not exist and defaults is provided', () => {

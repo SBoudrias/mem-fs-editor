@@ -1,5 +1,4 @@
-import { describe, beforeEach, it, expect } from 'vitest';
-import sinon from 'sinon';
+import { describe, beforeEach, it, expect, vi } from 'vitest';
 import { type MemFsEditor, create } from '../src/index.js';
 import { create as createMemFs } from 'mem-fs';
 import { getFixture } from './fixtures.js';
@@ -9,7 +8,7 @@ describe('#write()', () => {
 
   beforeEach(() => {
     const store = createMemFs();
-    sinon.spy(store, 'add');
+    vi.spyOn(store, 'add');
 
     memFs = create(store);
   });
@@ -42,11 +41,11 @@ describe('#write()', () => {
     const filepath = getFixture('file-a.txt');
     const contents = 'some text';
     memFs.write(filepath, contents);
-    expect(memFs.store.add.callCount).toBe(1);
+    expect(memFs.store.add).toHaveBeenCalledTimes(1);
     expect(memFs.read(filepath)).toBe(contents);
     expect(memFs.store.get(filepath).state).toBe('modified');
 
     memFs.write(filepath, contents);
-    expect(memFs.store.add.callCount).toBe(1);
+    expect(memFs.store.add).toHaveBeenCalledTimes(1);
   });
 });

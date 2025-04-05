@@ -1,8 +1,7 @@
-import { describe, beforeEach, it, expect, afterEach } from 'vitest';
+import { describe, beforeEach, it, expect, vi } from 'vitest';
 import fs from 'fs';
 import os from 'os';
 import path, { dirname } from 'path';
-import sinon from 'sinon';
 import { type MemFsEditor, create } from '../src/index.js';
 import { create as createMemFs } from 'mem-fs';
 import { getFixture } from './fixtures.js';
@@ -28,12 +27,8 @@ describe('#copy()', () => {
 
   describe('using append option', () => {
     beforeEach(() => {
-      sinon.spy(memFs, 'append');
-      sinon.spy(memFs, '_write');
-    });
-    afterEach(() => {
-      memFs._write.restore();
-      memFs.append.restore();
+      vi.spyOn(memFs, 'append');
+      vi.spyOn(memFs, '_write');
     });
 
     it('should append file to file already loaded', () => {
@@ -42,15 +37,15 @@ describe('#copy()', () => {
       const newPath = '/new/path/file.txt';
       memFs.copy(filepath, newPath, { append: true });
 
-      expect(memFs._write.callCount).toBe(1);
-      expect(memFs.append.callCount).toBe(0);
+      expect(memFs._write).toHaveBeenCalledTimes(1);
+      expect(memFs.append).toHaveBeenCalledTimes(0);
       expect(memFs.read(newPath)).toBe(initialContents);
       expect(memFs.store.get(newPath).state).toBe('modified');
 
       memFs.copy(filepath, newPath, { append: true });
 
-      expect(memFs._write.callCount).toBe(2);
-      expect(memFs.append.callCount).toBe(1);
+      expect(memFs._write).toHaveBeenCalledTimes(2);
+      expect(memFs.append).toHaveBeenCalledTimes(1);
       expect(memFs.read(newPath)).toBe(initialContents + initialContents);
     });
 
@@ -119,9 +114,9 @@ describe('#copy()', () => {
 
   it('copy files by globbing and process contents', () => {
     const outputDir = getFixture('../../test/output');
-    const process = sinon.stub().returnsArg(0);
+    const process = vi.fn().mockImplementation((f) => f);
     memFs.copy(getFixture('**'), outputDir, { process });
-    sinon.assert.callCount(process, 13); // 10 total files under 'fixtures', not counting folders
+    expect(process).toHaveBeenCalledTimes(13); // 10 total files under 'fixtures', not counting folders
     expect(memFs.read(path.join(outputDir, 'file-a.txt'))).toBe('foo' + os.EOL);
     expect(memFs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
   });
