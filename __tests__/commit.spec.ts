@@ -8,31 +8,29 @@ import { MemFsEditor, MemFsEditorFile, create } from '../src/index.js';
 import { getFixture } from './fixtures.js';
 import { isFilePending } from '../src/state.js';
 
-const rmSync = fs.rmSync || fs.rmdirSync;
-
 describe('#commit()', () => {
   const fixtureDir = path.join(os.tmpdir(), '/mem-fs-editor-test-fixture');
-  const output = path.join(os.tmpdir(), '/mem-fs-editor-test' + Math.random());
+  const output = path.join(os.tmpdir(), '/mem-fs-editor-test' + String(Math.random()));
   const NUMBER_FILES = 100;
 
   let memFs: MemFsEditor;
 
   beforeEach(() => {
-    memFs = create(createMemFs());
+    memFs = create(createMemFs<MemFsEditorFile>());
     fs.mkdirSync(fixtureDir, { recursive: true });
 
     // Create a 100 files to exercise the stream high water mark
     let i = NUMBER_FILES;
     while (i--) {
-      fs.writeFileSync(path.join(fixtureDir, 'file-' + i + '.txt'), 'foo');
+      fs.writeFileSync(path.join(fixtureDir, 'file-' + String(i) + '.txt'), 'foo');
     }
 
     memFs.copy(fixtureDir + '/**', output);
   });
 
   afterEach(() => {
-    rmSync(fixtureDir, { recursive: true, force: true });
-    rmSync(output, { recursive: true, force: true });
+    fs.rmSync(fixtureDir, { recursive: true, force: true });
+    fs.rmSync(output, { recursive: true, force: true });
   });
 
   it('should match snapshot', async () => {
@@ -48,7 +46,7 @@ describe('#commit()', () => {
       // eslint-disable-next-line no-unreachable-loop, @typescript-eslint/no-unused-vars
       for await (const _file of generator) {
         called++;
-        throw new Error(`error ${called}`);
+        throw new Error(`error ${String(called)}`);
       }
     });
 
@@ -171,13 +169,13 @@ describe('#copy() and #commit()', () => {
   let memFs: MemFsEditor;
 
   beforeEach(() => {
-    memFs = create(createMemFs());
+    memFs = create(createMemFs<MemFsEditorFile>());
 
     memFs.copy(getFixture('**'), output);
   });
 
   afterEach(() => {
-    rmSync(output, { recursive: true, force: true });
+    fs.rmSync(output, { recursive: true, force: true });
   });
 
   it('should match snapshot', async () => {
@@ -192,7 +190,7 @@ describe('#copyTpl() and #commit()', () => {
   let memFs: MemFsEditor;
 
   beforeEach(() => {
-    memFs = create(createMemFs());
+    memFs = create(createMemFs<MemFsEditorFile>());
 
     const a = { name: 'foo' } as any;
     const b = { a };
@@ -202,7 +200,7 @@ describe('#copyTpl() and #commit()', () => {
   });
 
   afterEach(() => {
-    rmSync(output, { recursive: true, force: true });
+    fs.rmSync(output, { recursive: true, force: true });
   });
 
   it('should match snapshot', async () => {

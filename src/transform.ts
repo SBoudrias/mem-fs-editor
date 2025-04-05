@@ -6,9 +6,10 @@ export const createCommitTransform = () =>
   new Transform({
     objectMode: true,
     transform(file: MemFsEditorFile, _encoding, callback) {
-      commitFileAsync(file).then(
-        () => callback(null, file),
-        (error) => callback(error),
-      );
+      commitFileAsync(file)
+        .then(() => {
+          callback(null, file);
+        })
+        .catch(callback);
     },
   });

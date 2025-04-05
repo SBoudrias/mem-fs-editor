@@ -1,5 +1,5 @@
 import { describe, beforeEach, it, expect, vi } from 'vitest';
-import { type MemFsEditor, create } from '../src/index.js';
+import { type MemFsEditor, MemFsEditorFile, create } from '../src/index.js';
 import { create as createMemFs } from 'mem-fs';
 import { getFixture } from './fixtures.js';
 
@@ -7,7 +7,7 @@ describe('#write()', () => {
   let memFs: MemFsEditor;
 
   beforeEach(() => {
-    const store = createMemFs();
+    const store = createMemFs<MemFsEditorFile>();
     vi.spyOn(store, 'add');
 
     memFs = create(store);

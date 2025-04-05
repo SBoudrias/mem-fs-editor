@@ -5,7 +5,7 @@ import { minimatch } from 'minimatch';
 import { hasClearedState, hasState } from '../state.js';
 import type { MemFsEditor, MemFsEditorFile } from '../index.js';
 
-const defaultDumpFilter = (file) => hasClearedState(file) || hasState(file);
+const defaultDumpFilter = (file: MemFsEditorFile) => hasClearedState(file) || hasState(file);
 
 export type MemFsEditorFileDump = {
   contents: string | null;

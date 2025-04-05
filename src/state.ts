@@ -1,35 +1,34 @@
 import fs from 'fs';
 import { MemFsEditorFile } from './index.js';
 
-const STATE = 'state';
+const states: Record<string, MemFsEditorFile['state']> = {
+  MODIFIED: 'modified',
+  DELETED: 'deleted',
+};
 
-const STATE_CLEARED = 'stateCleared';
-
-const STATE_MODIFIED = 'modified';
-
-const STATE_DELETED = 'deleted';
-
-const IS_NEW = 'isNew';
-
-export const setFileState = (file: MemFsEditorFile, state) => {
-  file[STATE] = state;
+export const setFileState = (file: MemFsEditorFile, state: MemFsEditorFile['state']) => {
+  file.state = state;
 };
 
 export const isFileNew = (file: MemFsEditorFile) => {
-  if (file[IS_NEW] === undefined) {
-    file[IS_NEW] = !fs.existsSync(file.path);
+  if (file.isNew === undefined) {
+    file.isNew = !fs.existsSync(file.path);
   }
 
-  return file[IS_NEW];
+  return file.isNew;
 };
 
-export const isFileStateModified = (file: MemFsEditorFile) => file[STATE] === STATE_MODIFIED;
+export const isFileStateModified = (file: MemFsEditorFile) => file.state === states.MODIFIED;
 
-export const setModifiedFileState = (file: MemFsEditorFile) => setFileState(file, STATE_MODIFIED);
+export const setModifiedFileState = (file: MemFsEditorFile) => {
+  setFileState(file, states.MODIFIED);
+};
 
-export const isFileStateDeleted = (file: MemFsEditorFile) => file[STATE] === STATE_DELETED;
+export const isFileStateDeleted = (file: MemFsEditorFile) => file.state === states.DELETED;
 
-export const setDeletedFileState = (file: MemFsEditorFile) => setFileState(file, STATE_DELETED);
+export const setDeletedFileState = (file: MemFsEditorFile) => {
+  setFileState(file, states.DELETED);
+};
 
 export const isFilePending = (file: MemFsEditorFile) =>
   isFileStateModified(file) || (isFileStateDeleted(file) && !isFileNew(file));
@@ -41,14 +40,14 @@ export const setCommittedFile = (file: MemFsEditorFile) => {
 export const isFileCommitted = (file: MemFsEditorFile) => Boolean(file.committed);
 
 export const resetFileState = (file: MemFsEditorFile) => {
-  delete file[STATE];
+  delete file.state;
 };
 
 /**
  * Delete commit related states.
  */
 export const resetFileCommitStates = (file: MemFsEditorFile) => {
-  delete file[STATE_CLEARED];
+  delete file.stateCleared;
   delete file.committed;
 };
 
@@ -58,18 +57,18 @@ export const resetFileCommitStates = (file: MemFsEditorFile) => {
 export const resetFile = (file: MemFsEditorFile) => {
   resetFileState(file);
   resetFileCommitStates(file);
-  delete file[IS_NEW];
+  delete file.isNew;
 };
 
 export const clearFileState = (file: MemFsEditorFile) => {
-  if (file[STATE]) {
-    file[STATE_CLEARED] = file[STATE];
+  if (file.state) {
+    file.stateCleared = file.state;
   }
 
   resetFileState(file);
-  delete file[IS_NEW];
+  delete file.isNew;
 };
 
-export const hasState = (file: MemFsEditorFile) => Boolean(file[STATE]);
+export const hasState = (file: MemFsEditorFile) => Boolean(file.state);
 
-export const hasClearedState = (file: MemFsEditorFile) => Boolean(file[STATE_CLEARED]);
+export const hasClearedState = (file: MemFsEditorFile) => Boolean(file.stateCleared);

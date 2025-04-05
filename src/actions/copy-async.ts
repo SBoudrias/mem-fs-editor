@@ -42,7 +42,8 @@ async function getOneFile(from: string | string[]) {
     if ((await fsPromises.stat(resolved)).isFile()) {
       return resolved;
     }
-  } catch (_) {}
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (error) {}
 
   return undefined;
 }
@@ -62,7 +63,7 @@ export async function copyAsync(
   tplSettings?: Options,
 ) {
   to = path.resolve(to);
-  options = options || {};
+  options ||= {};
   const oneFile = await getOneFile(from);
   if (oneFile) {
     return this._copySingleAsync(oneFile, renderFilepath(to, context, tplSettings), options);
@@ -103,16 +104,17 @@ export async function copyAsync(
   // Sanity checks: Makes sure we copy at least one file.
   assert(
     options.ignoreNoMatch || diskFiles.length > 0 || storeFiles.length > 0,
-    'Trying to copy from a source that does not exist: ' + from,
+    'Trying to copy from a source that does not exist: ' + String(from),
   );
 
   await Promise.all([
     ...diskFiles.map((file) =>
       this._copySingleAsync(file, renderFilepath(generateDestination(file), context, tplSettings), options),
     ),
-    ...storeFiles.map((file) =>
-      Promise.resolve(this._copySingle(file, renderFilepath(generateDestination(file), context, tplSettings), options)),
-    ),
+    ...storeFiles.map((file) => {
+      this._copySingle(file, renderFilepath(generateDestination(file), context, tplSettings), options);
+      return Promise.resolve();
+    }),
   ]);
 }
 
@@ -129,13 +131,17 @@ export async function _copySingleAsync(
   options: CopySingleAsyncOptions = {},
 ) {
   if (!options.processFile) {
-    return this._copySingle(from, to, options);
+    this._copySingle(from, to, options);
+    return;
   }
+
   from = path.resolve(from);
 
   const contents = await applyProcessingFileFunc.call(this, options.processFile, from);
 
   if (options.append) {
+    // Safety check against legacy API
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (!this.store.existsInMemory) {
       throw new Error('Current mem-fs is not compatible with append');
     }

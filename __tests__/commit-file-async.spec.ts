@@ -6,8 +6,6 @@ import { create as createMemFs } from 'mem-fs';
 import { type MemFsEditor, type MemFsEditorFile, create } from '../src/index.js';
 import commitFileAsync from '../src/actions/commit-file-async.js';
 
-const rmSync = fs.rmSync || fs.rmdirSync;
-
 // Permission mode are handled differently by windows.
 // More information can be found at Node source https://github.com/nodejs/node/blob/8cf33850bea691d8c53b2d4175c959c8549aa76c/deps/uv/src/win/fs.c#L1743-L1761
 // Windows only changes readonly flag and ignores user/group.
@@ -16,7 +14,7 @@ const READ_WRITE_MODE = 0o666;
 const READ_ONLY_MODE = 0o444;
 
 describe('#commitFileAsync()', () => {
-  const outputRoot = path.join(os.tmpdir(), 'mem-fs-editor-test' + Math.random());
+  const outputRoot = path.join(os.tmpdir(), 'mem-fs-editor-test' + String(Math.random()));
   const outputDir = path.join(outputRoot, 'output');
   const filename = path.join(outputDir, 'file.txt');
   const filenameNew = path.join(outputDir, 'file-new.txt');
@@ -25,7 +23,7 @@ describe('#commitFileAsync()', () => {
   let memFs: MemFsEditor;
 
   beforeEach(() => {
-    const store = createMemFs();
+    const store = createMemFs<MemFsEditorFile>();
     vi.spyOn(store, 'add');
 
     memFs = create(store);
@@ -41,7 +39,7 @@ describe('#commitFileAsync()', () => {
   });
 
   afterEach(() => {
-    rmSync(outputRoot, { recursive: true, force: true });
+    fs.rmSync(outputRoot, { recursive: true, force: true });
   });
 
   it('writes a modified file to disk', async () => {

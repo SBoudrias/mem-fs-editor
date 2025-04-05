@@ -3,14 +3,28 @@ name: Node.js CI
 on: [push, pull_request]
 
 jobs:
-  build:
-    name: Node ${{ matrix.node-version }} ${{ matrix.os }}
+  Linting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+      - run: node --version
+      - run: npm ci
+      - name: Typescript
+        run: npx tsc
+      - name: Eslint
+        run: npx eslint .
+
+  Testing:
+    name: Testing on Node ${{ matrix.node-version }} ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
 
     strategy:
       fail-fast: false
       matrix:
-        node-version: [18.x, 20.x]
+        node-version: [18.x, 20.x, 22.x]
         os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
@@ -18,9 +32,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Install and test
-        run: |
-          node --version
-          npm ci
-          npx vitest --run --coverage
+      - run: node --version
+      - run: npm ci
+      - name: Vitest
+        run: npx vitest --run --coverage
       - uses: codecov/codecov-action@v5

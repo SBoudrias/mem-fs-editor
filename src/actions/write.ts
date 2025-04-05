@@ -1,6 +1,6 @@
 import assert from 'assert';
 import { resolve } from 'path';
-
+import fs from 'fs';
 import { isFileStateModified, setModifiedFileState } from '../state.js';
 import type { MemFsEditor, MemFsEditorFile } from '../index.js';
 import File from 'vinyl';
@@ -11,7 +11,8 @@ export const isMemFsEditorFileEqual = (a: CompareFile, b: CompareFile) => {
   if (a.stat?.mode !== b.stat?.mode) {
     return false;
   }
-  return a.contents === b.contents || a.contents?.equals(b.contents!);
+
+  return a.contents === b.contents || (a.contents && b.contents && a.contents.equals(b.contents));
 };
 
 export function _write<EditorFile extends MemFsEditorFile>(this: MemFsEditor<EditorFile>, file: EditorFile) {
@@ -34,16 +35,17 @@ export default function write(
   this: MemFsEditor,
   filepath: string,
   contents: string | Buffer,
-  stat: { mode?: number } | null = null,
+  stat: fs.Stats | undefined = undefined,
 ) {
   assert(typeof contents === 'string' || Buffer.isBuffer(contents), 'Expected `contents` to be a String or a Buffer');
 
   const newContents = Buffer.isBuffer(contents) ? contents : Buffer.from(contents);
+
   this._write(
     new File({
       path: resolve(filepath),
       contents: newContents,
-      stat: stat as any,
+      stat,
     }),
   );
   return contents.toString();

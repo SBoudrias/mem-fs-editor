@@ -92,6 +92,6 @@ MemFsEditor.prototype.move = move;
 MemFsEditor.prototype.commit = commit;
 MemFsEditor.prototype.dump = dump;
 
-export function create(store) {
-  return new MemFsEditor(store);
+export function create<T extends MemFsEditorFile>(store: Store<T>) {
+  return new MemFsEditor<T>(store);
 }

@@ -1,5 +1,5 @@
 import { describe, beforeEach, it, expect, vi } from 'vitest';
-import { type MemFsEditor, create } from '../src/index.js';
+import { type MemFsEditor, MemFsEditorFile, create } from '../src/index.js';
 import { create as createMemFs } from 'mem-fs';
 import escape from 'escape-regexp';
 import { getFixture } from './fixtures.js';
@@ -8,11 +8,11 @@ describe('#readJSON()', () => {
   let memFs: MemFsEditor;
 
   beforeEach(() => {
-    memFs = create(createMemFs());
+    memFs = create(createMemFs<MemFsEditorFile>());
   });
 
   it('read the content of a file', () => {
-    const obj = memFs.readJSON(getFixture('file.json'));
+    const obj = memFs.readJSON(getFixture('file.json')) as { foo: string };
     expect(obj.foo).toBe('bar');
   });
 
@@ -28,7 +28,7 @@ describe('#readJSON()', () => {
   it('return defaults if file does not exist and defaults is provided', () => {
     const obj = memFs.readJSON(getFixture('no-such-file.json'), {
       foo: 'bar',
-    });
+    }) as { foo: string };
     expect(obj.foo).toBe('bar');
   });
 
@@ -42,6 +42,12 @@ describe('#readJSON()', () => {
 
   it('throw error with file path info', () => {
     const filePath = getFixture('file-tpl.txt');
-    expect(memFs.readJSON.bind(memFs, new RegExp(escape(filePath)))).toThrow();
+    expect(
+      memFs.readJSON.bind(
+        memFs,
+        // @ts-expect-error - Expecting it to throw
+        new RegExp(escape(filePath)),
+      ),
+    ).toThrow();
   });
 });

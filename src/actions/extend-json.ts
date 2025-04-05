@@ -9,7 +9,7 @@ export default function extendJSON(
   space?: string | number,
 ) {
   const originalContent = this.readJSON(filepath, {});
-  const newContent = extend({}, originalContent, contents);
+  const newContent = extend({}, originalContent, contents ?? {});
 
   this.writeJSON(filepath, newContent, replacer, space);
 }

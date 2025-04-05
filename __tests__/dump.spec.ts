@@ -3,9 +3,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { create as createMemFs } from 'mem-fs';
-import { type MemFsEditor, create } from '../src/index.js';
-
-const rmSync = fs.rmSync || fs.rmdirSync;
+import { type MemFsEditor, MemFsEditorFile, create } from '../src/index.js';
 
 describe('#dump()', () => {
   const output = path.join(os.tmpdir(), '/mem-fs-editor-test');
@@ -13,7 +11,7 @@ describe('#dump()', () => {
   let memFs: MemFsEditor;
 
   beforeEach(async () => {
-    memFs = create(createMemFs());
+    memFs = create(createMemFs<MemFsEditorFile>());
 
     memFs.write(path.join(output, subdir, 'committed'), 'committed');
     memFs.write(path.join(output, subdir, 'committed-delete'), 'committed-delete');
@@ -33,7 +31,7 @@ describe('#dump()', () => {
   });
 
   afterEach(() => {
-    rmSync(output, { recursive: true, force: true });
+    fs.rmSync(output, { recursive: true, force: true });
   });
 
   it('should match snapshot', () => {

@@ -12,8 +12,8 @@ export default async function (
   tplSettings?: Options,
   options?: CopyAsyncOptions,
 ) {
-  context = context || {};
-  tplSettings = tplSettings || {};
+  context ||= {};
+  tplSettings ||= {};
 
   await this.copyAsync(
     from,
@@ -22,7 +22,7 @@ export default async function (
       processDestinationPath: (path) => path.replace(/.ejs$/, ''),
       ...options,
       async processFile(filename) {
-        if (isBinary(filename, null)) {
+        if (isBinary(filename)) {
           return fs.readFile(filename);
         }
 

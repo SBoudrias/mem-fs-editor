@@ -7,6 +7,7 @@ async function write(file: MemFsEditorFile) {
   if (!file.contents) {
     throw new Error(`${file.path} cannot write an empty file`);
   }
+
   const dir = path.dirname(file.path);
   try {
     if (!(await fs.stat(dir)).isDirectory()) {
@@ -33,11 +34,13 @@ async function write(file: MemFsEditorFile) {
 }
 
 async function remove(file: MemFsEditorFile) {
+  // Safety check against legacy API
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   const remove = fs.rm || fs.rmdir;
   await remove(file.path, { recursive: true });
 }
 
-export default async function commitFileAsync<EditorFile extends MemFsEditorFile>(file: EditorFile) {
+export default async function commitFileAsync(file: MemFsEditorFile) {
   if (isFileStateModified(file)) {
     setCommittedFile(file);
     await write(file);

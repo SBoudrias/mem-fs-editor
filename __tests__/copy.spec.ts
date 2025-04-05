@@ -2,7 +2,7 @@ import { describe, beforeEach, it, expect, vi } from 'vitest';
 import fs from 'fs';
 import os from 'os';
 import path, { dirname } from 'path';
-import { type MemFsEditor, create } from '../src/index.js';
+import { type MemFsEditor, MemFsEditorFile, create } from '../src/index.js';
 import { create as createMemFs } from 'mem-fs';
 import { getFixture } from './fixtures.js';
 import { fileURLToPath } from 'url';
@@ -13,7 +13,7 @@ describe('#copy()', () => {
   let memFs: MemFsEditor;
 
   beforeEach(() => {
-    memFs = create(createMemFs());
+    memFs = create(createMemFs<MemFsEditorFile>());
   });
 
   it('copy file', () => {
@@ -33,7 +33,7 @@ describe('#copy()', () => {
 
     it('should append file to file already loaded', () => {
       const filepath = getFixture('file-a.txt');
-      const initialContents = memFs.read(filepath);
+      const initialContents = memFs.read(filepath) ?? '';
       const newPath = '/new/path/file.txt';
       memFs.copy(filepath, newPath, { append: true });
 
@@ -50,10 +50,13 @@ describe('#copy()', () => {
     });
 
     it('should throw if mem-fs is not compatible', () => {
+      // @ts-expect-error - This is a legacy API
       memFs.store.existsInMemory = undefined;
       const filepath = getFixture('file-a.txt');
       const newPath = '/new/path/file.txt';
-      expect(() => memFs.copy(filepath, newPath, { append: true })).toThrow();
+      expect(() => {
+        memFs.copy(filepath, newPath, { append: true });
+      }).toThrow();
     });
   });
 
@@ -141,7 +144,7 @@ describe('#copy()', () => {
   it('preserve permissions', async () => {
     const filename = path.join(os.tmpdir(), 'perm.txt');
     const copyname = path.join(os.tmpdir(), 'copy-perm.txt');
-    fs.writeFileSync(filename, 'foo', { mode: parseInt(733, 8) });
+    fs.writeFileSync(filename, 'foo', { mode: 0o733 });
 
     memFs.copy(filename, copyname);
 

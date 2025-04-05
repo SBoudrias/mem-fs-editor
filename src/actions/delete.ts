@@ -26,7 +26,7 @@ export default function deleteAction(
 
   paths = paths.map((filePath) => path.resolve(filePath));
   paths = globify(paths);
-  options = options || {};
+  options ||= {};
 
   const globOptions = options.globOptions || {};
   const files = globbySync(paths, globOptions);
