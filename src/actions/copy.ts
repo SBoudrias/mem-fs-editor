@@ -36,13 +36,14 @@ export function copy(
   context?: Data,
   tplSettings?: Options,
 ) {
-  to = path.resolve(to);
+  from = (Array.isArray(from) ? from : [from]).map(from => normalize(from));
+  to = path.resolve(normalize(to));
   options = options ?? {};
 
   const { fromBasePath } = options;
   if (fromBasePath) {
-    const applyBasePath = (from: string) => (path.isAbsolute(from) ? from : path.resolve(fromBasePath, from));
-    from = Array.isArray(from) ? from.map(applyBasePath) : applyBasePath(from);
+    const applyBasePath = (f: string) => (path.isAbsolute(f) ? f : path.resolve(fromBasePath, f));
+    from = from.map(applyBasePath);
   }
 
   let files: string[] = [];
@@ -70,7 +71,7 @@ export function copy(
   }
 
   let generateDestination: (string) => string = () => to;
-  if (Array.isArray(from) || !this.exists(from) || (isDynamicPattern(normalize(from)) && !options.noGlob)) {
+  if (from.length > 1 || !this.exists(from) || (isDynamicPattern(normalize(from)) && !options.noGlob)) {
     assert(
       !this.exists(to) || fs.statSync(to).isDirectory(),
       'When copying multiple files, provide a directory as destination',
