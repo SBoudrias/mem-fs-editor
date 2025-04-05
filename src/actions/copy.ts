@@ -1,7 +1,7 @@
 import assert from 'assert';
 import fs from 'fs';
 import path, { resolve } from 'path';
-import { globbySync, isDynamicPattern, type Options as GlobbyOptions } from 'globby';
+import { globSync, isDynamicPattern } from 'tinyglobby';
 import multimatch from 'multimatch';
 import { Data, Options } from 'ejs';
 import normalize from 'normalize-path';
@@ -22,7 +22,7 @@ function applyProcessingFunc(
 
 export type CopyOptions = CopySingleOptions & {
   noGlob?: boolean;
-  globOptions?: GlobbyOptions;
+  globOptions?: Omit<Parameters<typeof globSync>[0], 'patterns'>;
   ignoreNoMatch?: boolean;
   fromBasePath?: string;
   processDestinationPath?: (string) => string;
@@ -52,7 +52,7 @@ export function copy(
   } else {
     const fromGlob = globify(from);
     const globOptions = { ...options.globOptions, nodir: true };
-    const diskFiles = globbySync(fromGlob, globOptions).map((file) => path.resolve(file));
+    const diskFiles = globSync(fromGlob, globOptions).map((file) => path.resolve(file));
 
     const storeFiles: string[] = [];
     this.store.each((file) => {
