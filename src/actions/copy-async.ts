@@ -1,7 +1,7 @@
 import assert from 'assert';
 import fs from 'fs';
 import fsPromises from 'fs/promises';
-import path, { resolve } from 'path';
+import path from 'path';
 import type { Data, Options } from 'ejs';
 import { globbySync, isDynamicPattern, type Options as GlobbyOptions } from 'globby';
 import multimatch from 'multimatch';
@@ -131,7 +131,7 @@ export async function _copySingleAsync(
   if (!options.processFile) {
     return this._copySingle(from, to, options);
   }
-  from = resolve(from);
+  from = path.resolve(from);
 
   const contents = await applyProcessingFileFunc.call(this, options.processFile, from);
 

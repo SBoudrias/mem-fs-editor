@@ -1,4 +1,4 @@
-import filesystem from 'fs';
+import fs from 'fs';
 import path, { resolve } from 'path';
 import { Duplex } from 'stream';
 import os from 'os';
@@ -8,28 +8,26 @@ import { MemFsEditor, MemFsEditorFile, create } from '../src/index.js';
 import { getFixture } from './fixtures.js';
 import { isFilePending } from '../src/state.js';
 
-const rmSync = filesystem.rmSync || filesystem.rmdirSync;
+const rmSync = fs.rmSync || fs.rmdirSync;
 
 describe('#commit()', () => {
   const fixtureDir = path.join(os.tmpdir(), '/mem-fs-editor-test-fixture');
   const output = path.join(os.tmpdir(), '/mem-fs-editor-test' + Math.random());
   const NUMBER_FILES = 100;
 
-  let store;
-  let fs: MemFsEditor;
+  let memFs: MemFsEditor;
 
   beforeEach(() => {
-    store = createMemFs();
-    fs = create(store);
-    filesystem.mkdirSync(fixtureDir, { recursive: true });
+    memFs = create(createMemFs());
+    fs.mkdirSync(fixtureDir, { recursive: true });
 
     // Create a 100 files to exercise the stream high water mark
     let i = NUMBER_FILES;
     while (i--) {
-      filesystem.writeFileSync(path.join(fixtureDir, 'file-' + i + '.txt'), 'foo');
+      fs.writeFileSync(path.join(fixtureDir, 'file-' + i + '.txt'), 'foo');
     }
 
-    fs.copy(fixtureDir + '/**', output);
+    memFs.copy(fixtureDir + '/**', output);
   });
 
   afterEach(() => {
@@ -38,8 +36,8 @@ describe('#commit()', () => {
   });
 
   it('should match snapshot', async () => {
-    await fs.commit();
-    expect(fs.dump(output)).toMatchSnapshot();
+    await memFs.commit();
+    expect(memFs.dump(output)).toMatchSnapshot();
   });
 
   it('call filters and trigger callback on error', async () => {
@@ -54,13 +52,13 @@ describe('#commit()', () => {
       }
     });
 
-    await expect(fs.commit(filter)).rejects.toThrow(/error 1/);
+    await expect(memFs.commit(filter)).rejects.toThrow(/error 1/);
   });
 
   it('call filters and update memory model', async () => {
     let called = 0;
 
-    await fs.commit(
+    await memFs.commit(
       Duplex.from(async function* (generator: AsyncGenerator<MemFsEditorFile>) {
         for await (const file of generator) {
           called++;
@@ -71,13 +69,13 @@ describe('#commit()', () => {
     );
 
     expect(called).toBe(100);
-    expect(fs.read(path.join(output, 'file-1.txt'))).toBe('modified');
+    expect(memFs.read(path.join(output, 'file-1.txt'))).toBe('modified');
   });
 
   it('call filters, update memory model and commit selected files', async () => {
     let called = 0;
 
-    await fs.commit(
+    await memFs.commit(
       { filter: (file) => file.path.endsWith('1.txt') && isFilePending(file) },
       Duplex.from(async function* (generator: AsyncGenerator<MemFsEditorFile>) {
         for await (const file of generator) {
@@ -88,74 +86,74 @@ describe('#commit()', () => {
       }),
     );
     expect(called).toBe(10);
-    expect(fs.read(path.join(output, 'file-1.txt'))).toBe('modified');
-    expect(fs.read(path.join(output, 'file-2.txt'))).not.toBe('modified');
-    expect(store.get(path.join(output, 'file-1.txt')).committed).toBeTruthy();
-    expect(store.get(path.join(output, 'file-2.txt')).result).toBe(undefined);
+    expect(memFs.read(path.join(output, 'file-1.txt'))).toBe('modified');
+    expect(memFs.read(path.join(output, 'file-2.txt'))).not.toBe('modified');
+    expect(memFs.store.get(path.join(output, 'file-1.txt')).committed).toBeTruthy();
+    expect(memFs.store.get(path.join(output, 'file-2.txt')).result).toBe(undefined);
   });
 
   it('write file to disk', async () => {
-    await fs.commit();
-    expect(filesystem.existsSync(path.join(output, 'file-1.txt'))).toBeTruthy();
-    expect(filesystem.existsSync(path.join(output, 'file-1.txt'))).toBeTruthy();
-    expect(filesystem.existsSync(path.join(output, 'file-50.txt'))).toBeTruthy();
-    expect(filesystem.existsSync(path.join(output, 'file-99.txt'))).toBeTruthy();
+    await memFs.commit();
+    expect(fs.existsSync(path.join(output, 'file-1.txt'))).toBeTruthy();
+    expect(fs.existsSync(path.join(output, 'file-1.txt'))).toBeTruthy();
+    expect(fs.existsSync(path.join(output, 'file-50.txt'))).toBeTruthy();
+    expect(fs.existsSync(path.join(output, 'file-99.txt'))).toBeTruthy();
   }, 10000);
 
   it('handle error when write fails', async () => {
-    filesystem.writeFileSync(output, 'foo');
-    await expect(fs.commit()).rejects.toThrow(/is not a directory/);
+    fs.writeFileSync(output, 'foo');
+    await expect(memFs.commit()).rejects.toThrow(/is not a directory/);
   });
 
   it('delete file from disk', async () => {
     const file = path.join(output, 'delete.txt');
-    filesystem.mkdirSync(output, { recursive: true });
-    filesystem.writeFileSync(file, 'to delete');
+    fs.mkdirSync(output, { recursive: true });
+    fs.writeFileSync(file, 'to delete');
 
-    fs.delete(file);
-    await fs.commit();
-    expect(filesystem.existsSync(file)).toBeFalsy();
-    expect(store.get(file).committed).toBeTruthy();
+    memFs.delete(file);
+    await memFs.commit();
+    expect(fs.existsSync(file)).toBeFalsy();
+    expect(memFs.store.get(file).committed).toBeTruthy();
   });
 
   it('delete directories from disk', async () => {
     const file = path.join(output, 'nested/delete.txt');
-    filesystem.mkdirSync(path.join(output, 'nested'), { recursive: true });
-    filesystem.writeFileSync(file, 'to delete');
+    fs.mkdirSync(path.join(output, 'nested'), { recursive: true });
+    fs.writeFileSync(file, 'to delete');
 
-    fs.delete(path.join(output, 'nested'));
-    await fs.commit();
-    expect(filesystem.existsSync(file)).toBeFalsy();
+    memFs.delete(path.join(output, 'nested'));
+    await memFs.commit();
+    expect(fs.existsSync(file)).toBeFalsy();
   });
 
   it('reset file status after commiting', async () => {
-    await fs.commit();
-    expect(fs.store.get(path.join(output, '/file-a.txt')).state).toBeUndefined();
+    await memFs.commit();
+    expect(memFs.store.get(path.join(output, '/file-a.txt')).state).toBeUndefined();
   });
 
   it('does not commit files who are deleted before being commited', async () => {
-    fs.write('to-delete', 'foo');
-    fs.delete('to-delete');
-    fs.copy(getFixture('file-a.txt'), 'copy-to-delete');
-    fs.delete('copy-to-delete');
-    fs.store.get('to-delete');
+    memFs.write('to-delete', 'foo');
+    memFs.delete('to-delete');
+    memFs.copy(getFixture('file-a.txt'), 'copy-to-delete');
+    memFs.delete('copy-to-delete');
+    memFs.store.get('to-delete');
 
-    const writeFile = vi.spyOn(filesystem.promises, 'writeFile');
+    const writeFile = vi.spyOn(fs.promises, 'writeFile');
 
-    await fs.commit({ filter: () => true });
+    await memFs.commit({ filter: () => true });
 
     expect(writeFile).toHaveBeenCalled();
     expect(writeFile).not.toBeCalledWith(resolve('to-delete'), expect.anything(), expect.anything());
   });
 
   it('does not pass files who are deleted before being commited through the pipeline', async () => {
-    fs.write('to-delete', 'foo');
-    fs.delete('to-delete');
-    fs.copy(getFixture('file-a.txt'), 'copy-to-delete');
-    fs.delete('copy-to-delete');
-    fs.store.get('to-delete');
+    memFs.write('to-delete', 'foo');
+    memFs.delete('to-delete');
+    memFs.copy(getFixture('file-a.txt'), 'copy-to-delete');
+    memFs.delete('copy-to-delete');
+    memFs.store.get('to-delete');
 
-    await fs.commit(
+    await memFs.commit(
       Duplex.from(async function* (generator: AsyncGenerator<MemFsEditorFile>) {
         for await (const file of generator) {
           expect(file.path).not.toEqual(path.resolve('to-delete'));
@@ -170,14 +168,12 @@ describe('#commit()', () => {
 describe('#copy() and #commit()', () => {
   const output = path.join(os.tmpdir(), '/mem-fs-editor-test');
 
-  let store;
-  let fs: MemFsEditor;
+  let memFs: MemFsEditor;
 
   beforeEach(() => {
-    store = createMemFs();
-    fs = create(store);
+    memFs = create(createMemFs());
 
-    fs.copy(getFixture('**'), output);
+    memFs.copy(getFixture('**'), output);
   });
 
   afterEach(() => {
@@ -185,26 +181,24 @@ describe('#copy() and #commit()', () => {
   });
 
   it('should match snapshot', async () => {
-    await fs.commit();
-    expect(fs.dump(output)).toMatchSnapshot();
+    await memFs.commit();
+    expect(memFs.dump(output)).toMatchSnapshot();
   });
 });
 
 describe('#copyTpl() and #commit()', () => {
   const output = path.join(os.tmpdir(), '/mem-fs-editor-test');
 
-  let store;
-  let fs: MemFsEditor;
+  let memFs: MemFsEditor;
 
   beforeEach(() => {
-    store = createMemFs();
-    fs = create(store);
+    memFs = create(createMemFs());
 
     const a = { name: 'foo' } as any;
     const b = { a };
     a.b = b;
 
-    fs.copyTpl(getFixture('**'), output, { name: 'bar' }, { context: { a } });
+    memFs.copyTpl(getFixture('**'), output, { name: 'bar' }, { context: { a } });
   });
 
   afterEach(() => {
@@ -212,7 +206,7 @@ describe('#copyTpl() and #commit()', () => {
   });
 
   it('should match snapshot', async () => {
-    await fs.commit();
-    expect(fs.dump(output)).toMatchSnapshot();
+    await memFs.commit();
+    expect(memFs.dump(output)).toMatchSnapshot();
   });
 });

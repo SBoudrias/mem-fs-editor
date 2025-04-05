@@ -5,20 +5,18 @@ import { create as createMemFs } from 'mem-fs';
 import { getFixture } from './fixtures.js';
 
 describe('#delete()', () => {
-  let store;
-  let fs: MemFsEditor;
+  let memFs: MemFsEditor;
 
   beforeEach(() => {
-    store = createMemFs();
-    fs = create(store);
+    memFs = create(createMemFs());
   });
 
   it('deletes existing files', () => {
     const filepath = getFixture('file-a.txt');
-    fs.delete(filepath);
-    expect(fs.read.bind(fs, filepath)).toThrow();
+    memFs.delete(filepath);
+    expect(memFs.read.bind(memFs, filepath)).toThrow();
 
-    const file = fs.store.get(filepath);
+    const file = memFs.store.get(filepath);
     expect(file.contents).toBe(null);
     expect(file.state).toBe('deleted');
   });
@@ -26,36 +24,36 @@ describe('#delete()', () => {
   it('deletes a directory with existing files', () => {
     const dirpath = getFixture('nested');
     const nestedFile = path.join(dirpath, 'file.txt');
-    fs.delete(dirpath);
+    memFs.delete(dirpath);
 
-    const file = fs.store.get(nestedFile);
+    const file = memFs.store.get(nestedFile);
     expect(file.contents).toBe(null);
     expect(file.state).toBe('deleted');
   });
 
   it('deletes new files', () => {
-    fs.write('foo', 'foo');
-    fs.delete('foo');
+    memFs.write('foo', 'foo');
+    memFs.delete('foo');
 
-    const file = fs.store.get('foo');
+    const file = memFs.store.get('foo');
     expect(file.contents).toBe(null);
     expect(file.state).toBe('deleted');
   });
 
   it('deletes new directories', () => {
-    fs.write('/test/bar/foo.txt', 'foo');
-    fs.delete('/test/bar/');
+    memFs.write('/test/bar/foo.txt', 'foo');
+    memFs.delete('/test/bar/');
 
-    const file = fs.store.get('/test/bar/foo.txt');
+    const file = memFs.store.get('/test/bar/foo.txt');
     expect(file.contents).toBe(null);
     expect(file.state).toBe('deleted');
   });
 
   it('delete new files if specifying a full path', () => {
-    fs.write('bar', 'bar');
-    fs.delete(path.resolve('bar'));
+    memFs.write('bar', 'bar');
+    memFs.delete(path.resolve('bar'));
 
-    const file = fs.store.get('bar');
+    const file = memFs.store.get('bar');
     expect(file.contents).toBe(null);
     expect(file.state).toBe('deleted');
   });

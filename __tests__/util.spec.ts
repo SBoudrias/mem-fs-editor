@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import filesystem from 'fs';
+import fs from 'fs';
 import path from 'path';
 import sinon from 'sinon';
 import { getCommonPath, globify } from '../src/util.js';
@@ -64,7 +64,7 @@ describe('globify()', () => {
   });
 
   it('throws if target path is neither a file or a directory', () => {
-    sinon.stub(filesystem, 'statSync').returns({
+    sinon.stub(fs, 'statSync').returns({
       isFile: () => false,
       isDirectory: () => false,
     });
@@ -72,6 +72,6 @@ describe('globify()', () => {
     const filePath = getFixture('file-a.txt');
     expect(() => globify(filePath)).toThrow();
 
-    filesystem.statSync.restore();
+    fs.statSync.restore();
   });
 });

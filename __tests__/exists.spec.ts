@@ -7,26 +7,24 @@ const fileA = getFixture('file-a.txt');
 const fileDelete = getFixture('deleteAfter');
 
 describe('#exists()', () => {
-  let store;
-  let fs: MemFsEditor;
+  let memFs: MemFsEditor;
 
   beforeEach(() => {
-    store = createMemFs();
-    fs = create(store);
+    memFs = create(createMemFs());
   });
 
   it("file doesn't exist", () => {
-    expect(fs.exists('something that doesnt exist')).toBeFalsy();
+    expect(memFs.exists('something that doesnt exist')).toBeFalsy();
   });
 
   it('file does exist', () => {
-    fs.read(fileA);
-    expect(fs.exists(fileA)).toBeTruthy();
+    memFs.read(fileA);
+    expect(memFs.exists(fileA)).toBeTruthy();
   });
 
   it("file doesn't exist after delete", () => {
-    fs.write(fileDelete, 'some content');
-    fs.delete(fileDelete);
-    expect(fs.exists(fileDelete)).toBeFalsy();
+    memFs.write(fileDelete, 'some content');
+    memFs.delete(fileDelete);
+    expect(memFs.exists(fileDelete)).toBeFalsy();
   });
 });

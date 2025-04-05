@@ -6,21 +6,19 @@ import { create as createMemFs } from 'mem-fs';
 import { getFixture } from './fixtures.js';
 
 describe('#move()', () => {
-  let store;
-  let fs: MemFsEditor;
+  let memFs: MemFsEditor;
 
   beforeEach(() => {
-    store = createMemFs();
-    fs = create(store);
+    memFs = create(createMemFs());
   });
 
   it('move file', () => {
     const filepath = getFixture('file-a.txt');
-    const initialContents = fs.read(filepath);
+    const initialContents = memFs.read(filepath);
     const newpath = '/new/path/file.txt';
-    fs.move(filepath, newpath);
-    expect(fs.read(newpath)).toBe(initialContents);
-    expect(fs.read.bind(fs, filepath)).toThrow();
+    memFs.move(filepath, newpath);
+    expect(memFs.read(newpath)).toBe(initialContents);
+    expect(memFs.read.bind(memFs, filepath)).toThrow();
   });
 
   it('move directory', () => {
@@ -29,18 +27,18 @@ describe('#move()', () => {
     const filepath = path.join(dirpath, filename);
     const newdirpath = '/new/path';
     const newfilepath = path.join(newdirpath, filename);
-    fs.move(dirpath, newdirpath);
-    expect(fs.store.get(newfilepath).state).toBe('modified');
-    expect(fs.read.bind(fs, filepath)).toThrow();
+    memFs.move(dirpath, newdirpath);
+    expect(memFs.store.get(newfilepath).state).toBe('modified');
+    expect(memFs.read.bind(memFs, filepath)).toThrow();
   });
 
   it('move file to an existing `to` path', () => {
     const filepath = getFixture('file-a.txt');
-    const initialContents = fs.read(filepath);
+    const initialContents = memFs.read(filepath);
     const newpath = getFixture('nested/file.txt');
-    fs.move(filepath, newpath);
-    expect(fs.read(newpath)).toBe(initialContents);
-    expect(fs.read.bind(fs, filepath)).toThrow();
+    memFs.move(filepath, newpath);
+    expect(memFs.read(newpath)).toBe(initialContents);
+    expect(memFs.read.bind(memFs, filepath)).toThrow();
   });
 
   it('move directory to an existing `to` path (as a directory)', () => {
@@ -49,18 +47,18 @@ describe('#move()', () => {
     const contents = 'another';
     const fromdir = getFixture('nested');
 
-    fs.write(filepath, contents);
-    fs.move(fromdir, dirpath);
+    memFs.write(filepath, contents);
+    memFs.move(fromdir, dirpath);
 
-    expect(fs.read(path.join(dirpath, 'file.txt'))).toBe('nested' + os.EOL);
-    expect(fs.read(filepath)).toBe(contents);
-    expect(fs.read.bind(fs, path.join(fromdir, 'file.txt'))).toThrow();
+    expect(memFs.read(path.join(dirpath, 'file.txt'))).toBe('nested' + os.EOL);
+    expect(memFs.read(filepath)).toBe(contents);
+    expect(memFs.read.bind(memFs, path.join(fromdir, 'file.txt'))).toThrow();
   });
 
   it('throws when moving directory to an existing `to` path (as a file)', () => {
     const filepath = getFixture('file-a.txt');
     const frompath = getFixture('nested');
 
-    expect(fs.move.bind(fs, frompath, filepath)).toThrow();
+    expect(memFs.move.bind(memFs, frompath, filepath)).toThrow();
   });
 });

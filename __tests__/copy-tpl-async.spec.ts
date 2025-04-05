@@ -7,33 +7,31 @@ import normalize from 'normalize-path';
 import { getFixture } from './fixtures.js';
 
 describe('#copyTpl()', () => {
-  let store;
-  let fs: MemFsEditor;
+  let memFs: MemFsEditor;
 
   beforeEach(() => {
-    store = createMemFs();
-    fs = create(store);
+    memFs = create(createMemFs());
   });
 
   it('copy file and process contents as underscore template', async () => {
     const filepath = getFixture('file-tpl.txt');
     const newPath = '/new/path/file.txt';
-    await fs.copyTplAsync(filepath, newPath, { name: 'new content' });
-    expect(fs.read(newPath)).toBe('new content' + os.EOL);
+    await memFs.copyTplAsync(filepath, newPath, { name: 'new content' });
+    expect(memFs.read(newPath)).toBe('new content' + os.EOL);
   });
 
   it('fallback to memory file', async () => {
     const filepath = getFixture('file-tpl.txt');
-    await fs.copyAsync(filepath, filepath + '.mem');
+    await memFs.copyAsync(filepath, filepath + '.mem');
     const newPath = '/new/path/file.txt';
-    await fs.copyTplAsync(filepath + '.mem', newPath, { name: 'new content' });
-    expect(fs.read(newPath)).toBe('new content' + os.EOL);
+    await memFs.copyTplAsync(filepath + '.mem', newPath, { name: 'new content' });
+    expect(memFs.read(newPath)).toBe('new content' + os.EOL);
   });
 
   it('allow setting custom template delimiters', async () => {
     const filepath = getFixture('file-tpl-custom-delimiter.txt');
     const newPath = '/new/path/file.txt';
-    await fs.copyTplAsync(
+    await memFs.copyTplAsync(
       filepath,
       newPath,
       { name: 'mustache' },
@@ -41,25 +39,25 @@ describe('#copyTpl()', () => {
         delimiter: '?',
       },
     );
-    expect(fs.read(newPath)).toBe('mustache' + os.EOL);
+    expect(memFs.read(newPath)).toBe('mustache' + os.EOL);
   });
 
   it('allow including partials', async () => {
     const filepath = getFixture('file-tpl-include.txt');
     const newPath = '/new/path/file.txt';
-    await fs.copyTplAsync(filepath, newPath);
-    expect(fs.read(newPath)).toBe('partial' + os.EOL + os.EOL);
+    await memFs.copyTplAsync(filepath, newPath);
+    expect(memFs.read(newPath)).toBe('partial' + os.EOL + os.EOL);
   });
 
   it('allow appending files', async () => {
     const filepath = getFixture('file-tpl.txt');
     const newPath = '/new/path/file-append.txt';
-    await fs.copyTplAsync(filepath, newPath, { name: 'new content' });
-    expect(fs.read(newPath)).toBe('new content' + os.EOL);
-    await fs.copyTplAsync(filepath, newPath, { name: 'new content' }, undefined, {
+    await memFs.copyTplAsync(filepath, newPath, { name: 'new content' });
+    expect(memFs.read(newPath)).toBe('new content' + os.EOL);
+    await memFs.copyTplAsync(filepath, newPath, { name: 'new content' }, undefined, {
       append: true,
     });
-    expect(fs.read(newPath)).toBe('new content' + os.EOL + 'new content' + os.EOL);
+    expect(memFs.read(newPath)).toBe('new content' + os.EOL + 'new content' + os.EOL);
   });
 
   it('allow including glob options', async () => {
@@ -70,16 +68,16 @@ describe('#copyTpl()', () => {
       },
     };
     const newPath = '/new/path';
-    await fs.copyTplAsync(filenames, newPath, {}, {}, copyOptions);
-    expect(fs.exists(path.join(newPath, 'file-tpl-partial.txt'))).toBeTruthy();
-    expect(fs.exists(path.join(newPath, 'file-tpl.txt'))).toBeFalsy();
+    await memFs.copyTplAsync(filenames, newPath, {}, {}, copyOptions);
+    expect(memFs.exists(path.join(newPath, 'file-tpl-partial.txt'))).toBeTruthy();
+    expect(memFs.exists(path.join(newPath, 'file-tpl.txt'))).toBeFalsy();
   });
 
   it('perform no substitution on binary files', async () => {
     const filepath = getFixture('file-binary.bin');
     const newPath = '/new/path/file.bin';
-    await fs.copyTplAsync(filepath, newPath);
-    expect(fs.read(newPath)).toBe(fs.read(filepath));
+    await memFs.copyTplAsync(filepath, newPath);
+    expect(memFs.read(newPath)).toBe(memFs.read(filepath));
   });
 
   it('allow passing circular function context', async () => {
@@ -88,7 +86,7 @@ describe('#copyTpl()', () => {
     b.a = a;
     const filepath = getFixture('file-circular.txt');
     const newPath = '/new/path/file.txt';
-    await fs.copyTplAsync(
+    await memFs.copyTplAsync(
       filepath,
       newPath,
       {},
@@ -96,27 +94,27 @@ describe('#copyTpl()', () => {
         context: { a },
       },
     );
-    expect(fs.read(newPath)).toBe('new content new content' + os.EOL);
+    expect(memFs.read(newPath)).toBe('new content new content' + os.EOL);
   });
 
   it('removes ejs extension when globbing', async () => {
     const filepath = getFixture('ejs');
     const newPath = '/new/path/';
-    await fs.copyTplAsync(filepath, newPath);
-    expect(fs.exists(path.join(newPath, 'file-ejs-extension.txt'))).toBeTruthy();
+    await memFs.copyTplAsync(filepath, newPath);
+    expect(memFs.exists(path.join(newPath, 'file-ejs-extension.txt'))).toBeTruthy();
   });
 
   it("doens't removes ejs extension when not globbing", async () => {
     const filepath = getFixture('ejs/file-ejs-extension.txt.ejs');
     const newPath = '/new/path/file-ejs-extension.txt.ejs';
-    await fs.copyTplAsync(filepath, newPath);
-    expect(fs.exists(newPath)).toBeTruthy();
+    await memFs.copyTplAsync(filepath, newPath);
+    expect(memFs.exists(newPath)).toBeTruthy();
   });
 
   it('keeps template path in file history', async () => {
     const filepath = getFixture('file-tpl.txt');
     const newPath = '/new/path/file.txt';
-    await fs.copyTplAsync(filepath, newPath, { name: 'new content' });
-    expect(fs.store.get(newPath).history).toMatchObject([resolve(filepath), resolve(newPath)]);
+    await memFs.copyTplAsync(filepath, newPath, { name: 'new content' });
+    expect(memFs.store.get(newPath).history).toMatchObject([resolve(filepath), resolve(newPath)]);
   });
 });

@@ -4,38 +4,36 @@ import { MemFsEditor, create } from '../src/index.js';
 import { create as createMemFs } from 'mem-fs';
 
 describe('#write()', () => {
-  let store;
-  let fs: MemFsEditor;
+  let memFs: MemFsEditor;
 
   beforeEach(() => {
-    store = createMemFs();
-    fs = create(store);
+    memFs = create(createMemFs());
   });
 
   it('appends new content to new file', () => {
-    fs.append('append.txt', 'b', { create: true });
+    memFs.append('append.txt', 'b', { create: true });
 
-    expect(fs.read('append.txt')).toBe('b');
+    expect(memFs.read('append.txt')).toBe('b');
   });
 
   it('appends new content to file', () => {
-    fs.write('append.txt', 'a\n\n\n');
-    fs.append('append.txt', 'b');
+    memFs.write('append.txt', 'a\n\n\n');
+    memFs.append('append.txt', 'b');
 
-    expect(fs.read('append.txt')).toBe('a' + os.EOL + 'b');
+    expect(memFs.read('append.txt')).toBe('a' + os.EOL + 'b');
   });
 
   it('allows specifying custom separator', () => {
-    fs.write('append.txt', 'a');
-    fs.append('append.txt', 'b', { separator: ', ' });
+    memFs.write('append.txt', 'a');
+    memFs.append('append.txt', 'b', { separator: ', ' });
 
-    expect(fs.read('append.txt')).toBe('a, b');
+    expect(memFs.read('append.txt')).toBe('a, b');
   });
 
   it('allows disabling end trim', () => {
-    fs.write('append.txt', 'a\n\n');
-    fs.append('append.txt', 'b', { trimEnd: false });
+    memFs.write('append.txt', 'a\n\n');
+    memFs.append('append.txt', 'b', { trimEnd: false });
 
-    expect(fs.read('append.txt')).toBe('a\n\n' + os.EOL + 'b');
+    expect(memFs.read('append.txt')).toBe('a\n\n' + os.EOL + 'b');
   });
 });
