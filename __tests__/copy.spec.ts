@@ -142,8 +142,10 @@ describe('#copy()', () => {
   });
 
   it('preserve permissions', async () => {
-    const filename = path.join(os.tmpdir(), 'perm.txt');
-    const copyname = path.join(os.tmpdir(), 'copy-perm.txt');
+    const copyFolder = path.join(os.tmpdir(), 'mem-fs-editor');
+    const filename = path.join(copyFolder, 'perm.txt');
+    const copyname = path.join(copyFolder, 'copy-perm.txt');
+    fs.mkdirSync(copyFolder, { recursive: true });
     fs.writeFileSync(filename, 'foo', { mode: 0o733 });
 
     memFs.copy(filename, copyname);
@@ -152,6 +154,8 @@ describe('#copy()', () => {
     const oldStat = fs.statSync(filename);
     const newStat = fs.statSync(copyname);
     expect(newStat.mode).toBe(oldStat.mode);
+
+    fs.rmSync(copyFolder, { recursive: true, force: true });
   });
 
   it('copy with globbing disabled', () => {

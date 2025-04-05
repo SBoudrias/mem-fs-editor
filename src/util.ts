@@ -46,7 +46,7 @@ export function globify(inputFilePath: string | string[]): string | string[] {
   if (!fs.existsSync(filePath)) {
     // The target of a pattern who's not a glob and doesn't match an existing
     // entity on the disk is ambiguous. As such, match both files and directories.
-    return [filePath, normalize(path.join(filePath, '**'))];
+    return [filePath, normalize(path.posix.join(filePath, '**'))];
   }
 
   const fsStats = fs.statSync(filePath);
@@ -55,7 +55,7 @@ export function globify(inputFilePath: string | string[]): string | string[] {
   }
 
   if (fsStats.isDirectory()) {
-    return normalize(path.join(filePath, '**'));
+    return normalize(path.posix.join(filePath, '**'));
   }
 
   throw new Error('Only file path or directory path are supported.');
@@ -76,6 +76,25 @@ export function isBinary(filePath: string, newFileContents?: string | Buffer) {
     (newFileContents &&
       isBinaryFileSync(Buffer.isBuffer(newFileContents) ? newFileContents : Buffer.from(newFileContents)))
   );
+}
+
+export function parseOptions({
+  from,
+  to,
+  fromBasePath,
+}: {
+  from: string | string[];
+  to: string;
+  fromBasePath?: string;
+}): { from: string[]; to: string; fromBasePath: string } {
+  from = Array.isArray(from) ? from : [from];
+
+  if (fromBasePath) {
+    const applyBasePath = (f: string) => (path.isAbsolute(f) ? f : path.resolve(fromBasePath, f));
+    from = from.map(applyBasePath);
+  }
+
+  return { from, to: normalize(path.resolve(to)), fromBasePath: fromBasePath ?? getCommonPath(from) };
 }
 
 export function render(template: string, data?: ejs.Data, options?: ejs.Options): string {
