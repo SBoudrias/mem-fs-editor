@@ -1,14 +1,15 @@
 import assert from 'assert';
 import fs from 'fs';
-import path, { resolve } from 'path';
+import path from 'path';
 import createDebug from 'debug';
+import type { Data, Options } from 'ejs';
 import { globbySync, isDynamicPattern, type Options as GlobbyOptions } from 'globby';
 import multimatch from 'multimatch';
-import { Data, Options } from 'ejs';
 import normalize from 'normalize-path';
 import File from 'vinyl';
 
 import type { MemFsEditor } from '../index.js';
+import { resolveFromPaths, render, getCommonPath, ResolvedFrom, globify, resolveGlobOptions } from '../util.js';
 
 const debug = createDebug('mem-fs-editor:copy');
 
@@ -34,71 +35,87 @@ export function copy(
   this: MemFsEditor,
   from: string | string[],
   to: string,
-  options?: CopyOptions,
+  options: CopyOptions = {},
   context?: Data,
   tplSettings?: Options,
 ) {
-  to = path.resolve(to);
-  options ??= {};
+  const { fromBasePath = getCommonPath(from), noGlob } = options;
+  const resolvedFromPaths = resolveFromPaths({ from, fromBasePath });
+  const hasDynamicPattern = resolvedFromPaths.some((f) => isDynamicPattern(normalize(f.from)));
+  const { preferFiles } = resolveGlobOptions({
+    noGlob,
+    hasDynamicPattern,
+    hasGlobOptions: Boolean(options.globOptions),
+  });
 
-  const { fromBasePath } = options;
-  if (fromBasePath) {
-    const applyBasePath = (from: string) => (path.isAbsolute(from) ? from : path.resolve(fromBasePath, from));
-    from = Array.isArray(from) ? from.map(applyBasePath) : applyBasePath(from);
+  const foundFiles: ResolvedFrom[] = [];
+  const globResolved: ResolvedFrom[] = [];
+
+  for (const resolvedFromPath of resolvedFromPaths) {
+    const { from: filePath, resolvedFrom } = resolvedFromPath;
+    if (preferFiles && this.exists(resolvedFrom)) {
+      foundFiles.push(resolvedFromPath);
+    } else if (noGlob) {
+      throw new Error('Trying to copy from a source that does not exist: ' + filePath);
+    } else {
+      globResolved.push(resolvedFromPath);
+    }
   }
 
-  let files: string[] = [];
-  if (options.noGlob) {
-    const fromFiles = Array.isArray(from) ? from : [from];
-    files = fromFiles.filter((filepath) => this.store.existsInMemory(filepath) || fs.existsSync(filepath));
-  } else {
-    const fromGlob = globify(from);
-    const globOptions = { ...options.globOptions, nodir: true };
-    const diskFiles = globbySync(fromGlob, globOptions).map((file) => path.resolve(file));
-
-    const storeFiles: string[] = [];
+  if (globResolved.length > 0) {
+    const patterns = globResolved.map((file) => globify(file.from)).flat();
+    const globbedFiles = globbySync(patterns, {
+      cwd: fromBasePath,
+      ...options.globOptions,
+      absolute: true,
+      onlyFiles: true,
+    });
     this.store.each((file) => {
       const normalizedFilepath = normalize(file.path);
       // The store may have a glob path and when we try to copy it will fail because not real file
       if (
-        !diskFiles.includes(file.path) &&
+        !globbedFiles.includes(normalizedFilepath) &&
         !isDynamicPattern(normalizedFilepath) &&
-        multimatch([normalizedFilepath], fromGlob).length !== 0
+        multimatch([normalizedFilepath], patterns).length !== 0
       ) {
-        storeFiles.push(file.path);
+        globbedFiles.push(file.path);
       }
     });
-    files = diskFiles.concat(storeFiles);
-  }
 
-  let generateDestination: (string: string) => string = () => to;
-  if (Array.isArray(from) || !this.exists(from) || (isDynamicPattern(normalize(from)) && !options.noGlob)) {
-    assert(
-      !this.exists(to) || fs.statSync(to).isDirectory(),
-      'When copying multiple files, provide a directory as destination',
+    const foundResolvedFrom = foundFiles.map((file) => file.resolvedFrom);
+    foundFiles.push(
+      ...resolveFromPaths({
+        from: globbedFiles
+          .map((filePath) => normalize(filePath))
+          .filter((filePath) => !foundResolvedFrom.includes(filePath)),
+        fromBasePath,
+      }),
     );
-
-    const processDestinationPath = options.processDestinationPath || ((path) => path);
-    const root = fromBasePath ?? getCommonPath(from);
-    generateDestination = (filepath) => {
-      const toFile = path.relative(root, filepath);
-      return processDestinationPath(path.join(to, toFile));
-    };
   }
 
   // Sanity checks: Makes sure we copy at least one file.
   assert(
-    options.ignoreNoMatch || files.length > 0,
-    'Trying to copy from a source that does not exist: ' + String(from),
+    options.ignoreNoMatch || foundFiles.length > 0,
+    'Trying to copy from a source that does not exist: ' + from.toString(),
   );
 
-  files.forEach((file) => {
-    let toFile = generateDestination(file);
+  // If `from` is an array, or if it contains any dynamic patterns, or if it doesn't exist, `to` must be a directory.
+  const treatToAsDir = Array.isArray(from) || !preferFiles || globResolved.length > 0;
+  if (treatToAsDir) {
+    assert(
+      !this.exists(to) || fs.statSync(to).isDirectory(),
+      'When copying multiple files, provide a directory as destination',
+    );
+  }
+
+  const processDestinationPath = options.processDestinationPath || ((path) => path);
+  foundFiles.forEach((file) => {
+    let toFile = treatToAsDir ? processDestinationPath(path.join(to, file.relativeFrom)) : to;
     if (context) {
       toFile = render(toFile, context, { ...tplSettings, cache: false });
     }
 
-    this._copySingle(file, toFile, options);
+    this._copySingle(file.resolvedFrom, toFile, options);
   });
 }
 
@@ -112,7 +129,7 @@ export function _copySingle(this: MemFsEditor, from: string, to: string, options
 
   debug('Copying %s to %s with %o', from, to, options);
   const file = this.store.get(from);
-  to = resolve(to);
+  to = path.resolve(to);
 
   let { contents } = file;
   if (!contents) {
