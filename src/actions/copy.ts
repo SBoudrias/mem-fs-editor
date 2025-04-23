@@ -1,6 +1,7 @@
 import assert from 'assert';
 import fs from 'fs';
 import path, { resolve } from 'path';
+import createDebug from 'debug';
 import { globbySync, isDynamicPattern, type Options as GlobbyOptions } from 'globby';
 import multimatch from 'multimatch';
 import { Data, Options } from 'ejs';
@@ -8,7 +9,8 @@ import normalize from 'normalize-path';
 import File from 'vinyl';
 
 import type { MemFsEditor } from '../index.js';
-import { getCommonPath, globify, render } from '../util.js';
+
+const debug = createDebug('mem-fs-editor:copy');
 
 function applyProcessingFunc(
   process: (contents: string | Buffer, filepath: string, destination: string) => string | Buffer,
@@ -108,6 +110,7 @@ export type CopySingleOptions = {
 export function _copySingle(this: MemFsEditor, from: string, to: string, options: CopySingleOptions = {}) {
   assert(this.exists(from), 'Trying to copy from a source that does not exist: ' + from);
 
+  debug('Copying %s to %s with %o', from, to, options);
   const file = this.store.get(from);
   to = resolve(to);
 

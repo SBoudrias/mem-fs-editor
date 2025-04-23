@@ -2,6 +2,7 @@ import assert from 'assert';
 import fs from 'fs';
 import fsPromises from 'fs/promises';
 import path from 'path';
+import createDebug from 'debug';
 import type { Data, Options } from 'ejs';
 import { globbySync, isDynamicPattern, type Options as GlobbyOptions } from 'globby';
 import multimatch from 'multimatch';
@@ -11,6 +12,8 @@ import File from 'vinyl';
 import type { MemFsEditor } from '../index.js';
 import { AppendOptions } from './append.js';
 import { CopySingleOptions } from './copy.js';
+
+const debug = createDebug('mem-fs-editor:copy-async');
 
 async function applyProcessingFileFunc(
   this: MemFsEditor,
@@ -136,6 +139,8 @@ export async function _copySingleAsync(
   }
 
   from = path.resolve(from);
+
+  debug('Copying %s to %s with %o', from, to, options);
 
   const contents = await applyProcessingFileFunc.call(this, options.processFile, from);
 
