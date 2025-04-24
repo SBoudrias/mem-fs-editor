@@ -33,14 +33,7 @@ function renderFilepath(filepath, context, tplSettings) {
   return render(filepath, context, tplSettings);
 }
 
-async function getOneFile(from: string | string[]) {
-  let oneFile;
-  if (typeof from === 'string') {
-    oneFile = from;
-  } else {
-    return undefined;
-  }
-
+async function getOneFile(oneFile: string) {
   const resolved = path.resolve(oneFile);
   try {
     if ((await fsPromises.stat(resolved)).isFile()) {

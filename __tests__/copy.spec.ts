@@ -78,6 +78,14 @@ describe('#copy()', () => {
     expect(memFs.copy.bind(memFs, filepath, newPath)).toThrow();
   });
 
+  it('throws when trying to copy from a non-existing file with noGlob option', () => {
+    const filepath = getFixture('does-not-exits');
+    const newPath = getFixture('../../test/new/path/file.txt');
+    expect(() => {
+      memFs.copy(filepath, newPath, { noGlob: true });
+    }).toThrow('Trying to copy from a source that does not exist: ');
+  });
+
   it('copy file and process contents', () => {
     const filepath = getFixture('file-a.txt');
     const initialContents = memFs.read(filepath);
