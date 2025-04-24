@@ -14,8 +14,8 @@ import { resolveFromPaths, render, getCommonPath, ResolvedFrom, globify, resolve
 const debug = createDebug('mem-fs-editor:copy');
 
 function applyProcessingFunc(
-  process: (contents: string | Buffer, filepath: string, destination: string) => string | Buffer,
-  contents: string | Buffer,
+  process: (contents: Buffer, filepath: string, destination: string) => string | Buffer,
+  contents: Buffer,
   filename: string,
   destination: string,
 ) {
@@ -121,21 +121,19 @@ export function copy(
 
 export type CopySingleOptions = {
   append?: boolean;
-  process?: (contents: string | Buffer, filepath: string, destination: string) => string | Buffer;
+  process?: (contents: Buffer, filepath: string, destination: string) => string | Buffer;
 };
 
 export function _copySingle(this: MemFsEditor, from: string, to: string, options: CopySingleOptions = {}) {
-  assert(this.exists(from), 'Trying to copy from a source that does not exist: ' + from);
-
   debug('Copying %s to %s with %o', from, to, options);
-  const file = this.store.get(from);
+  const file = this._getExisting(from);
   to = path.resolve(to);
 
-  let { contents } = file;
-  if (!contents) {
-    throw new Error(`Cannot copy empty file ${from}`);
+  if (!file) {
+    throw new Error('Trying to copy from a source that does not exist: ' + from);
   }
 
+  let { contents } = file;
   if (options.process) {
     contents = applyProcessingFunc(options.process, contents, file.path, to);
   }

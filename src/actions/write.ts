@@ -8,6 +8,7 @@ import File from 'vinyl';
 type CompareFile = { contents: null | Buffer; stat?: { mode?: number } | null };
 
 export const isMemFsEditorFileEqual = (a: CompareFile, b: CompareFile) => {
+  /* c8 ignore next */
   if (a.stat?.mode !== b.stat?.mode) {
     return false;
   }

@@ -28,7 +28,7 @@ export default function <EditorFile extends MemFsEditorFile>(
       .all()
       .filter((file) => filterFile(file, cwd))
       .map((file) => {
-        const filePath = normalize(cwd ? path.relative(cwd, file.path) : file.path);
+        const filePath = normalize(path.relative(cwd, file.path));
         const fileDump: MemFsEditorFileDump = {
           contents: file.contents?.toString() ?? null,
         };

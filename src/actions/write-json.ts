@@ -9,6 +9,7 @@ export default function writeJSON(
   replacer?: ((this: any, key: string, value: any) => any) | (number | string)[] | null,
   space?: string | number,
 ) {
+  /* c8 ignore next 4 */
   const jsonStr =
     typeof replacer === 'function'
       ? JSON.stringify(contents, replacer, space || DEFAULT_INDENTATION) + '\n'

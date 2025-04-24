@@ -47,6 +47,12 @@ describe('#commitFileAsync()', () => {
     expect(fs.readFileSync(filename).toString()).toEqual('foo');
   });
 
+  it('throws if file contents is null', async () => {
+    const file = memFs.store.get(filename);
+    file.contents = null;
+    await expect(commitFileAsync(memFs.store.get(filename))).rejects.toThrow('cannot write an empty file');
+  });
+
   it('writes non existing file to disk', async () => {
     await commitFileAsync(newFile);
     expect(fs.existsSync(filenameNew)).toBe(true);
