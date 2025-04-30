@@ -46,7 +46,7 @@ export function copy(
     files = from.filter((f) => this.store.existsInMemory(f) || fs.existsSync(f));
   } else {
     const fromGlob = globify(from);
-    const diskFiles = globSync(fromGlob, { ...options.globOptions, absolute: true, onlyFiles: true });
+    const diskFiles = globSync(fromGlob, { ...options.globOptions, absolute: true, onlyFiles: true }).map(normalize);
 
     const storeFiles: string[] = [];
     this.store.each((file) => {
