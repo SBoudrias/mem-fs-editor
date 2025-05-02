@@ -1,5 +1,5 @@
-import { describe, beforeEach, it, expect, vi } from 'vitest';
-import fs from 'fs';
+import { describe, beforeEach, it, expect, vi, afterEach } from 'vitest';
+import fs from 'fs/promises';
 import os from 'os';
 import path, { dirname } from 'path';
 import { type MemFsEditor, MemFsEditorFile, create } from '../src/index.js';
@@ -11,9 +11,16 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 describe('#copy()', () => {
   let memFs: MemFsEditor;
+  let outputDir: string;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     memFs = create(createMemFs<MemFsEditorFile>());
+    outputDir = path.join(os.tmpdir(), 'mem-fs-editor');
+    await fs.mkdir(outputDir, { recursive: true });
+  });
+
+  afterEach(async () => {
+    await fs.rm(outputDir, { recursive: true, force: true });
   });
 
   it('copy file', () => {
@@ -102,21 +109,18 @@ describe('#copy()', () => {
   });
 
   it('copy by directory', () => {
-    const outputDir = getFixture('../../test/output');
     memFs.copy(getFixture(), outputDir);
     expect(memFs.read(path.join(outputDir, 'file-a.txt'))).toBe('foo' + os.EOL);
     expect(memFs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
   });
 
   it('copy by globbing', () => {
-    const outputDir = getFixture('../../test/output');
     memFs.copy(getFixture('**'), outputDir);
     expect(memFs.read(path.join(outputDir, 'file-a.txt'))).toBe('foo' + os.EOL);
     expect(memFs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
   });
 
   it('copy by globbing multiple patterns', () => {
-    const outputDir = getFixture('../../test/output');
     memFs.copy([getFixture('**'), '!**/*tpl*'], outputDir);
     expect(memFs.read(path.join(outputDir, 'file-a.txt'))).toBe('foo' + os.EOL);
     expect(memFs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
@@ -124,7 +128,6 @@ describe('#copy()', () => {
   });
 
   it('copy files by globbing and process contents', () => {
-    const outputDir = getFixture('../../test/output');
     const process = vi.fn().mockImplementation((f) => f);
     memFs.copy(getFixture('**'), outputDir, { process });
     expect(process).toHaveBeenCalledTimes(13); // 10 total files under 'fixtures', not counting folders
@@ -133,7 +136,6 @@ describe('#copy()', () => {
   });
 
   it('accepts directory name with "."', () => {
-    const outputDir = getFixture('../../test/out.put');
     memFs.copy(getFixture('**'), outputDir);
     expect(memFs.read(path.join(outputDir, 'file-a.txt'))).toBe('foo' + os.EOL);
     expect(memFs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
@@ -150,21 +152,16 @@ describe('#copy()', () => {
   });
 
   it('preserve permissions', async () => {
-    const copyFolder = path.join(os.tmpdir(), 'mem-fs-editor');
-    fs.rmSync(copyFolder, { recursive: true, force: true });
-    const filename = path.join(copyFolder, 'perm.txt');
-    const copyname = path.join(copyFolder, 'copy-perm.txt');
-    fs.mkdirSync(copyFolder, { recursive: true });
-    fs.writeFileSync(filename, 'foo', { mode: 0o733 });
+    const filename = path.join(outputDir, 'perm.txt');
+    const copyname = path.join(outputDir, 'copy-perm.txt');
+    await fs.writeFile(filename, 'foo', { mode: 0o733 });
 
     memFs.copy(filename, copyname);
 
     await memFs.commit();
-    const oldStat = fs.statSync(filename);
-    const newStat = fs.statSync(copyname);
+    const oldStat = await fs.stat(filename);
+    const newStat = await fs.stat(copyname);
     expect(newStat.mode).toBe(oldStat.mode);
-
-    fs.rmSync(copyFolder, { recursive: true, force: true });
   });
 
   it('copy with globbing disabled', () => {
@@ -184,7 +181,6 @@ describe('#copy()', () => {
   });
 
   it('accepts fromBasePath', () => {
-    const outputDir = getFixture('../../test/output');
     memFs.copy(['file-a.txt', 'nested/file.txt'], outputDir, {
       fromBasePath: path.join(__dirname, 'fixtures'),
       noGlob: true,
