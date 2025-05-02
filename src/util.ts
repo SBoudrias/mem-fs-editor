@@ -49,7 +49,7 @@ export function globify(inputFilePath: string | string[]): string | string[] {
   if (!fs.existsSync(filePath)) {
     // The target of a pattern who's not a glob and doesn't match an existing
     // entity on the disk is ambiguous. As such, match both files and directories.
-    return [filePath, normalize(path.posix.join(filePath, '**'))];
+    return [filePath, normalize(path.join(filePath, '**'))];
   }
 
   const fsStats = fs.statSync(filePath);
@@ -58,7 +58,7 @@ export function globify(inputFilePath: string | string[]): string | string[] {
   }
 
   if (fsStats.isDirectory()) {
-    return normalize(path.posix.join(filePath, '**'));
+    return normalize(path.join(filePath, '**'));
   }
 
   throw new Error('Only file path or directory path are supported.');
