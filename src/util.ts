@@ -1,4 +1,4 @@
-import assert from 'node:assert';
+import assert from 'assert';
 import ejs from 'ejs';
 import fs from 'fs';
 import path from 'path';
