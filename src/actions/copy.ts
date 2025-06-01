@@ -108,7 +108,7 @@ export function copy(
     );
   }
 
-  const processDestinationPath = options.processDestinationPath || ((path) => path);
+  const processDestinationPath = options.processDestinationPath || ((destPath) => destPath);
   foundFiles.forEach((file) => {
     let toFile = treatToAsDir ? processDestinationPath(path.join(to, file.relativeFrom)) : to;
     if (context) {
