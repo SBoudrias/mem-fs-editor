@@ -29,7 +29,7 @@ export default function deleteAction(
   options ||= {};
 
   const globOptions = options.globOptions || {};
-  const files = globSync(paths, globOptions);
+  const files = globSync(paths, { ...globOptions, absolute: true, onlyFiles: true });
   files.forEach((file) => {
     deleteFile(file, this.store);
   });
