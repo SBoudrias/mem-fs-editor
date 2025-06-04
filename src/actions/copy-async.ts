@@ -2,15 +2,19 @@ import assert from 'assert';
 import fs from 'fs';
 import fsPromises from 'fs/promises';
 import path from 'path';
+import createDebug from 'debug';
 import type { Data, Options } from 'ejs';
-import { globbySync, isDynamicPattern, type Options as GlobbyOptions } from 'globby';
+import { globby, isDynamicPattern, type Options as GlobbyOptions } from 'globby';
 import multimatch from 'multimatch';
-import { render, globify, getCommonPath } from '../util.js';
 import normalize from 'normalize-path';
 import File from 'vinyl';
+
 import type { MemFsEditor } from '../index.js';
 import { AppendOptions } from './append.js';
 import { CopySingleOptions } from './copy.js';
+import { resolveFromPaths, render, getCommonPath, ResolvedFrom, globify, resolveGlobOptions } from '../util.js';
+
+const debug = createDebug('mem-fs-editor:copy-async');
 
 async function applyProcessingFileFunc(
   this: MemFsEditor,
@@ -29,15 +33,8 @@ function renderFilepath(filepath, context, tplSettings) {
   return render(filepath, context, tplSettings);
 }
 
-async function getOneFile(from: string | string[]) {
-  let oneFile;
-  if (typeof from === 'string') {
-    oneFile = from;
-  } else {
-    return undefined;
-  }
-
-  const resolved = path.resolve(oneFile);
+async function getOneFile(filepath: string) {
+  const resolved = path.resolve(filepath);
   try {
     if ((await fsPromises.stat(resolved)).isFile()) {
       return resolved;
@@ -58,47 +55,62 @@ export async function copyAsync(
   this: MemFsEditor,
   from: string | string[],
   to: string,
-  options?: CopyAsyncOptions,
+  options: CopyAsyncOptions = {},
   context?: Data,
   tplSettings?: Options,
 ) {
   to = path.resolve(to);
-  options ||= {};
-  const oneFile = await getOneFile(from);
-  if (oneFile) {
-    return this._copySingleAsync(oneFile, renderFilepath(to, context, tplSettings), options);
+  if (typeof from === 'string') {
+    // If `from` is a string and an existing file just go ahead and copy it.
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (this.store.existsInMemory?.(from) && this.exists(from)) {
+      this._copySingle(from, renderFilepath(to, context, tplSettings), options);
+      return;
+    }
+
+    const oneFile = await getOneFile(from);
+    if (oneFile) {
+      return this._copySingleAsync(oneFile, renderFilepath(to, context, tplSettings), options);
+    }
   }
 
-  const fromGlob = globify(from);
-
-  const globOptions = { ...options.globOptions, nodir: true };
-  const diskFiles = globbySync(fromGlob, globOptions).map((filepath) => path.resolve(filepath));
-  const storeFiles: string[] = [];
-  this.store.each((file) => {
-    const normalizedFilepath = normalize(file.path);
-    // The store may have a glob path and when we try to copy it will fail because not real file
-    if (
-      !isDynamicPattern(normalizedFilepath) &&
-      multimatch([normalizedFilepath], fromGlob).length !== 0 &&
-      !diskFiles.includes(file.path)
-    ) {
-      storeFiles.push(file.path);
-    }
+  const fromBasePath = getCommonPath(from);
+  const resolvedFromPaths = resolveFromPaths({ from, fromBasePath });
+  const hasDynamicPattern = resolvedFromPaths.some((f) => isDynamicPattern(normalize(f.from)));
+  const { preferFiles } = resolveGlobOptions({
+    noGlob: false,
+    hasDynamicPattern,
+    hasGlobOptions: Boolean(options.globOptions),
   });
 
-  let generateDestination: (string) => string = () => to;
-  if (Array.isArray(from) || !this.exists(from) || isDynamicPattern(normalize(from))) {
-    assert(
-      !this.exists(to) || fs.statSync(to).isDirectory(),
-      'When copying multiple files, provide a directory as destination',
-    );
+  const storeFiles: string[] = [];
+  const globResolved: ResolvedFrom[] = [];
 
-    const processDestinationPath = options.processDestinationPath || ((path) => path);
-    const root = getCommonPath(from);
-    generateDestination = (filepath) => {
-      const toFile = path.relative(root, filepath);
-      return processDestinationPath(path.join(to, toFile));
-    };
+  for (const resolvedFromPath of resolvedFromPaths) {
+    const { resolvedFrom } = resolvedFromPath;
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (this.store.existsInMemory?.(resolvedFrom)) {
+      storeFiles.push(resolvedFrom);
+    } else {
+      globResolved.push(resolvedFromPath);
+    }
+  }
+
+  let diskFiles: string[] = [];
+  if (globResolved.length > 0) {
+    const patterns = globResolved.map((file) => globify(file.from)).flat();
+    diskFiles = await globby(patterns, { ...options.globOptions, absolute: true, onlyFiles: true });
+    this.store.each((file) => {
+      const normalizedFilepath = normalize(file.path);
+      // The store may have a glob path and when we try to copy it will fail because not real file
+      if (
+        !diskFiles.includes(normalizedFilepath) &&
+        !isDynamicPattern(normalizedFilepath) &&
+        multimatch([normalizedFilepath], patterns).length !== 0
+      ) {
+        storeFiles.push(file.path);
+      }
+    });
   }
 
   // Sanity checks: Makes sure we copy at least one file.
@@ -106,6 +118,22 @@ export async function copyAsync(
     options.ignoreNoMatch || diskFiles.length > 0 || storeFiles.length > 0,
     'Trying to copy from a source that does not exist: ' + String(from),
   );
+
+  // If `from` is an array, or if it contains any dynamic patterns, or if it doesn't exist, `to` must be a directory.
+  const treatToAsDir = Array.isArray(from) || !preferFiles || globResolved.length > 0;
+  let generateDestination: (string) => string = () => to;
+  if (treatToAsDir) {
+    assert(
+      !this.exists(to) || fs.statSync(to).isDirectory(),
+      'When copying multiple files, provide a directory as destination',
+    );
+
+    const processDestinationPath = options.processDestinationPath || ((path) => path);
+    generateDestination = (filepath) => {
+      const toFile = path.relative(fromBasePath, filepath);
+      return processDestinationPath(path.join(to, toFile));
+    };
+  }
 
   await Promise.all([
     ...diskFiles.map((file) =>
@@ -136,6 +164,8 @@ export async function _copySingleAsync(
   }
 
   from = path.resolve(from);
+
+  debug('Copying %s to %s with %o', from, to, options);
 
   const contents = await applyProcessingFileFunc.call(this, options.processFile, from);
 

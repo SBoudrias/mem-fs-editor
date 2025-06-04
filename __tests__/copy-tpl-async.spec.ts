@@ -6,7 +6,7 @@ import { create as createMemFs } from 'mem-fs';
 import normalize from 'normalize-path';
 import { getFixture } from './fixtures.js';
 
-describe('#copyTpl()', () => {
+describe('#copyTplAsync()', () => {
   let memFs: MemFsEditor;
 
   beforeEach(() => {
@@ -26,6 +26,14 @@ describe('#copyTpl()', () => {
     const newPath = '/new/path/file.txt';
     await memFs.copyTplAsync(filepath + '.mem', newPath, { name: 'new content' });
     expect(memFs.read(newPath)).toBe('new content' + os.EOL);
+  });
+
+  it('fallback to memory file with array', async () => {
+    const filepath = getFixture('file-tpl.txt');
+    await memFs.copyAsync(filepath, filepath + '.mem');
+    const newPath = '/new/path/';
+    await memFs.copyTplAsync([filepath + '.mem'], newPath, { name: 'new content' });
+    expect(memFs.read(`${newPath}file-tpl.txt.mem`)).toBe('new content' + os.EOL);
   });
 
   it('allow setting custom template delimiters', async () => {

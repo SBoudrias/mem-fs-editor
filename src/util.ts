@@ -1,3 +1,4 @@
+import assert from 'assert';
 import ejs from 'ejs';
 import fs from 'fs';
 import path from 'path';
@@ -32,6 +33,8 @@ export function getCommonPath(filePath: string | string[]): string {
   return path.dirname(filePath);
 }
 
+export function globify(inputFilePath: string): string | string[];
+export function globify(inputFilePath: string[]): string[];
 export function globify(inputFilePath: string | string[]): string | string[] {
   if (Array.isArray(inputFilePath)) {
     return inputFilePath.reduce<string[]>((memo, pattern) => memo.concat(globify(pattern)), []);
@@ -84,4 +87,30 @@ export function render(template: string, data?: ejs.Data, options?: ejs.Options)
 
 export function renderFile(template: string, data?: ejs.Data, options?: ejs.Options): Promise<string> {
   return ejs.renderFile(template, data, { cache: true, ...options });
+}
+
+export type ResolvedFrom = {
+  from: string;
+  resolvedFrom: string;
+  relativeFrom: string;
+};
+
+export function resolveFromPaths({
+  from,
+  fromBasePath,
+}: {
+  from: string | string[];
+  fromBasePath: string;
+}): ResolvedFrom[] {
+  return (Array.isArray(from) ? from : [from]).map((filePath) => {
+    const filePathIsAbsolute = path.isAbsolute(filePath);
+    const relativeFrom = filePathIsAbsolute ? path.relative(fromBasePath, filePath) : filePath;
+    const resolvedFrom = filePathIsAbsolute ? filePath : path.resolve(fromBasePath, filePath);
+    return { from: filePath, resolvedFrom, relativeFrom };
+  });
+}
+
+export function resolveGlobOptions({ noGlob, hasGlobOptions, hasDynamicPattern }) {
+  assert(!noGlob || !hasGlobOptions, '`noGlob` and `globOptions` are mutually exclusive');
+  return { preferFiles: noGlob || (!hasGlobOptions && !hasDynamicPattern) };
 }
