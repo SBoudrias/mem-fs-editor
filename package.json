@@ -34,7 +34,6 @@
   },
   "dependencies": {
     "@types/ejs": "^3.1.5",
-    "@types/node": ">=20",
     "binaryextensions": "^6.11.0",
     "commondir": "^1.0.1",
     "debug": "^4.4.1",
@@ -72,7 +71,13 @@
     "vitest": "^3.2.1"
   },
   "peerDependencies": {
+    "@types/node": ">=20",
     "mem-fs": "^4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/node": {
+      "optional": true
+    }
   },
   "engines": {
     "node": ">=20.0.0"
