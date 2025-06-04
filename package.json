@@ -33,43 +33,43 @@
     "test": "vitest --run"
   },
   "dependencies": {
-    "@types/ejs": "^3.1.4",
-    "@types/node": ">=18",
+    "@types/ejs": "^3.1.5",
+    "@types/node": ">=20",
     "binaryextensions": "^6.11.0",
     "commondir": "^1.0.1",
-    "debug": "^4.4.0",
+    "debug": "^4.4.1",
     "deep-extend": "^0.6.0",
     "ejs": "^3.1.10",
-    "globby": "^14.0.2",
+    "globby": "^14.1.0",
     "isbinaryfile": "5.0.4",
-    "minimatch": "^9.0.3",
+    "minimatch": "^10.0.1",
     "multimatch": "^7.0.0",
     "normalize-path": "^3.0.0",
     "textextensions": "^6.11.0",
-    "vinyl": "^3.0.0"
+    "vinyl": "^3.0.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
-    "@eslint/js": "^9.24.0",
+    "@eslint/js": "^9.28.0",
     "@types/commondir": "^1.0.2",
     "@types/debug": "^4.1.12",
     "@types/deep-extend": "^0.6.2",
     "@types/escape-regexp": "^0.0.3",
     "@types/normalize-path": "^3.0.2",
-    "@typescript-eslint/eslint-plugin": "^8.29.0",
-    "@typescript-eslint/parser": "^8.29.0",
-    "@vitest/coverage-v8": "^3.0.4",
+    "@typescript-eslint/eslint-plugin": "^8.33.1",
+    "@typescript-eslint/parser": "^8.33.1",
+    "@vitest/coverage-v8": "^3.2.1",
     "escape-regexp": "0.0.1",
-    "eslint": "^9.24.0",
-    "eslint-config-prettier": "^10.0.1",
+    "eslint": "^9.28.0",
+    "eslint-config-prettier": "^10.1.5",
     "eslint-config-xo": "^0.46.0",
-    "eslint-plugin-prettier": "^5.0.1",
-    "globals": "^16.0.0",
-    "prettier": "^3.0.3",
-    "prettier-plugin-packagejson": "^2.4.6",
-    "typescript": "^5.2.2",
-    "typescript-eslint": "^8.29.0",
-    "vitest": "^3.0.4"
+    "eslint-plugin-prettier": "^5.4.1",
+    "globals": "^16.2.0",
+    "prettier": "^3.5.3",
+    "prettier-plugin-packagejson": "^2.5.15",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.33.1",
+    "vitest": "^3.2.1"
   },
   "peerDependencies": {
     "mem-fs": "^4.0.0"
@@ -78,6 +78,6 @@
     "node": ">=20.0.0"
   },
   "acceptDependencies": {
-    "isbinaryfile": "^5.0.3"
+    "isbinaryfile": "^5.0.4"
   }
 }
