@@ -1,11 +1,12 @@
 // @ts-check
 import eslint from '@eslint/js';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
+import { defineConfig } from 'eslint/config';
 import globals from 'globals';
 import xo from 'eslint-config-xo';
 import tseslint from 'typescript-eslint';
 
-export default tseslint.config([
+export default defineConfig([
   {
     ignores: ['dist', 'node_modules', 'coverage'],
   },
@@ -19,8 +20,6 @@ export default tseslint.config([
     },
 
     rules: {
-      'default-param-last': 'off',
-      'padding-line-between-statements': 'off',
       'max-params': 'off',
       'no-eq-null': 'off',
 
