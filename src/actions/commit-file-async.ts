@@ -26,6 +26,7 @@ async function write(file: MemFsEditorFile) {
 
   if (newMode !== undefined) {
     const { mode: existingMode } = await fs.stat(file.path);
+    /* c8 ignore next 4 */
     // eslint-disable-next-line no-bitwise
     if ((existingMode & 0o777) !== (newMode & 0o777)) {
       await fs.chmod(file.path, newMode);
