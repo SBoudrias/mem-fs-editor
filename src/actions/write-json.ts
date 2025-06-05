@@ -9,10 +9,13 @@ export default function writeJSON(
   replacer?: ((this: any, key: string, value: any) => any) | (number | string)[] | null,
   space?: string | number,
 ) {
-  const jsonStr =
-    typeof replacer === 'function'
-      ? JSON.stringify(contents, replacer, space || DEFAULT_INDENTATION) + '\n'
-      : JSON.stringify(contents, replacer, space || DEFAULT_INDENTATION) + '\n';
-
-  return this.write(filepath, jsonStr);
+  return this.write(
+    filepath,
+    JSON.stringify(
+      contents,
+      // Convert to any due to multiples stringify signatures.
+      replacer as any,
+      space || DEFAULT_INDENTATION,
+    ) + '\n',
+  );
 }
