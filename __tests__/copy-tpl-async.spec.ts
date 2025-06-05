@@ -1,10 +1,22 @@
-import { describe, beforeEach, it, expect } from 'vitest';
+import { describe, beforeEach, it, expect, vi } from 'vitest';
 import os from 'os';
 import path, { resolve } from 'path';
 import { type MemFsEditor, MemFsEditorFile, create } from '../src/index.js';
 import { create as createMemFs } from 'mem-fs';
-import normalize from 'normalize-path';
 import { getFixture } from './fixtures.js';
+import multimatch from 'multimatch';
+import { glob } from 'tinyglobby';
+import normalizePath from 'normalize-path';
+
+vi.mock('multimatch', async (importOriginal) => {
+  const actual = (await importOriginal()) as any;
+  return { ...actual, default: vi.fn().mockImplementation(actual.default) };
+});
+
+vi.mock('tinyglobby', async (importOriginal) => {
+  const actual = (await importOriginal()) as any;
+  return { ...actual, glob: vi.fn().mockImplementation(actual.glob) };
+});
 
 describe('#copyTplAsync()', () => {
   let memFs: MemFsEditor;
@@ -68,17 +80,20 @@ describe('#copyTplAsync()', () => {
     expect(memFs.read(newPath)).toBe('new content' + os.EOL + 'new content' + os.EOL);
   });
 
-  it('allow including glob options', async () => {
-    const filenames = [getFixture('file-tpl-partial.txt'), getFixture('file-tpl.txt')];
-    const copyOptions = {
-      globOptions: {
-        ignore: [normalize(filenames[1])],
-      },
-    };
-    const newPath = '/new/path';
-    await memFs.copyTplAsync(filenames, newPath, {}, {}, copyOptions);
-    expect(memFs.exists(path.join(newPath, 'file-tpl-partial.txt'))).toBeTruthy();
-    expect(memFs.exists(path.join(newPath, 'file-tpl.txt'))).toBeFalsy();
+  it('should pass globOptions to glob', async () => {
+    const globOptions = { debug: false } as const;
+    const filepath = getFixture('file-tpl-partial.*');
+    await memFs.copyTplAsync([filepath], '/new/path/', {}, {}, { globOptions, fromBasePath: getFixture() });
+
+    expect(glob).toHaveBeenCalledWith([normalizePath(filepath)], expect.objectContaining(globOptions));
+  });
+
+  it('should pass storeMatchOptions to multimatch', async () => {
+    const storeMatchOptions = { debug: false } as const;
+    const filepath = getFixture('file-tpl-partial.*');
+    await memFs.copyTplAsync([filepath], '/new/path/', {}, {}, { storeMatchOptions, fromBasePath: getFixture() });
+
+    expect(multimatch).toHaveBeenCalledWith(expect.any(Array), [normalizePath(filepath)], storeMatchOptions);
   });
 
   it('perform no substitution on binary files', async () => {

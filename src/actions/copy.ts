@@ -3,8 +3,9 @@ import fs from 'fs';
 import path from 'path';
 import createDebug from 'debug';
 import type { Data, Options } from 'ejs';
-import { globSync, isDynamicPattern } from 'tinyglobby';
+import { globSync, isDynamicPattern, type GlobOptions } from 'tinyglobby';
 import multimatch from 'multimatch';
+import type { Options as MultimatchOptions } from 'multimatch';
 import normalize from 'normalize-path';
 import File from 'vinyl';
 
@@ -25,7 +26,18 @@ function applyProcessingFunc(
 
 export type CopyOptions = CopySingleOptions & {
   noGlob?: boolean;
-  globOptions?: Omit<Parameters<typeof globSync>[0], 'patterns'>;
+  /**
+   * Options for disk globbing.
+   * Glob options that should be compatible with minimatch results.
+   */
+  globOptions?: Pick<
+    GlobOptions,
+    'caseSensitiveMatch' | 'cwd' | 'debug' | 'deep' | 'dot' | 'expandDirectories' | 'followSymbolicLinks'
+  >;
+  /**
+   * Options for store files matching.
+   */
+  storeMatchOptions?: MultimatchOptions;
   ignoreNoMatch?: boolean;
   fromBasePath?: string;
   processDestinationPath?: (string) => string;
@@ -40,12 +52,17 @@ export function copy(
   tplSettings?: Options,
 ) {
   const { fromBasePath = getCommonPath(from), noGlob } = options;
+  const hasGlobOptions = Boolean(options.globOptions);
+  const hasMultimatchOptions = Boolean(options.storeMatchOptions);
+  assert(!noGlob || !hasGlobOptions, '`noGlob` and `globOptions` are mutually exclusive');
+  assert(!noGlob || !hasMultimatchOptions, '`noGlob` and `storeMatchOptions` are mutually exclusive');
+
   const resolvedFromPaths = resolveFromPaths({ from, fromBasePath });
   const hasDynamicPattern = resolvedFromPaths.some((f) => isDynamicPattern(normalize(f.from)));
   const { preferFiles } = resolveGlobOptions({
     noGlob,
     hasDynamicPattern,
-    hasGlobOptions: Boolean(options.globOptions),
+    hasGlobOptions,
   });
 
   const foundFiles: ResolvedFrom[] = [];
@@ -69,17 +86,18 @@ export function copy(
       ...options.globOptions,
       absolute: true,
       onlyFiles: true,
-    });
-    this.store.each((file) => {
-      const normalizedFilepath = normalize(file.path);
+    }).map((filePath) => path.resolve(filePath));
+
+    const normalizedStoreFilePaths = this.store
+      .all()
+      .map((file) => file.path)
+      .filter((filePath) => !globbedFiles.includes(filePath))
+      .map((filePath) => normalize(filePath))
       // The store may have a glob path and when we try to copy it will fail because not real file
-      if (
-        !globbedFiles.includes(normalizedFilepath) &&
-        !isDynamicPattern(normalizedFilepath) &&
-        multimatch([normalizedFilepath], patterns).length !== 0
-      ) {
-        globbedFiles.push(file.path);
-      }
+      .filter((filePath) => !isDynamicPattern(filePath));
+
+    multimatch(normalizedStoreFilePaths, patterns, options.storeMatchOptions).forEach((filePath) => {
+      globbedFiles.push(path.resolve(filePath));
     });
 
     const foundResolvedFrom = foundFiles.map((file) => file.resolvedFrom);
