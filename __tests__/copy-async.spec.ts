@@ -30,7 +30,7 @@ describe('#copyAsync()', () => {
 
     it('should append file to file already loaded', async () => {
       const filepath = getFixture('file-a.txt');
-      const initialContents = memFs.read(filepath) ?? '';
+      const initialContents = memFs.read(filepath);
       const newPath = '/new/path/file.txt';
       await memFs.copyAsync(filepath, newPath, { append: true });
 

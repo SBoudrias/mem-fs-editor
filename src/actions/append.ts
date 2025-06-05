@@ -16,10 +16,6 @@ export default function append(this: MemFsEditor, to: string, contents: string |
   }
 
   let currentContents = this.read(to);
-  if (!currentContents) {
-    throw new Error(`Error appending to ${to}, file is empty.`);
-  }
-
   if (currentContents && opts.trimEnd) {
     currentContents = currentContents.replace(/\s+$/, '');
   }

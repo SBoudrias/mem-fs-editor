@@ -11,7 +11,7 @@ export function _processTpl(
     context,
     tplSettings,
   }: {
-    contents: string | Buffer;
+    contents: Buffer;
     filename: string;
     destination?: string;
     context?: Data;
