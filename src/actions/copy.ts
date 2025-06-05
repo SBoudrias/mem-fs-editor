@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import createDebug from 'debug';
 import type { Data, Options } from 'ejs';
-import { globbySync, isDynamicPattern, type Options as GlobbyOptions } from 'globby';
+import { globSync, isDynamicPattern } from 'tinyglobby';
 import multimatch from 'multimatch';
 import normalize from 'normalize-path';
 import File from 'vinyl';
@@ -25,7 +25,7 @@ function applyProcessingFunc(
 
 export type CopyOptions = CopySingleOptions & {
   noGlob?: boolean;
-  globOptions?: GlobbyOptions;
+  globOptions?: Omit<Parameters<typeof globSync>[0], 'patterns'>;
   ignoreNoMatch?: boolean;
   fromBasePath?: string;
   processDestinationPath?: (string) => string;
@@ -64,7 +64,7 @@ export function copy(
 
   if (globResolved.length > 0) {
     const patterns = globResolved.map((file) => globify(file.from)).flat();
-    const globbedFiles = globbySync(patterns, {
+    const globbedFiles = globSync(patterns, {
       cwd: fromBasePath,
       ...options.globOptions,
       absolute: true,

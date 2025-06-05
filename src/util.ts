@@ -3,7 +3,7 @@ import ejs from 'ejs';
 import fs from 'fs';
 import path from 'path';
 import commondir from 'commondir';
-import { isDynamicPattern } from 'globby';
+import { isDynamicPattern } from 'tinyglobby';
 import normalize from 'normalize-path';
 import { isBinaryFileSync } from 'isbinaryfile';
 
