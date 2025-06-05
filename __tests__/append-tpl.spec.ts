@@ -13,9 +13,9 @@ describe('#appendTpl()', () => {
 
   it('appends to file and processes contents as underscore template', () => {
     const filepath = getFixture('file-a.txt');
-    const originalContent = memFs.read(filepath)!.toString();
+    const originalContent = memFs.read(filepath).toString();
     const contentPath = getFixture('file-tpl.txt');
-    const contents = memFs.read(contentPath)!;
+    const contents = memFs.read(contentPath);
     memFs.appendTpl(filepath, contents, {
       name: 'bar',
     });
@@ -24,9 +24,9 @@ describe('#appendTpl()', () => {
 
   it('allows setting custom template delimiters', () => {
     const filepath = getFixture('file-a.txt');
-    const originalContent = memFs.read(filepath)!.toString();
+    const originalContent = memFs.read(filepath).toString();
     const contentPath = getFixture('file-tpl-custom-delimiter.txt');
-    const contents = memFs.read(contentPath)!;
+    const contents = memFs.read(contentPath);
     memFs.appendTpl(filepath, contents, { name: 'bar' }, { delimiter: '?' });
     expect(memFs.read(filepath)).toBe(originalContent + 'bar' + os.EOL);
   });
@@ -35,7 +35,7 @@ describe('#appendTpl()', () => {
     const f = () => {
       const filepath = getFixture('file-a.txt');
       const contentPath = getFixture('file-tpl.txt');
-      const contents = memFs.read(contentPath)!;
+      const contents = memFs.read(contentPath);
       memFs.appendTpl(filepath, contents);
     };
 
