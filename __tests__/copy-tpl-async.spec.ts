@@ -88,12 +88,24 @@ describe('#copyTplAsync()', () => {
     expect(glob).toHaveBeenCalledWith([normalizePath(filepath)], expect.objectContaining(globOptions));
   });
 
+  it('should fail when passing noGlob and globOptions', async () => {
+    await expect(
+      memFs.copyTplAsync(['foo'], '/new/path/', {}, {}, { globOptions: { debug: false }, noGlob: true }),
+    ).rejects.toThrowError('`noGlob` and `globOptions` are mutually exclusive');
+  });
+
   it('should pass storeMatchOptions to multimatch', async () => {
     const storeMatchOptions = { debug: false } as const;
     const filepath = getFixture('file-tpl-partial.*');
     await memFs.copyTplAsync([filepath], '/new/path/', {}, {}, { storeMatchOptions, fromBasePath: getFixture() });
 
     expect(multimatch).toHaveBeenCalledWith(expect.any(Array), [normalizePath(filepath)], storeMatchOptions);
+  });
+
+  it('should fail when passing noGlob and storeMatchOptions', async () => {
+    await expect(
+      memFs.copyTplAsync(['foo'], '/new/path/', {}, {}, { storeMatchOptions: { debug: false }, noGlob: true }),
+    ).rejects.toThrowError('`noGlob` and `storeMatchOptions` are mutually exclusive');
   });
 
   it('perform no substitution on binary files', async () => {
