@@ -16,9 +16,9 @@ function read(
   options?: { raw?: boolean; defaults?: string | Buffer | null },
 ): Buffer | string | null {
   options ||= { raw: false };
-  const file = this.store.get(filepath);
+  const file = this._getExisting(filepath);
 
-  if (file.contents === null) {
+  if (file === null) {
     if ('defaults' in options) {
       return options.defaults ?? null;
     }
