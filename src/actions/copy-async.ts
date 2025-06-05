@@ -62,8 +62,7 @@ export async function copyAsync(
   to = path.resolve(to);
   if (typeof from === 'string') {
     // If `from` is a string and an existing file just go ahead and copy it.
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    if (this.store.existsInMemory?.(from) && this.exists(from)) {
+    if (this.store.existsInMemory(from) && this.exists(from)) {
       this._copySingle(from, renderFilepath(to, context, tplSettings), options);
       return;
     }
@@ -88,8 +87,7 @@ export async function copyAsync(
 
   for (const resolvedFromPath of resolvedFromPaths) {
     const { resolvedFrom } = resolvedFromPath;
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    if (this.store.existsInMemory?.(resolvedFrom)) {
+    if (this.store.existsInMemory(resolvedFrom)) {
       storeFiles.push(resolvedFrom);
     } else {
       globResolved.push(resolvedFromPath);
@@ -170,12 +168,6 @@ export async function _copySingleAsync(
   const contents = await applyProcessingFileFunc.call(this, options.processFile, from);
 
   if (options.append) {
-    // Safety check against legacy API
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    if (!this.store.existsInMemory) {
-      throw new Error('Current mem-fs is not compatible with append');
-    }
-
     if (this.store.existsInMemory(to)) {
       this.append(to, contents, { create: true, ...options });
       return;
