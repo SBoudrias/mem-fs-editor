@@ -64,8 +64,8 @@ export function globify(inputFilePath: string | string[]): string | string[] {
   throw new Error('Only file path or directory path are supported.');
 }
 
-export function isBinary(filePath: string, newFileContents?: string | Buffer) {
-  const extension = path.extname(filePath).replace(/^\./, '') || path.basename(filePath);
+export function isBinary(filePath: string, newFileContents?: Buffer) {
+  const extension = path.extname(filePath).replace(/^\./, '');
   if (binaryextensions.includes(extension)) {
     return true;
   }
@@ -75,9 +75,7 @@ export function isBinary(filePath: string, newFileContents?: string | Buffer) {
   }
 
   return (
-    (fs.existsSync(filePath) && isBinaryFileSync(filePath)) ||
-    (newFileContents &&
-      isBinaryFileSync(Buffer.isBuffer(newFileContents) ? newFileContents : Buffer.from(newFileContents)))
+    (fs.existsSync(filePath) && isBinaryFileSync(filePath)) || (newFileContents && isBinaryFileSync(newFileContents))
   );
 }
 
