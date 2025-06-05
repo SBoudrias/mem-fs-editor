@@ -26,18 +26,12 @@ async function write(file: MemFsEditorFile) {
 
   if (newMode !== undefined) {
     const { mode: existingMode } = await fs.stat(file.path);
+    /* c8 ignore next 4 */
     // eslint-disable-next-line no-bitwise
     if ((existingMode & 0o777) !== (newMode & 0o777)) {
       await fs.chmod(file.path, newMode);
     }
   }
-}
-
-async function remove(file: MemFsEditorFile) {
-  // Safety check against legacy API
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  const remove = fs.rm || fs.rmdir;
-  await remove(file.path, { recursive: true });
 }
 
 export default async function commitFileAsync(file: MemFsEditorFile) {
@@ -46,7 +40,7 @@ export default async function commitFileAsync(file: MemFsEditorFile) {
     await write(file);
   } else if (isFileStateDeleted(file) && !isFileNew(file)) {
     setCommittedFile(file);
-    await remove(file);
+    await fs.rm(file.path, { recursive: true });
   }
 
   clearFileState(file);

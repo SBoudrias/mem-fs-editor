@@ -32,6 +32,16 @@ describe('#copy()', () => {
     expect(memFs.store.get(newPath).state).toBe('modified');
   });
 
+  it('supports non-vinyl files', () => {
+    const filepath = getFixture('file-a.txt');
+    const { contents, path } = memFs.store.loadFile(filepath);
+    const file = { contents, path };
+    memFs.store.add(file);
+    const newPath = '/new/path/file.txt';
+    memFs.copy(filepath, newPath);
+    expect(memFs.store.get(newPath).state).toBe('modified');
+  });
+
   describe('using append option', () => {
     beforeEach(() => {
       vi.spyOn(memFs, 'append');
@@ -40,7 +50,7 @@ describe('#copy()', () => {
 
     it('should append file to file already loaded', () => {
       const filepath = getFixture('file-a.txt');
-      const initialContents = memFs.read(filepath) ?? '';
+      const initialContents = memFs.read(filepath);
       const newPath = '/new/path/file.txt';
       memFs.copy(filepath, newPath, { append: true });
 
