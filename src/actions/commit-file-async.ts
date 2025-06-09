@@ -33,20 +33,13 @@ async function write(file: MemFsEditorFile) {
   }
 }
 
-async function remove(file: MemFsEditorFile) {
-  // Safety check against legacy API
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  const remove = fs.rm || fs.rmdir;
-  await remove(file.path, { recursive: true });
-}
-
 export default async function commitFileAsync(file: MemFsEditorFile) {
   if (isFileStateModified(file)) {
     setCommittedFile(file);
     await write(file);
   } else if (isFileStateDeleted(file) && !isFileNew(file)) {
     setCommittedFile(file);
-    await remove(file);
+    await fs.rm(file.path, { recursive: true });
   }
 
   clearFileState(file);
