@@ -10,7 +10,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22.x
-          cache: npm
       - run: node --version
       - run: npm ci
       - name: Typescript
@@ -33,7 +32,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: npm
       - run: node --version
       - run: npm ci
       - name: Vitest
