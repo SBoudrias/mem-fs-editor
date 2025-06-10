@@ -121,7 +121,7 @@ export async function copyAsync(
 
   // If `from` is an array, or if it contains any dynamic patterns, or if it doesn't exist, `to` must be a directory.
   const treatToAsDir = Array.isArray(from) || !preferFiles || globResolved.length > 0;
-  let generateDestination: (string) => string = () => to;
+  let generateDestination: (filepath: string) => string = () => to;
   if (treatToAsDir) {
     assert(
       !this.exists(to) || fs.statSync(to).isDirectory(),

@@ -28,7 +28,7 @@ export type CopyOptions = CopySingleOptions & {
   globOptions?: Omit<Parameters<typeof globSync>[0], 'patterns'>;
   ignoreNoMatch?: boolean;
   fromBasePath?: string;
-  processDestinationPath?: (string) => string;
+  processDestinationPath?: (filepath: string) => string;
 };
 
 export function copy(
