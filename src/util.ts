@@ -1,4 +1,3 @@
-import assert from 'assert';
 import ejs from 'ejs';
 import fs from 'fs';
 import path from 'path';
@@ -111,6 +110,5 @@ export function resolveFromPaths({
 }
 
 export function resolveGlobOptions({ noGlob, hasGlobOptions, hasDynamicPattern }) {
-  assert(!noGlob || !hasGlobOptions, '`noGlob` and `globOptions` are mutually exclusive');
   return { preferFiles: noGlob || (!hasGlobOptions && !hasDynamicPattern) };
 }

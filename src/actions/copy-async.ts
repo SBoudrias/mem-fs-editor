@@ -10,9 +10,9 @@ import normalize from 'normalize-path';
 import File from 'vinyl';
 
 import type { MemFsEditor } from '../index.js';
-import { AppendOptions } from './append.js';
-import { CopySingleOptions } from './copy.js';
-import { resolveFromPaths, render, getCommonPath, ResolvedFrom, globify, resolveGlobOptions } from '../util.js';
+import type { AppendOptions } from './append.js';
+import type { CopyOptions, CopySingleOptions } from './copy.js';
+import { resolveFromPaths, render, getCommonPath, type ResolvedFrom, globify, resolveGlobOptions } from '../util.js';
 
 const debug = createDebug('mem-fs-editor:copy-async');
 
@@ -45,11 +45,7 @@ async function getOneFile(filepath: string) {
   return undefined;
 }
 
-export type CopyAsyncOptions = CopySingleAsyncOptions & {
-  globOptions?: Omit<Parameters<typeof glob>[0], 'patterns'>;
-  processDestinationPath?: (string) => string;
-  ignoreNoMatch?: boolean;
-};
+export type CopyAsyncOptions = CopySingleAsyncOptions & CopyOptions;
 
 export async function copyAsync(
   this: MemFsEditor,
@@ -60,6 +56,12 @@ export async function copyAsync(
   tplSettings?: Options,
 ) {
   to = path.resolve(to);
+  const { noGlob } = options;
+  const hasGlobOptions = Boolean(options.globOptions);
+  const hasMultimatchOptions = Boolean(options.storeMatchOptions);
+  assert(!noGlob || !hasGlobOptions, '`noGlob` and `globOptions` are mutually exclusive');
+  assert(!noGlob || !hasMultimatchOptions, '`noGlob` and `storeMatchOptions` are mutually exclusive');
+
   if (typeof from === 'string') {
     // If `from` is a string and an existing file just go ahead and copy it.
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -99,17 +101,20 @@ export async function copyAsync(
   let diskFiles: string[] = [];
   if (globResolved.length > 0) {
     const patterns = globResolved.map((file) => globify(file.from)).flat();
-    diskFiles = await glob(patterns, { ...options.globOptions, absolute: true, onlyFiles: true });
-    this.store.each((file) => {
-      const normalizedFilepath = normalize(file.path);
+    diskFiles = (await glob(patterns, { ...options.globOptions, absolute: true, onlyFiles: true })).map((file) =>
+      path.resolve(file),
+    );
+
+    const normalizedStoreFilePaths = this.store
+      .all()
+      .map((file) => file.path)
+      .filter((filePath) => !diskFiles.includes(filePath))
+      .map((filePath) => normalize(filePath))
       // The store may have a glob path and when we try to copy it will fail because not real file
-      if (
-        !diskFiles.includes(normalizedFilepath) &&
-        !isDynamicPattern(normalizedFilepath) &&
-        multimatch([normalizedFilepath], patterns).length !== 0
-      ) {
-        storeFiles.push(file.path);
-      }
+      .filter((filePath) => !isDynamicPattern(filePath));
+
+    multimatch(normalizedStoreFilePaths, patterns, options.storeMatchOptions).forEach((filePath) => {
+      storeFiles.push(path.resolve(filePath));
     });
   }
 
