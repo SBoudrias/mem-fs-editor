@@ -50,7 +50,7 @@ describe('#copy()', () => {
 
     it('should append file to file already loaded', () => {
       const filepath = getFixture('file-a.txt');
-      const initialContents = memFs.read(filepath) ?? '';
+      const initialContents = memFs.read(filepath);
       const newPath = '/new/path/file.txt';
       memFs.copy(filepath, newPath, { append: true });
 
