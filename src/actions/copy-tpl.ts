@@ -1,7 +1,7 @@
 import { Data, Options } from 'ejs';
 import { isBinary, render } from '../util.js';
 import type { MemFsEditor } from '../index.js';
-import { CopySingleOptions } from './copy.js';
+import type { CopyOptions } from './copy.js';
 
 export function _processTpl(
   this: MemFsEditor,
@@ -36,7 +36,7 @@ export function copyTpl(
   to: string,
   context?: Data,
   tplSettings?: Options,
-  options?: CopySingleOptions,
+  options?: CopyOptions,
 ) {
   context ||= {};
   tplSettings ||= {};
