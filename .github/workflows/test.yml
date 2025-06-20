@@ -39,3 +39,5 @@ jobs:
       - name: Vitest
         run: npx vitest --run --coverage
       - uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
