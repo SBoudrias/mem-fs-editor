@@ -1,5 +1,5 @@
 {
-  "include": ["src/**/*", "__tests__/**/*", "vitest.config.ts"],
+  "include": ["**/*"],
   "compilerOptions": {
     "noEmit": true,
 

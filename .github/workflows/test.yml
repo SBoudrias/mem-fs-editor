@@ -9,14 +9,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22.x
+          node-version: latest
           cache: npm
       - run: node --version
       - run: npm ci
-      - name: Typescript (all + tests)
+      - name: Typescript
         run: npx tsc -p tsconfig.json --noEmit
-      - name: Typescript (build)
-        run: npm run build
       - name: Eslint
         run: npx eslint .
 
