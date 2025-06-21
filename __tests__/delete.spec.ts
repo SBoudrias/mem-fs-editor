@@ -14,7 +14,9 @@ describe('#delete()', () => {
   it('deletes existing files', () => {
     const filepath = getFixture('file-a.txt');
     memFs.delete(filepath);
-    expect(memFs.read.bind(memFs, filepath)).toThrow();
+    expect(() => {
+      memFs.read(filepath);
+    }).toThrow();
 
     const file = memFs.store.get(filepath);
     expect(file.contents).toBe(null);

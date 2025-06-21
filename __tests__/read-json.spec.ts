@@ -33,21 +33,18 @@ describe('#readJSON()', () => {
   });
 
   it('throw error if file could not be parsed as JSON, even if defaults is provided', () => {
-    expect(
-      memFs.readJSON.bind(memFs, getFixture('file-tpl.txt'), {
+    expect(() => {
+      memFs.readJSON(getFixture('file-tpl.txt'), {
         foo: 'bar',
-      }),
-    ).toThrow();
+      });
+    }).toThrow();
   });
 
   it('throw error with file path info', () => {
     const filePath = getFixture('file-tpl.txt');
-    expect(
-      memFs.readJSON.bind(
-        memFs,
-        // @ts-expect-error - Expecting it to throw
-        new RegExp(escape(filePath)),
-      ),
-    ).toThrow();
+    expect(() => {
+      // @ts-expect-error - Expecting it to throw
+      memFs.readJSON(new RegExp(escape(filePath)));
+    }).toThrow();
   });
 });

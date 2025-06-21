@@ -97,7 +97,9 @@ describe('#copyAsync()', () => {
     await memFs.copyAsync([getFixture('**'), '!**/*tpl*'], outputDir);
     expect(memFs.read(path.join(outputDir, 'file-a.txt'))).toBe('foo' + os.EOL);
     expect(memFs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
-    expect(memFs.read.bind(memFs, path.join(outputDir, 'file-tpl.txt'))).toThrow();
+    expect(() => {
+      memFs.read(path.join(outputDir, 'file-tpl.txt'));
+    }).toThrow();
   });
 
   it('copy files by globbing and process contents', async () => {

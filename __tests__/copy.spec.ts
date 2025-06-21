@@ -82,7 +82,9 @@ describe('#copy()', () => {
   it('throws when trying to copy from a non-existing file', () => {
     const filepath = getFixture('does-not-exits');
     const newPath = getFixture('../../test/new/path/file.txt');
-    expect(memFs.copy.bind(memFs, filepath, newPath)).toThrow();
+    expect(() => {
+      memFs.copy(filepath, newPath);
+    }).toThrow();
   });
 
   it('throws when trying to copy from a non-existing file with noGlob option', () => {
@@ -124,7 +126,9 @@ describe('#copy()', () => {
     memFs.copy([getFixture('**'), '!**/*tpl*'], outputDir);
     expect(memFs.read(path.join(outputDir, 'file-a.txt'))).toBe('foo' + os.EOL);
     expect(memFs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
-    expect(memFs.read.bind(memFs, path.join(outputDir, 'file-tpl.txt'))).toThrow();
+    expect(() => {
+      memFs.read(path.join(outputDir, 'file-tpl.txt'));
+    }).toThrow();
   });
 
   it('copy files by globbing and process contents', () => {
@@ -148,7 +152,9 @@ describe('#copy()', () => {
   });
 
   it('requires destination directory when globbing', () => {
-    expect(memFs.copy.bind(memFs, getFixture('**'), getFixture('file-a.txt'))).toThrow();
+    expect(() => {
+      memFs.copy(getFixture('**'), getFixture('file-a.txt'));
+    }).toThrow();
   });
 
   it('preserve permissions', async () => {
