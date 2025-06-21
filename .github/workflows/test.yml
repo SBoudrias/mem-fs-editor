@@ -13,8 +13,10 @@ jobs:
           cache: npm
       - run: node --version
       - run: npm ci
-      - name: Typescript
-        run: npx tsc
+      - name: Typescript (all + tests)
+        run: npx tsc -p tsconfig.json --noEmit
+      - name: Typescript (build)
+        run: npm run build
       - name: Eslint
         run: npx eslint .
 
