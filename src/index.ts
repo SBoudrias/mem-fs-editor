@@ -35,12 +35,18 @@ export type MemFsEditorFile = Prettify<
   }
 >;
 
+type ParametersExceptStore<F> = F extends (arg0: any, ...rest: infer R) => any ? R : never;
+
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export class MemFsEditor<EditorFile extends MemFsEditorFile = MemFsEditorFile> {
   store: Store<EditorFile>;
 
   constructor(store: Store<EditorFile>) {
     this.store = store;
+  }
+
+  delete(...args: ParametersExceptStore<typeof deleteAction>) {
+    deleteAction(this.store, ...args);
   }
 }
 
@@ -54,7 +60,6 @@ export interface MemFsEditor<EditorFile extends MemFsEditorFile> {
   extendJSON: typeof extendJSON;
   append: typeof append;
   appendTpl: typeof appendTpl;
-  delete: typeof deleteAction;
   copy: typeof copy;
   _copySingle: typeof _copySingle;
   copyTpl: typeof copyTpl;
@@ -76,7 +81,6 @@ MemFsEditor.prototype.writeJSON = writeJSON;
 MemFsEditor.prototype.extendJSON = extendJSON;
 MemFsEditor.prototype.append = append;
 MemFsEditor.prototype.appendTpl = appendTpl;
-MemFsEditor.prototype.delete = deleteAction;
 MemFsEditor.prototype.copy = copy;
 MemFsEditor.prototype._copySingle = _copySingle;
 MemFsEditor.prototype.copyTpl = copyTpl;

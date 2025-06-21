@@ -3,22 +3,22 @@ import { globSync } from 'tinyglobby';
 import multimatch from 'multimatch';
 import normalize from 'normalize-path';
 
-import type { MemFsEditor, MemFsEditorFile } from '../index.js';
+import type { MemFsEditorFile } from '../index.js';
 import type { Store } from 'mem-fs';
 import { setDeletedFileState } from '../state.js';
 import { globify } from '../util.js';
 
-function deleteFile(path: string, store: Store<MemFsEditorFile>) {
+function deleteFile<EditorFile extends MemFsEditorFile>(store: Store<EditorFile>, path: string) {
   const file = store.get(path);
   setDeletedFileState(file);
   file.contents = null;
   store.add(file);
 }
 
-export default function deleteAction(
-  this: MemFsEditor,
+function deleteAction<EditorFile extends MemFsEditorFile>(
+  store: Store<EditorFile>,
   paths: string | string[],
-  options?: { globOptions?: Omit<Parameters<typeof globSync>[0], 'patterns'> },
+  options: { globOptions?: Omit<Parameters<typeof globSync>[0], 'patterns'> } = {},
 ) {
   if (!Array.isArray(paths)) {
     paths = [paths];
@@ -26,17 +26,17 @@ export default function deleteAction(
 
   paths = paths.map((filePath) => path.resolve(filePath));
   paths = globify(paths);
-  options ||= {};
 
-  const globOptions = options.globOptions || {};
-  const files = globSync(paths, { ...globOptions, absolute: true, onlyFiles: true });
+  const files = globSync(paths, { ...options.globOptions, absolute: true, onlyFiles: true });
   files.forEach((file) => {
-    deleteFile(file, this.store);
+    deleteFile(store, file);
   });
 
-  this.store.each((file) => {
+  store.each((file) => {
     if (multimatch([normalize(file.path)], paths).length !== 0) {
-      deleteFile(file.path, this.store);
+      deleteFile(store, file.path);
     }
   });
 }
+
+export default deleteAction;
