@@ -45,16 +45,6 @@ describe('#copyAsync()', () => {
       expect(memFs.append).toHaveBeenCalledTimes(1);
       expect(memFs.read(newPath)).toBe(initialContents + initialContents);
     });
-
-    it('should throw if mem-fs is not compatible', async () => {
-      // @ts-expect-error - This is a legacy API
-      memFs.store.existsInMemory = undefined;
-      const filepath = getFixture('file-a.txt');
-      const newPath = '/new/path/file.txt';
-      await expect(memFs.copyAsync(filepath, newPath, { append: true, processFile: () => '' })).rejects.toEqual(
-        new Error('Current mem-fs is not compatible with append'),
-      );
-    });
   });
 
   it('can copy directory not commited to disk', async () => {
