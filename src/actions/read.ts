@@ -1,15 +1,15 @@
 import type { MemFsEditor } from '../index.js';
 
-function read(
+function read<const DefaultType extends string | null = string>(
   this: MemFsEditor,
   filepath: string,
-  options?: { raw?: boolean; defaults?: string | null },
-): string | null;
-function read(
+  options?: { raw?: boolean; defaults?: DefaultType },
+): string | DefaultType;
+function read<const DefaultType extends Buffer | null = Buffer>(
   this: MemFsEditor,
   filepath: string,
-  options: { raw?: true; defaults?: Buffer | null },
-): Buffer | string | null;
+  options: { raw?: true; defaults?: DefaultType },
+): Buffer | string | DefaultType;
 function read(
   this: MemFsEditor,
   filepath: string,
@@ -26,7 +26,7 @@ function read(
     throw new Error(filepath + " doesn't exist");
   }
 
-  return options.raw ? file.contents : file.contents.toString() || null;
+  return options.raw ? file.contents : file.contents.toString();
 }
 
 export default read;

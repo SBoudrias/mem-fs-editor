@@ -15,8 +15,8 @@ import { resolveFromPaths, render, getCommonPath, ResolvedFrom, globify, resolve
 const debug = createDebug('mem-fs-editor:copy');
 
 function applyProcessingFunc(
-  process: (contents: string | Buffer, filepath: string, destination: string) => string | Buffer,
-  contents: string | Buffer,
+  process: (contents: Buffer, filepath: string, destination: string) => string | Buffer,
+  contents: Buffer,
   filename: string,
   destination: string,
 ) {
@@ -139,7 +139,7 @@ export function copy(
 
 export type CopySingleOptions = {
   append?: boolean;
-  process?: (contents: string | Buffer, filepath: string, destination: string) => string | Buffer;
+  process?: (contents: Buffer, filepath: string, destination: string) => string | Buffer;
 };
 
 export function _copySingle(this: MemFsEditor, from: string, to: string, options: CopySingleOptions = {}) {

@@ -19,7 +19,7 @@ describe('#read()', () => {
   });
 
   it('get the buffer content of a file', () => {
-    const content = memFs.read(fileA, { raw: true })!;
+    const content = memFs.read(fileA, { raw: true });
     expect(content).toBeInstanceOf(Buffer);
     expect(content.toString()).toBe('foo' + os.EOL);
   });
@@ -49,7 +49,7 @@ describe('#read()', () => {
     const content = memFs.read('file-who-does-not-exist.txt', {
       defaults: Buffer.from('foo' + os.EOL),
       raw: true,
-    })!;
+    });
     expect(content).toBeInstanceOf(Buffer);
     expect(content.toString()).toBe('foo' + os.EOL);
   });
