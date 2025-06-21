@@ -1,15 +1,17 @@
 import type { MemFsEditor } from '../index.js';
 
-function read<const DefaultType extends string | null = string>(
+function read(this: MemFsEditor, filepath: string, options?: never): string;
+function read<const DefaultType extends string | null>(
   this: MemFsEditor,
   filepath: string,
-  options?: { raw?: boolean; defaults?: DefaultType },
+  options: { raw?: false; defaults: DefaultType },
 ): string | DefaultType;
-function read<const DefaultType extends Buffer | null = Buffer>(
+function read(this: MemFsEditor, filepath: string, options: { raw: true; defaults?: never }): Buffer;
+function read<const DefaultType extends Buffer | null>(
   this: MemFsEditor,
   filepath: string,
-  options: { raw?: true; defaults?: DefaultType },
-): Buffer | string | DefaultType;
+  options: { raw: true; defaults: DefaultType },
+): Buffer | DefaultType;
 function read(
   this: MemFsEditor,
   filepath: string,
