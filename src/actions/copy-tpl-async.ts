@@ -8,7 +8,7 @@ export default async function (
   this: MemFsEditor,
   from: string | string[],
   to: string,
-  data?: ejs.Data,
+  data: ejs.Data = {},
   tplOptions?: ejs.Options,
   options?: CopyAsyncOptions,
 ) {
