@@ -196,7 +196,7 @@ describe('#copyTpl() and #commit()', () => {
     const b = { a };
     a.b = b;
 
-    memFs.copyTpl(getFixture('**'), output, { name: 'bar' }, { context: { a } });
+    memFs.copyTpl(getFixture('**'), output, { name: 'bar' }, { templateOptions: { context: { a } } });
   });
 
   afterEach(() => {

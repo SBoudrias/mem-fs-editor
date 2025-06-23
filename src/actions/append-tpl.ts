@@ -7,9 +7,9 @@ export default function appendTpl(
   this: MemFsEditor,
   to: string,
   contents: string | Buffer,
-  context?: Data,
-  tplSettings?: Options,
+  templateData?: Data,
+  templateOptions?: Options,
   options?: AppendOptions,
 ) {
-  this.append(to, render(contents.toString(), context, tplSettings), options);
+  this.append(to, render(contents.toString(), templateData, templateOptions), options);
 }

@@ -137,7 +137,7 @@ describe('#copy()', () => {
 
   it('accepts template paths', () => {
     const outputFile = getFixture('test/<%= category %>/file-a.txt');
-    memFs.copy(getFixture('file-a.txt'), outputFile, {}, { category: 'foo' });
+    memFs.copy(getFixture('file-a.txt'), outputFile, { templateData: { category: 'foo' } });
     expect(memFs.read(getFixture('test/foo/file-a.txt'))).toBe('foo' + os.EOL);
   });
 

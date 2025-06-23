@@ -3,7 +3,6 @@ import fs from 'fs';
 import fsPromises from 'fs/promises';
 import path from 'path';
 import createDebug from 'debug';
-import type { Data, Options } from 'ejs';
 import { glob, isDynamicPattern } from 'tinyglobby';
 import multimatch from 'multimatch';
 import normalize from 'normalize-path';
@@ -18,12 +17,12 @@ import { copySingle } from './copy.js';
 
 const debug = createDebug('mem-fs-editor:copy-async');
 
-function renderFilepath(filepath, context, tplSettings) {
-  if (!context) {
+function renderFilepath(filepath, templateData, templateOptions) {
+  if (!templateData) {
     return filepath;
   }
 
-  return render(filepath, context, tplSettings);
+  return render(filepath, templateData, templateOptions);
 }
 
 async function getOneFile(filepath: string) {
@@ -45,8 +44,6 @@ export async function copyAsync(
   from: string | string[],
   to: string,
   options: CopyAsyncOptions = {},
-  context?: Data,
-  tplSettings?: Options,
 ) {
   to = path.resolve(to);
   const { noGlob } = options;
@@ -58,13 +55,13 @@ export async function copyAsync(
   if (typeof from === 'string') {
     // If `from` is a string and an existing file just go ahead and copy it.
     if (this.store.existsInMemory(from) && this.exists(from)) {
-      copySingle(this, from, renderFilepath(to, context, tplSettings), options);
+      copySingle(this, from, renderFilepath(to, options.templateData, options.templateOptions), options);
       return;
     }
 
     const oneFile = await getOneFile(from);
     if (oneFile) {
-      return copySingleAsync(this, oneFile, renderFilepath(to, context, tplSettings), options);
+      return copySingleAsync(this, oneFile, renderFilepath(to, options.templateData, options.templateOptions), options);
     }
   }
 
@@ -133,10 +130,20 @@ export async function copyAsync(
 
   await Promise.all([
     ...diskFiles.map((file) =>
-      copySingleAsync(this, file, renderFilepath(generateDestination(file), context, tplSettings), options),
+      copySingleAsync(
+        this,
+        file,
+        renderFilepath(generateDestination(file), options.templateData, options.templateOptions),
+        options,
+      ),
     ),
     ...storeFiles.map((file) => {
-      copySingle(this, file, renderFilepath(generateDestination(file), context, tplSettings), options);
+      copySingle(
+        this,
+        file,
+        renderFilepath(generateDestination(file), options.templateData, options.templateOptions),
+        options,
+      );
       return Promise.resolve();
     }),
   ]);

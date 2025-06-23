@@ -2,7 +2,7 @@ import assert from 'assert';
 import fs from 'fs';
 import path from 'path';
 import createDebug from 'debug';
-import type { Data, Options } from 'ejs';
+import type { Data as EjsData, Options as EjsOptions } from 'ejs';
 import { globSync, isDynamicPattern, type GlobOptions } from 'tinyglobby';
 import multimatch from 'multimatch';
 import type { Options as MultimatchOptions } from 'multimatch';
@@ -42,16 +42,11 @@ export type CopyOptions = CopySingleOptions & {
   ignoreNoMatch?: boolean;
   fromBasePath?: string;
   processDestinationPath?: (filepath: string) => string;
+  templateData?: EjsData;
+  templateOptions?: EjsOptions;
 };
 
-export function copy(
-  this: MemFsEditor,
-  from: string | string[],
-  to: string,
-  options: CopyOptions = {},
-  context?: Data,
-  tplSettings?: Options,
-) {
+export function copy(this: MemFsEditor, from: string | string[], to: string, options: CopyOptions = {}) {
   const { fromBasePath = getCommonPath(from), noGlob } = options;
   const hasGlobOptions = Boolean(options.globOptions);
   const hasMultimatchOptions = Boolean(options.storeMatchOptions);
@@ -130,8 +125,8 @@ export function copy(
   const processDestinationPath = options.processDestinationPath || ((destPath) => destPath);
   foundFiles.forEach((file) => {
     let toFile = treatToAsDir ? processDestinationPath(path.join(to, file.relativeFrom)) : to;
-    if (context) {
-      toFile = render(toFile, context, { ...tplSettings, cache: false });
+    if (options.templateData) {
+      toFile = render(toFile, options.templateData, { ...options.templateOptions, cache: false });
     }
 
     copySingle(this, file.resolvedFrom, toFile, options);
