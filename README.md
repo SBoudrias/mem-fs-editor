@@ -54,9 +54,9 @@ Append the new contents to the current file contents.
 - `options.separator` (default `os.EOL`). Separator to insert between current and new contents.
 - `options.create` (default `false`). Create the file if doesn't exists.
 
-### `#appendTpl(filepath, contents, context[, templateOptions[, [options]])`
+### `#appendTpl(filepath, contents, templateData[, templateOptions[, [options]])`
 
-Append the new `contents` to the exsting `filepath` content and parse the new contents as an [ejs](http://ejs.co/) template where `context` is the template context (the variable names available inside the template).
+Append the new `contents` to the exsting `filepath` content and parse the new contents as an [ejs](http://ejs.co/) template where `templateData` is the template data (the variable names available inside the template).
 
 - `options.trimEnd` (default `true`). Trim trailing whitespace of the current file contents.
 - `options.separator` (default `os.EOL`). Separator to insert between current and new contents.
@@ -73,7 +73,7 @@ Delete a file or a directory.
 
 `filePath` can also be a `glob`. If `filePath` is glob, you can optionally pass in an `options.globOptions` object to change its pattern matching behavior. The full list of options are being described [here](https://github.com/mrmlnc/fast-glob#options-1). The `sync` flag is forced to be `true` in `globOptions`.
 
-### `#copy(from, to, [options], context[, templateOptions ])`
+### `#copy(from, to, [options], templateData[, templateOptions ])`
 
 Copy file(s) from the `from` path to the `to` path.
 When passing array, you should pass `options.fromBasePath` to be used to calculate the `to` relative path. The common directory will be detected and used as `fromBasePath` otherwise.
@@ -89,22 +89,22 @@ Optionally, when `from` is a glob pattern, pass an `options.processDestinationPa
 
 `options.noGlob` can be used to by bypass glob matching entirely. In that case, `from` will directly match file paths against the file system.
 
-### `#copyAsync(from, to, [options], context[, templateOptions ])`
+### `#copyAsync(from, to, [options], templateData[, templateOptions ])`
 
 Async version of `copy`.
 
 `copy` loads `from` to memory and copy its contents to `to`.
 `copyAsync` copies directly from the disk to `to`, falling back to `copy` behavior if the file doesn't exists on disk.
 
-Same parameters of `copy` (see [copy() documentation for more details](#copyfrom-to-options-context-templateoptions-)).
+Same parameters of `copy` (see [copy() documentation for more details](#copyfrom-to-options-templatedata-templateoptions-)).
 
-### `#copyTpl(from, to, context[, templateOptions [, copyOptions]])`
+### `#copyTpl(from, to, templateData[, templateOptions [, copyOptions]])`
 
-Copy the `from` file and, if it is not a binary file, parse its content as an [ejs](http://ejs.co/) template where `context` is the template context (the variable names available inside the template).
+Copy the `from` file and, if it is not a binary file, parse its content as an [ejs](http://ejs.co/) template where `templateData` is the template data (the variable names available inside the template).
 
 You can optionally pass a `templateOptions` object. `mem-fs-editor` automatically setup the filename option so you can easily use partials.
 
-You can also optionally pass a `copyOptions` object (see [copy() documentation for more details](#copyfrom-to-options-context-templateoptions-)).
+You can also optionally pass a `copyOptions` object (see [copy() documentation for more details](#copyfrom-to-options-templatedata-templateoptions-)).
 
 Templates syntax looks like this:
 
@@ -121,13 +121,13 @@ Dir syntax looks like this:
 
 Refer to the [ejs documentation](http://ejs.co/) for more details.
 
-### `#copyTplAsync(from, to, [options], context[, templateOptions ])`
+### `#copyTplAsync(from, to, [options], templateData[, templateOptions ])`
 
 Async version of `copyTpl` that uses `copyAsync` instead of `copy`.
 
 Can be used for best performance. Reduces overheads.
 
-Same parameters of `copyTpl` (see [copyTpl() documentation for more details](#copyfrom-to-options-context-templateoptions-)).
+Same parameters of `copyTpl` (see [copyTpl() documentation for more details](#copyfrom-to-options-templatedata-templateoptions-)).
 
 ### `#move(from, to, [options])`
 

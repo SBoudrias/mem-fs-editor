@@ -114,7 +114,7 @@ describe('#copyAsync()', () => {
 
   it('accepts template paths', async () => {
     const outputFile = getFixture('test/<%= category %>/file-a.txt');
-    await memFs.copyAsync(getFixture('file-a.txt'), outputFile, {}, { category: 'foo' });
+    await memFs.copyAsync(getFixture('file-a.txt'), outputFile, { templateData: { category: 'foo' } });
     expect(memFs.read(getFixture('test/foo/file-a.txt'))).toBe('foo' + os.EOL);
   });
 
