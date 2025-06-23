@@ -3,17 +3,9 @@ import { globSync } from 'tinyglobby';
 import multimatch from 'multimatch';
 import normalize from 'normalize-path';
 
-import type { MemFsEditor, MemFsEditorFile } from '../index.js';
-import type { Store } from 'mem-fs';
+import type { MemFsEditor } from '../index.js';
 import { setDeletedFileState } from '../state.js';
 import { globify } from '../util.js';
-
-function deleteFile(path: string, store: Store<MemFsEditorFile>) {
-  const file = store.get(path);
-  setDeletedFileState(file);
-  file.contents = null;
-  store.add(file);
-}
 
 export default function deleteAction(
   this: MemFsEditor,
@@ -29,14 +21,20 @@ export default function deleteAction(
   options ||= {};
 
   const globOptions = options.globOptions || {};
-  const files = globSync(paths, { ...globOptions, absolute: true, onlyFiles: true });
+  const files = new Set([
+    ...globSync(paths, { ...globOptions, absolute: true, onlyFiles: true }).map((filePath) => path.resolve(filePath)),
+    ...multimatch(
+      this.store
+        .all()
+        .map((file) => file.path)
+        .map((filePath) => normalize(filePath)),
+      paths,
+    ).map((filePath) => path.resolve(filePath)),
+  ]);
   files.forEach((file) => {
-    deleteFile(file, this.store);
-  });
-
-  this.store.each((file) => {
-    if (multimatch([normalize(file.path)], paths).length !== 0) {
-      deleteFile(file.path, this.store);
-    }
+    const storeFile = this.store.get(file);
+    setDeletedFileState(storeFile);
+    storeFile.contents = null;
+    this.store.add(storeFile);
   });
 }
