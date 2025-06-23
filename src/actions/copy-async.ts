@@ -18,11 +18,11 @@ import { writeInternal } from './write.js';
 const debug = createDebug('mem-fs-editor:copy-async');
 
 async function applyProcessingFileFunc(
-  this: MemFsEditor,
+  editor: MemFsEditor,
   processFile: CopySingleAsyncOptions['processFile'],
   filename: string,
 ) {
-  const output = await Promise.resolve(processFile!.call(this, filename));
+  const output = await Promise.resolve(processFile!.call(editor, filename));
   return Buffer.isBuffer(output) ? output : Buffer.from(output);
 }
 
@@ -72,7 +72,7 @@ export async function copyAsync(
 
     const oneFile = await getOneFile(from);
     if (oneFile) {
-      return this._copySingleAsync(oneFile, renderFilepath(to, context, tplSettings), options);
+      return copySingleAsync(this, oneFile, renderFilepath(to, context, tplSettings), options);
     }
   }
 
@@ -141,7 +141,7 @@ export async function copyAsync(
 
   await Promise.all([
     ...diskFiles.map((file) =>
-      this._copySingleAsync(file, renderFilepath(generateDestination(file), context, tplSettings), options),
+      copySingleAsync(this, file, renderFilepath(generateDestination(file), context, tplSettings), options),
     ),
     ...storeFiles.map((file) => {
       this._copySingle(file, renderFilepath(generateDestination(file), context, tplSettings), options);
@@ -156,14 +156,9 @@ export type CopySingleAsyncOptions = AppendOptions &
     processFile?: (this: MemFsEditor, filepath: string) => string | Promise<string | Buffer>;
   };
 
-export async function _copySingleAsync(
-  this: MemFsEditor,
-  from: string,
-  to: string,
-  options: CopySingleAsyncOptions = {},
-) {
+async function copySingleAsync(editor: MemFsEditor, from: string, to: string, options: CopySingleAsyncOptions = {}) {
   if (!options.processFile) {
-    this._copySingle(from, to, options);
+    editor._copySingle(from, to, options);
     return;
   }
 
@@ -171,17 +166,17 @@ export async function _copySingleAsync(
 
   debug('Copying %s to %s with %o', from, to, options);
 
-  const contents = await applyProcessingFileFunc.call(this, options.processFile, from);
+  const contents = await applyProcessingFileFunc(editor, options.processFile, from);
 
   if (options.append) {
-    if (this.store.existsInMemory(to)) {
-      this.append(to, contents, { create: true, ...options });
+    if (editor.store.existsInMemory(to)) {
+      editor.append(to, contents, { create: true, ...options });
       return;
     }
   }
 
   writeInternal(
-    this.store,
+    editor.store,
     new File({
       contents,
       stat: await fsPromises.stat(from),
