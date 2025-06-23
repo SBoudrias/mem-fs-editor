@@ -1,24 +1,28 @@
 import { EOL } from 'os';
 import type { MemFsEditor } from '../index.js';
 
-export type AppendOptions = { create?: boolean; trimEnd?: boolean; separator?: string };
-
-export default function append(this: MemFsEditor, to: string, contents: string | Buffer, options?: AppendOptions) {
+export default function append(
+  this: MemFsEditor,
+  to: string,
+  contents: string | Buffer,
+  options?: { create?: boolean; trimEnd?: boolean; separator?: string },
+) {
   const opts = {
+    create: false,
     trimEnd: true,
     separator: EOL,
     ...options,
   };
 
-  if (!this.exists(to) && opts.create) {
-    this.write(to, contents);
-    return;
+  if (!this.exists(to) && !opts.create) {
+    throw new Error(`${to} doesn't exist`);
   }
 
-  let currentContents = this.read(to);
-  if (currentContents && opts.trimEnd) {
-    currentContents = currentContents.replace(/\s+$/, '');
+  let currentContent = this.read(to, { defaults: '' });
+  if (currentContent && opts.trimEnd) {
+    currentContent = currentContent.trimEnd();
   }
 
-  this.write(to, currentContents + opts.separator + contents.toString());
+  const newContent = currentContent ? currentContent + opts.separator + contents.toString() : contents;
+  this.write(to, newContent);
 }
