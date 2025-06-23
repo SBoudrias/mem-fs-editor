@@ -13,6 +13,7 @@ import type { MemFsEditor } from '../index.js';
 import type { AppendOptions } from './append.js';
 import type { CopyOptions, CopySingleOptions } from './copy.js';
 import { resolveFromPaths, render, getCommonPath, type ResolvedFrom, globify, resolveGlobOptions } from '../util.js';
+import { writeInternal } from './write.js';
 
 const debug = createDebug('mem-fs-editor:copy-async');
 
@@ -179,7 +180,8 @@ export async function _copySingleAsync(
     }
   }
 
-  this._write(
+  writeInternal(
+    this.store,
     new File({
       contents,
       stat: await fsPromises.stat(from),

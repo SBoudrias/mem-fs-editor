@@ -8,6 +8,7 @@ import multimatch from 'multimatch';
 import type { Options as MultimatchOptions } from 'multimatch';
 import normalize from 'normalize-path';
 import File from 'vinyl';
+import { writeInternal } from './write.js';
 
 import type { MemFsEditor } from '../index.js';
 import { resolveFromPaths, render, getCommonPath, ResolvedFrom, globify, resolveGlobOptions } from '../util.js';
@@ -166,14 +167,16 @@ export function _copySingle(this: MemFsEditor, from: string, to: string, options
   }
 
   if (File.isVinyl(file)) {
-    this._write(
+    writeInternal(
+      this.store,
       Object.assign(file.clone({ contents: false, deep: false }), {
         contents,
         path: to,
       }),
     );
   } else {
-    this._write(
+    writeInternal(
+      this.store,
       new File({
         contents,
         stat: (file.stat as any) ?? fs.statSync(file.path),
