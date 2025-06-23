@@ -2,8 +2,9 @@ import assert from 'assert';
 import { resolve } from 'path';
 import fs from 'fs';
 import { isFileStateModified, setModifiedFileState } from '../state.js';
-import type { MemFsEditor, MemFsEditorFile } from '../index.js';
 import File from 'vinyl';
+import type { MemFsEditor, MemFsEditorFile } from '../index.js';
+import type { Store } from 'mem-fs';
 
 type CompareFile = { contents: null | Buffer; stat?: { mode?: number } | null };
 
@@ -16,19 +17,19 @@ export const isMemFsEditorFileEqual = (a: CompareFile, b: CompareFile) => {
   return a.contents === b.contents || (a.contents && b.contents && a.contents.equals(b.contents));
 };
 
-export function _write<EditorFile extends MemFsEditorFile>(this: MemFsEditor<EditorFile>, file: EditorFile) {
-  if (this.store.existsInMemory(file.path)) {
+export function writeInternal<EditorFile extends MemFsEditorFile>(store: Store<EditorFile>, file: EditorFile) {
+  if (store.existsInMemory(file.path)) {
     // Backward compatibility, keep behavior for existing files, custom properties may have been added
-    const existingFile = this.store.get(file.path);
+    const existingFile = store.get(file.path);
     if (!isFileStateModified(existingFile) || !isMemFsEditorFileEqual(existingFile, file)) {
       const { contents, stat } = file;
       setModifiedFileState(existingFile);
       Object.assign(existingFile, { contents, stat: stat ?? existingFile.stat });
-      this.store.add(existingFile);
+      store.add(existingFile);
     }
   } else {
     setModifiedFileState(file);
-    this.store.add(file);
+    store.add(file);
   }
 }
 
@@ -42,12 +43,14 @@ export default function write(
 
   const newContents = Buffer.isBuffer(contents) ? contents : Buffer.from(contents);
 
-  this._write(
+  writeInternal(
+    this.store,
     new File({
       path: resolve(filepath),
       contents: newContents,
       stat,
     }),
   );
+
   return contents.toString();
 }
