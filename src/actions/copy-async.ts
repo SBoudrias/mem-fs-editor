@@ -17,15 +17,6 @@ import { writeInternal } from './write.js';
 
 const debug = createDebug('mem-fs-editor:copy-async');
 
-async function applyProcessingFileFunc(
-  editor: MemFsEditor,
-  processFile: CopySingleAsyncOptions['processFile'],
-  filename: string,
-) {
-  const output = await Promise.resolve(processFile!.call(editor, filename));
-  return Buffer.isBuffer(output) ? output : Buffer.from(output);
-}
-
 function renderFilepath(filepath, context, tplSettings) {
   if (!context) {
     return filepath;
@@ -153,7 +144,7 @@ export async function copyAsync(
 export type CopySingleAsyncOptions = AppendOptions &
   CopySingleOptions & {
     append?: boolean;
-    processFile?: (this: MemFsEditor, filepath: string) => string | Promise<string | Buffer>;
+    processFile?: (filepath: string) => string | Promise<string | Buffer>;
   };
 
 async function copySingleAsync(editor: MemFsEditor, from: string, to: string, options: CopySingleAsyncOptions = {}) {
@@ -166,7 +157,7 @@ async function copySingleAsync(editor: MemFsEditor, from: string, to: string, op
 
   debug('Copying %s to %s with %o', from, to, options);
 
-  const contents = await applyProcessingFileFunc(editor, options.processFile, from);
+  const contents = await options.processFile(from);
 
   if (options.append) {
     if (editor.store.existsInMemory(to)) {
@@ -178,7 +169,7 @@ async function copySingleAsync(editor: MemFsEditor, from: string, to: string, op
   writeInternal(
     editor.store,
     new File({
-      contents,
+      contents: Buffer.from(contents),
       stat: await fsPromises.stat(from),
       path: to,
       history: [from],

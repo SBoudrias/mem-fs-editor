@@ -1,8 +1,8 @@
 import fs from 'fs/promises';
-import { isBinary, renderFile } from '../util.js';
+import { isBinary, processTpl, renderFile } from '../util.js';
 import type { MemFsEditor } from '../index.js';
-import { Data, Options } from 'ejs';
-import { CopyAsyncOptions } from './copy-async.js';
+import type { Data, Options } from 'ejs';
+import type { CopyAsyncOptions } from './copy-async.js';
 
 export default async function (
   this: MemFsEditor,
@@ -29,7 +29,7 @@ export default async function (
         return renderFile(filename, context, tplSettings);
       },
       process: (contents, filename, destination) =>
-        this._processTpl({
+        processTpl({
           contents,
           filename,
           destination,
