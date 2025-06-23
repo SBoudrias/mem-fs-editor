@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import { describe, beforeEach, it, expect } from 'vitest';
 import os from 'os';
 import path from 'path';
@@ -11,7 +12,8 @@ describe('#dump()', () => {
   beforeEach(async () => {
     const subdir = 'foo';
 
-    testDir = path.join(os.tmpdir(), '/mem-fs-editor-test');
+    const hash = crypto.createHash('md5').digest('hex');
+    testDir = path.join(os.tmpdir(), 'mem-fs-editor-test', hash);
     memFs = create(createMemFs<MemFsEditorFile>());
 
     memFs.write(path.join(testDir, subdir, 'committed'), 'committed');
