@@ -24,31 +24,33 @@ export type { AppendOptions } from './actions/append.js';
 export type { CopyOptions } from './actions/copy.js';
 export type { CopyAsyncOptions } from './actions/copy-async.js';
 export type { MemFsEditorFileDump } from './actions/dump.js';
+import type { Prettify } from './util.js';
 
-export interface MemFsEditorFile {
-  path: string;
-  stat?: { mode?: number } | null;
-  contents: Buffer | null;
+export type MemFsEditorFile = Prettify<
+  // We don't support Vinyl StreamFile and stat is not guaranteed to be a fs.Stat instance
+  Omit<Vinyl, 'contents' | 'stat'> & {
+    path: string;
+    contents: Buffer | null;
+    stat?: { mode?: number } | null;
+  }
+>;
 
-  committed?: boolean;
-  isNew?: boolean;
-  state?: 'modified' | 'deleted';
-  stateCleared?: 'modified' | 'deleted';
-}
-
-// We don't support StreamFile and stat is not guaranteed to be a fs.Stat instance
-export interface VinylMemFsEditorFile extends Omit<Vinyl, 'contents' | 'stat'>, MemFsEditorFile {}
+type ParametersExceptStore<F> = F extends (arg0: any, ...rest: infer R) => any ? R : never;
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
-export class MemFsEditor<EditorFile extends MemFsEditorFile = VinylMemFsEditorFile> {
+export class MemFsEditor<EditorFile extends MemFsEditorFile = MemFsEditorFile> {
   store: Store<EditorFile>;
 
   constructor(store: Store<EditorFile>) {
     this.store = store;
   }
+
+  delete(...args: ParametersExceptStore<typeof deleteAction>) {
+    deleteAction(this.store, ...args);
+  }
 }
 
-export interface MemFsEditor<EditorFile extends MemFsEditorFile = VinylMemFsEditorFile> {
+export interface MemFsEditor<EditorFile extends MemFsEditorFile> {
   read: typeof read;
   readJSON: typeof readJSON;
   exists: typeof exists;
@@ -58,7 +60,6 @@ export interface MemFsEditor<EditorFile extends MemFsEditorFile = VinylMemFsEdit
   extendJSON: typeof extendJSON;
   append: typeof append;
   appendTpl: typeof appendTpl;
-  delete: typeof deleteAction;
   copy: typeof copy;
   _copySingle: typeof _copySingle;
   copyTpl: typeof copyTpl;
@@ -80,7 +81,6 @@ MemFsEditor.prototype.writeJSON = writeJSON;
 MemFsEditor.prototype.extendJSON = extendJSON;
 MemFsEditor.prototype.append = append;
 MemFsEditor.prototype.appendTpl = appendTpl;
-MemFsEditor.prototype.delete = deleteAction;
 MemFsEditor.prototype.copy = copy;
 MemFsEditor.prototype._copySingle = _copySingle;
 MemFsEditor.prototype.copyTpl = copyTpl;

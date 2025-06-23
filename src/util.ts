@@ -9,6 +9,10 @@ import { isBinaryFileSync } from 'isbinaryfile';
 import textextensions from 'textextensions';
 import binaryextensions from 'binaryextensions';
 
+export type Prettify<T> = {
+  [K in keyof T]: T[K];
+} & {};
+
 function notNullOrExclusion(file?: string) {
   return file != null && file.charAt(0) !== '!';
 }
