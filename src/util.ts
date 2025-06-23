@@ -64,7 +64,7 @@ export function globify(inputFilePath: string | string[]): string | string[] {
 }
 
 export function isBinary(filePath: string, newFileContents?: Buffer) {
-  const extension = path.extname(filePath).replace(/^\./, '');
+  const extension = path.extname(filePath).replace(/^\./, '') || path.basename(filePath);
   if (binaryextensions.includes(extension)) {
     return true;
   }
