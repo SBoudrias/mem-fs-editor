@@ -14,6 +14,7 @@ import type { AppendOptions } from './append.js';
 import type { CopyOptions, CopySingleOptions } from './copy.js';
 import { resolveFromPaths, render, getCommonPath, type ResolvedFrom, globify, resolveGlobOptions } from '../util.js';
 import { writeInternal } from './write.js';
+import { copySingle } from './copy.js';
 
 const debug = createDebug('mem-fs-editor:copy-async');
 
@@ -57,7 +58,7 @@ export async function copyAsync(
   if (typeof from === 'string') {
     // If `from` is a string and an existing file just go ahead and copy it.
     if (this.store.existsInMemory(from) && this.exists(from)) {
-      this._copySingle(from, renderFilepath(to, context, tplSettings), options);
+      copySingle(this, from, renderFilepath(to, context, tplSettings), options);
       return;
     }
 
@@ -135,7 +136,7 @@ export async function copyAsync(
       copySingleAsync(this, file, renderFilepath(generateDestination(file), context, tplSettings), options),
     ),
     ...storeFiles.map((file) => {
-      this._copySingle(file, renderFilepath(generateDestination(file), context, tplSettings), options);
+      copySingle(this, file, renderFilepath(generateDestination(file), context, tplSettings), options);
       return Promise.resolve();
     }),
   ]);
@@ -149,7 +150,7 @@ export type CopySingleAsyncOptions = AppendOptions &
 
 async function copySingleAsync(editor: MemFsEditor, from: string, to: string, options: CopySingleAsyncOptions = {}) {
   if (!options.processFile) {
-    editor._copySingle(from, to, options);
+    copySingle(editor, from, to, options);
     return;
   }
 
