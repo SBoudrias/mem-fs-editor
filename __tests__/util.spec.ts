@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import fs from 'fs';
 import path from 'path';
-import { getCommonPath, globify } from '../src/util.js';
+import { getCommonPath, globify, isBinary } from '../src/util.js';
 import normalize from 'normalize-path';
 import { getFixture } from './fixtures.js';
 
@@ -70,5 +70,17 @@ describe('globify()', () => {
 
     const filePath = getFixture('file-a.txt');
     expect(() => globify(filePath)).toThrow();
+  });
+});
+
+describe('isBinary()', () => {
+  it('returns false for Dockerfile file', () => {
+    expect(isBinary('../Dockerfile')).toBe(false);
+  });
+  it('returns false for txt file', () => {
+    expect(isBinary('../foo.txt')).toBe(false);
+  });
+  it('returns true for ico file', () => {
+    expect(isBinary('../foo.ico')).toBe(true);
   });
 });
