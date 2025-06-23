@@ -84,24 +84,25 @@ export function renderTpl(template: string, data?: ejs.Data, options?: ejs.Optio
 export function processTpl({
   contents,
   filename,
-  context,
-  tplSettings,
+  data,
+  tplOptions,
 }: {
   contents: Buffer;
   filename: string;
   destination?: string;
-  context?: ejs.Data;
-  tplSettings?: ejs.Options;
+  data?: ejs.Data;
+  tplOptions?: ejs.Options;
 }): string | Buffer {
   if (isBinary(filename, contents)) {
     return contents;
   }
 
-  return renderTpl(contents.toString(), context, {
+  return ejs.render(contents.toString(), data, {
     // Setting filename by default allow including partials.
     filename,
     cache: true,
-    ...tplSettings,
+    ...tplOptions,
+    async: false,
   });
 }
 

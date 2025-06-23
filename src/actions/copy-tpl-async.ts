@@ -8,8 +8,8 @@ export default async function (
   this: MemFsEditor,
   from: string | string[],
   to: string,
-  context?: ejs.Data,
-  tplSettings?: ejs.Options,
+  data?: ejs.Data,
+  tplOptions?: ejs.Options,
   options?: CopyAsyncOptions,
 ) {
   await this.copyAsync(
@@ -23,18 +23,18 @@ export default async function (
           return fs.readFile(filename);
         }
 
-        return ejs.renderFile(filename, context, { cache: true, ...tplSettings });
+        return ejs.renderFile(filename, data, { cache: true, ...tplOptions });
       },
       process: (contents, filename, destination) =>
         processTpl({
           contents,
           filename,
           destination,
-          context,
-          tplSettings,
+          data,
+          tplOptions,
         }),
     },
-    context,
-    tplSettings,
+    data,
+    tplOptions,
   );
 }
