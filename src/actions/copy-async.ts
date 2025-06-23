@@ -10,11 +10,11 @@ import normalize from 'normalize-path';
 import File from 'vinyl';
 
 import type { MemFsEditor } from '../index.js';
-import type { AppendOptions } from './append.js';
 import type { CopyOptions, CopySingleOptions } from './copy.js';
 import { resolveFromPaths, renderTpl, getCommonPath, type ResolvedFrom, globify, resolveGlobOptions } from '../util.js';
 import { writeInternal } from './write.js';
 import { copySingle } from './copy.js';
+import append from './append.js';
 
 const debug = createDebug('mem-fs-editor:copy-async');
 
@@ -142,7 +142,7 @@ export async function copyAsync(
   ]);
 }
 
-export type CopySingleAsyncOptions = AppendOptions &
+export type CopySingleAsyncOptions = Parameters<typeof append>[2] &
   CopySingleOptions & {
     append?: boolean;
     processFile?: (filepath: string) => string | Promise<string | Buffer>;

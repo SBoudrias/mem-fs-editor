@@ -20,11 +20,6 @@ import move from './actions/move.js';
 import commit from './actions/commit.js';
 import dump from './actions/dump.js';
 
-export type { AppendOptions } from './actions/append.js';
-export type { CopyOptions } from './actions/copy.js';
-export type { CopyAsyncOptions } from './actions/copy-async.js';
-export type { MemFsEditorFileDump } from './actions/dump.js';
-
 export interface MemFsEditorFile {
   path: string;
   stat?: { mode?: number } | null;

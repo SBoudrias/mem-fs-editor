@@ -25,7 +25,7 @@ function read(
       return options.defaults ?? null;
     }
 
-    throw new Error(filepath + " doesn't exist");
+    throw new Error(`${filepath} doesn't exist`);
   }
 
   return options.raw ? file.contents : file.contents.toString();
