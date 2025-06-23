@@ -134,7 +134,7 @@ export function copy(
       toFile = render(toFile, context, { ...tplSettings, cache: false });
     }
 
-    this._copySingle(file.resolvedFrom, toFile, options);
+    copySingle(this, file.resolvedFrom, toFile, options);
   });
 }
 
@@ -143,11 +143,11 @@ export type CopySingleOptions = {
   process?: (contents: Buffer, filepath: string, destination: string) => string | Buffer;
 };
 
-export function _copySingle(this: MemFsEditor, from: string, to: string, options: CopySingleOptions = {}) {
-  assert(this.exists(from), 'Trying to copy from a source that does not exist: ' + from);
+export function copySingle(editor: MemFsEditor, from: string, to: string, options: CopySingleOptions = {}) {
+  assert(editor.exists(from), 'Trying to copy from a source that does not exist: ' + from);
 
   debug('Copying %s to %s with %o', from, to, options);
-  const file = this.store.get(from);
+  const file = editor.store.get(from);
   to = path.resolve(to);
 
   let { contents } = file;
@@ -160,15 +160,15 @@ export function _copySingle(this: MemFsEditor, from: string, to: string, options
   }
 
   if (options.append) {
-    if (this.store.existsInMemory(to)) {
-      this.append(to, contents, { create: true, ...options });
+    if (editor.store.existsInMemory(to)) {
+      editor.append(to, contents, { create: true, ...options });
       return;
     }
   }
 
   if (File.isVinyl(file)) {
     writeInternal(
-      this.store,
+      editor.store,
       Object.assign(file.clone({ contents: false, deep: false }), {
         contents,
         path: to,
@@ -176,7 +176,7 @@ export function _copySingle(this: MemFsEditor, from: string, to: string, options
     );
   } else {
     writeInternal(
-      this.store,
+      editor.store,
       new File({
         contents,
         stat: (file.stat as any) ?? fs.statSync(file.path),
