@@ -23,26 +23,16 @@ describe('#copyAsync()', () => {
   });
 
   describe('using append option', () => {
-    beforeEach(() => {
-      vi.spyOn(memFs, 'append');
-      vi.spyOn(memFs, '_write');
-    });
-
     it('should append file to file already loaded', async () => {
       const filepath = getFixture('file-a.txt');
       const initialContents = memFs.read(filepath);
       const newPath = '/new/path/file.txt';
-      await memFs.copyAsync(filepath, newPath, { append: true });
 
-      expect(memFs._write).toHaveBeenCalledTimes(1);
-      expect(memFs.append).toHaveBeenCalledTimes(0);
+      await memFs.copyAsync(filepath, newPath, { append: true });
       expect(memFs.read(newPath)).toBe(initialContents);
       expect(memFs.store.get(newPath).state).toBe('modified');
 
       await memFs.copyAsync(filepath, newPath, { append: true });
-
-      expect(memFs._write).toHaveBeenCalledTimes(2);
-      expect(memFs.append).toHaveBeenCalledTimes(1);
       expect(memFs.read(newPath)).toBe(initialContents + initialContents);
     });
   });

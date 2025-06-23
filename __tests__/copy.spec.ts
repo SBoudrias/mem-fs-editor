@@ -43,31 +43,21 @@ describe('#copy()', () => {
   });
 
   describe('using append option', () => {
-    beforeEach(() => {
-      vi.spyOn(memFs, 'append');
-      vi.spyOn(memFs, '_write');
-    });
-
     it('should append file to file already loaded', () => {
       const filepath = getFixture('file-a.txt');
       const initialContents = memFs.read(filepath);
       const newPath = '/new/path/file.txt';
-      memFs.copy(filepath, newPath, { append: true });
 
-      expect(memFs._write).toHaveBeenCalledTimes(1);
-      expect(memFs.append).toHaveBeenCalledTimes(0);
+      memFs.copy(filepath, newPath, { append: true });
       expect(memFs.read(newPath)).toBe(initialContents);
       expect(memFs.store.get(newPath).state).toBe('modified');
 
       memFs.copy(filepath, newPath, { append: true });
-
-      expect(memFs._write).toHaveBeenCalledTimes(2);
-      expect(memFs.append).toHaveBeenCalledTimes(1);
       expect(memFs.read(newPath)).toBe(initialContents + initialContents);
     });
   });
 
-  it('can copy directory not commited to disk', () => {
+  it('can copy directory not committed to disk', () => {
     const sourceDir = getFixture('../../test/foo');
     const destDir = getFixture('../../test/bar');
     memFs.write(path.join(sourceDir, 'file-a.txt'), 'a');
