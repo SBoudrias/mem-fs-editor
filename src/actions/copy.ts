@@ -159,12 +159,6 @@ export function _copySingle(this: MemFsEditor, from: string, to: string, options
   }
 
   if (options.append) {
-    // Safety check against legacy API
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    if (!this.store.existsInMemory) {
-      throw new Error('Current mem-fs is not compatible with append');
-    }
-
     if (this.store.existsInMemory(to)) {
       this.append(to, contents, { create: true, ...options });
       return;
