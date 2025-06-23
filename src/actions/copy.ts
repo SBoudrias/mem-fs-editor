@@ -11,7 +11,7 @@ import File from 'vinyl';
 import { writeInternal } from './write.js';
 
 import type { MemFsEditor } from '../index.js';
-import { resolveFromPaths, render, getCommonPath, ResolvedFrom, globify, resolveGlobOptions } from '../util.js';
+import { resolveFromPaths, renderTpl, getCommonPath, ResolvedFrom, globify, resolveGlobOptions } from '../util.js';
 
 const debug = createDebug('mem-fs-editor:copy');
 
@@ -131,7 +131,7 @@ export function copy(
   foundFiles.forEach((file) => {
     let toFile = treatToAsDir ? processDestinationPath(path.join(to, file.relativeFrom)) : to;
     if (context) {
-      toFile = render(toFile, context, { ...tplSettings, cache: false });
+      toFile = renderTpl(toFile, context, { ...tplSettings, cache: false });
     }
 
     copySingle(this, file.resolvedFrom, toFile, options);

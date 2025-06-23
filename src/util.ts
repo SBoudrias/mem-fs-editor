@@ -5,7 +5,6 @@ import commondir from 'commondir';
 import { isDynamicPattern } from 'tinyglobby';
 import normalize from 'normalize-path';
 import { isBinaryFileSync } from 'isbinaryfile';
-import type { Data, Options } from 'ejs';
 import textextensions from 'textextensions';
 import binaryextensions from 'binaryextensions';
 
@@ -78,12 +77,8 @@ export function isBinary(filePath: string, newFileContents?: Buffer) {
   );
 }
 
-export function render(template: string, data?: ejs.Data, options?: ejs.Options): string {
-  return ejs.render(template, data, { cache: false, ...options }) as string;
-}
-
-export function renderFile(template: string, data?: ejs.Data, options?: ejs.Options): Promise<string> {
-  return ejs.renderFile(template, data, { cache: true, ...options });
+export function renderTpl(template: string, data?: ejs.Data, options?: ejs.Options): string {
+  return ejs.render(template, data, { cache: false, ...options, async: false });
 }
 
 export function processTpl({
@@ -95,14 +90,14 @@ export function processTpl({
   contents: Buffer;
   filename: string;
   destination?: string;
-  context?: Data;
-  tplSettings?: Options;
+  context?: ejs.Data;
+  tplSettings?: ejs.Options;
 }): string | Buffer {
   if (isBinary(filename, contents)) {
     return contents;
   }
 
-  return render(contents.toString(), context, {
+  return renderTpl(contents.toString(), context, {
     // Setting filename by default allow including partials.
     filename,
     cache: true,

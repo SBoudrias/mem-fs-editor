@@ -1,6 +1,6 @@
 import { Data, Options } from 'ejs';
 import type { MemFsEditor } from '../index.js';
-import { render } from '../util.js';
+import { renderTpl } from '../util.js';
 import { AppendOptions } from './append.js';
 
 export default function appendTpl(
@@ -11,5 +11,5 @@ export default function appendTpl(
   tplSettings?: Options,
   options?: AppendOptions,
 ) {
-  this.append(to, render(contents.toString(), context, tplSettings), options);
+  this.append(to, renderTpl(contents.toString(), context, tplSettings), options);
 }

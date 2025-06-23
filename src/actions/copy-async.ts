@@ -12,7 +12,7 @@ import File from 'vinyl';
 import type { MemFsEditor } from '../index.js';
 import type { AppendOptions } from './append.js';
 import type { CopyOptions, CopySingleOptions } from './copy.js';
-import { resolveFromPaths, render, getCommonPath, type ResolvedFrom, globify, resolveGlobOptions } from '../util.js';
+import { resolveFromPaths, renderTpl, getCommonPath, type ResolvedFrom, globify, resolveGlobOptions } from '../util.js';
 import { writeInternal } from './write.js';
 import { copySingle } from './copy.js';
 
@@ -23,7 +23,7 @@ function renderFilepath(filepath, context, tplSettings) {
     return filepath;
   }
 
-  return render(filepath, context, tplSettings);
+  return renderTpl(filepath, context, tplSettings);
 }
 
 async function getOneFile(filepath: string) {
