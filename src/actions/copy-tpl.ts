@@ -1,4 +1,4 @@
-import type { Data, Options } from 'ejs';
+import ejs from 'ejs';
 import type { MemFsEditor } from '../index.js';
 import type { CopyOptions } from './copy.js';
 import { processTpl } from '../util.js';
@@ -7,12 +7,12 @@ export function copyTpl(
   this: MemFsEditor,
   from: string | string[],
   to: string,
-  context?: Data,
-  tplSettings?: Options,
+  data?: ejs.Data,
+  tplOptions?: ejs.Options,
   options?: CopyOptions,
 ) {
-  context ||= {};
-  tplSettings ||= {};
+  data ||= {};
+  tplOptions ||= {};
 
   this.copy(
     from,
@@ -20,9 +20,9 @@ export function copyTpl(
     {
       processDestinationPath: (path) => path.replace(/.ejs$/, ''),
       ...options,
-      process: (contents, filename) => processTpl({ contents, filename, context, tplSettings }),
+      process: (contents, filename) => processTpl({ contents, filename, data, tplOptions }),
     },
-    context,
-    tplSettings,
+    data,
+    tplOptions,
   );
 }

@@ -3,7 +3,7 @@ import fs from 'fs';
 import fsPromises from 'fs/promises';
 import path from 'path';
 import createDebug from 'debug';
-import type { Data, Options } from 'ejs';
+import ejs from 'ejs';
 import { glob, isDynamicPattern } from 'tinyglobby';
 import multimatch from 'multimatch';
 import normalize from 'normalize-path';
@@ -12,18 +12,18 @@ import File from 'vinyl';
 import type { MemFsEditor } from '../index.js';
 import type { AppendOptions } from './append.js';
 import type { CopyOptions, CopySingleOptions } from './copy.js';
-import { resolveFromPaths, render, getCommonPath, type ResolvedFrom, globify, resolveGlobOptions } from '../util.js';
+import { resolveFromPaths, renderTpl, getCommonPath, type ResolvedFrom, globify, resolveGlobOptions } from '../util.js';
 import { writeInternal } from './write.js';
 import { copySingle } from './copy.js';
 
 const debug = createDebug('mem-fs-editor:copy-async');
 
-function renderFilepath(filepath, context, tplSettings) {
-  if (!context) {
+function renderFilepath(filepath: string, data?: ejs.Data, tplOptions?: ejs.Options) {
+  if (!data) {
     return filepath;
   }
 
-  return render(filepath, context, tplSettings);
+  return renderTpl(filepath, data, tplOptions);
 }
 
 async function getOneFile(filepath: string) {
@@ -45,8 +45,8 @@ export async function copyAsync(
   from: string | string[],
   to: string,
   options: CopyAsyncOptions = {},
-  context?: Data,
-  tplSettings?: Options,
+  data?: ejs.Data,
+  tplOptions?: ejs.Options,
 ) {
   to = path.resolve(to);
   const { noGlob } = options;
@@ -58,13 +58,13 @@ export async function copyAsync(
   if (typeof from === 'string') {
     // If `from` is a string and an existing file just go ahead and copy it.
     if (this.store.existsInMemory(from) && this.exists(from)) {
-      copySingle(this, from, renderFilepath(to, context, tplSettings), options);
+      copySingle(this, from, renderFilepath(to, data, tplOptions), options);
       return;
     }
 
     const oneFile = await getOneFile(from);
     if (oneFile) {
-      return copySingleAsync(this, oneFile, renderFilepath(to, context, tplSettings), options);
+      return copySingleAsync(this, oneFile, renderFilepath(to, data, tplOptions), options);
     }
   }
 
@@ -133,10 +133,10 @@ export async function copyAsync(
 
   await Promise.all([
     ...diskFiles.map((file) =>
-      copySingleAsync(this, file, renderFilepath(generateDestination(file), context, tplSettings), options),
+      copySingleAsync(this, file, renderFilepath(generateDestination(file), data, tplOptions), options),
     ),
     ...storeFiles.map((file) => {
-      copySingle(this, file, renderFilepath(generateDestination(file), context, tplSettings), options);
+      copySingle(this, file, renderFilepath(generateDestination(file), data, tplOptions), options);
       return Promise.resolve();
     }),
   ]);

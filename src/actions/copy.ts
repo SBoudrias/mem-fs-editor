@@ -2,7 +2,7 @@ import assert from 'assert';
 import fs from 'fs';
 import path from 'path';
 import createDebug from 'debug';
-import type { Data, Options } from 'ejs';
+import ejs from 'ejs';
 import { globSync, isDynamicPattern, type GlobOptions } from 'tinyglobby';
 import multimatch from 'multimatch';
 import type { Options as MultimatchOptions } from 'multimatch';
@@ -11,7 +11,7 @@ import File from 'vinyl';
 import { writeInternal } from './write.js';
 
 import type { MemFsEditor } from '../index.js';
-import { resolveFromPaths, render, getCommonPath, ResolvedFrom, globify, resolveGlobOptions } from '../util.js';
+import { resolveFromPaths, renderTpl, getCommonPath, ResolvedFrom, globify, resolveGlobOptions } from '../util.js';
 
 const debug = createDebug('mem-fs-editor:copy');
 
@@ -49,8 +49,8 @@ export function copy(
   from: string | string[],
   to: string,
   options: CopyOptions = {},
-  context?: Data,
-  tplSettings?: Options,
+  data?: ejs.Data,
+  tplOptions?: ejs.Options,
 ) {
   const { fromBasePath = getCommonPath(from), noGlob } = options;
   const hasGlobOptions = Boolean(options.globOptions);
@@ -130,8 +130,8 @@ export function copy(
   const processDestinationPath = options.processDestinationPath || ((destPath) => destPath);
   foundFiles.forEach((file) => {
     let toFile = treatToAsDir ? processDestinationPath(path.join(to, file.relativeFrom)) : to;
-    if (context) {
-      toFile = render(toFile, context, { ...tplSettings, cache: false });
+    if (data) {
+      toFile = renderTpl(toFile, data, { ...tplOptions, cache: false });
     }
 
     copySingle(this, file.resolvedFrom, toFile, options);
