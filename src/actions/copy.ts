@@ -2,7 +2,6 @@ import assert from 'assert';
 import fs from 'fs';
 import path from 'path';
 import createDebug from 'debug';
-import ejs from 'ejs';
 import { globSync, isDynamicPattern, type GlobOptions } from 'tinyglobby';
 import multimatch from 'multimatch';
 import type { Options as MultimatchOptions } from 'multimatch';
@@ -11,19 +10,21 @@ import File from 'vinyl';
 import { writeInternal } from './write.js';
 
 import type { MemFsEditor } from '../index.js';
-import { resolveFromPaths, renderTpl, getCommonPath, ResolvedFrom, globify, resolveGlobOptions } from '../util.js';
+import { resolveFromPaths, getCommonPath, ResolvedFrom, globify, resolveGlobOptions } from '../util.js';
 
 const debug = createDebug('mem-fs-editor:copy');
 
-function applyProcessingFunc(
-  process: (contents: Buffer, filepath: string, destination: string) => string | Buffer,
-  contents: Buffer,
-  filename: string,
-  destination: string,
-) {
-  const output = process(contents, filename, destination);
-  return Buffer.isBuffer(output) ? output : Buffer.from(output);
-}
+export type CopySingleOptions = {
+  append?: boolean;
+  /**
+   * Transform both the file path and content during copy.
+   * @param destinationPath The destination file path
+   * @param sourcePath The source file path
+   * @param contents The file content as Buffer
+   * @returns Tuple of [new filepath, new content]
+   */
+  fileTransform?: (destinationPath: string, sourcePath: string, contents: Buffer) => [string, string | Buffer];
+};
 
 export type CopyOptions = CopySingleOptions & {
   noGlob?: boolean;
@@ -41,17 +42,9 @@ export type CopyOptions = CopySingleOptions & {
   storeMatchOptions?: MultimatchOptions;
   ignoreNoMatch?: boolean;
   fromBasePath?: string;
-  processDestinationPath?: (filepath: string) => string;
 };
 
-export function copy(
-  this: MemFsEditor,
-  from: string | string[],
-  to: string,
-  options: CopyOptions = {},
-  data?: ejs.Data,
-  tplOptions?: ejs.Options,
-) {
+export function copy(this: MemFsEditor, from: string | string[], to: string, options: CopyOptions = {}) {
   const { fromBasePath = getCommonPath(from), noGlob } = options;
   const hasGlobOptions = Boolean(options.globOptions);
   const hasMultimatchOptions = Boolean(options.storeMatchOptions);
@@ -127,37 +120,31 @@ export function copy(
     );
   }
 
-  const processDestinationPath = options.processDestinationPath || ((destPath) => destPath);
   foundFiles.forEach((file) => {
-    let toFile = treatToAsDir ? processDestinationPath(path.join(to, file.relativeFrom)) : to;
-    if (data) {
-      toFile = renderTpl(toFile, data, { ...tplOptions, cache: false });
-    }
+    const toFile = treatToAsDir ? path.join(to, file.relativeFrom) : to;
 
     copySingle(this, file.resolvedFrom, toFile, options);
   });
 }
 
-export type CopySingleOptions = {
-  append?: boolean;
-  process?: (contents: Buffer, filepath: string, destination: string) => string | Buffer;
-};
+const defaultFileTransform = (destPath: string, _srcPath: string, contents: Buffer): [string, Buffer] => [
+  destPath,
+  contents,
+];
 
 export function copySingle(editor: MemFsEditor, from: string, to: string, options: CopySingleOptions = {}) {
   assert(editor.exists(from), 'Trying to copy from a source that does not exist: ' + from);
 
   debug('Copying %s to %s with %o', from, to, options);
   const file = editor.store.get(from);
-  to = path.resolve(to);
 
-  let { contents } = file;
-  if (!contents) {
+  let contents: string | Buffer;
+  if (!file.contents) {
     throw new Error(`Cannot copy empty file ${from}`);
   }
 
-  if (options.process) {
-    contents = applyProcessingFunc(options.process, contents, file.path, to);
-  }
+  const { fileTransform = defaultFileTransform } = options;
+  [to, contents] = fileTransform(path.resolve(to), from, file.contents);
 
   if (options.append) {
     if (editor.store.existsInMemory(to)) {
@@ -170,7 +157,7 @@ export function copySingle(editor: MemFsEditor, from: string, to: string, option
     writeInternal(
       editor.store,
       Object.assign(file.clone({ contents: false, deep: false }), {
-        contents,
+        contents: Buffer.from(contents),
         path: to,
       }),
     );
@@ -178,7 +165,7 @@ export function copySingle(editor: MemFsEditor, from: string, to: string, option
     writeInternal(
       editor.store,
       new File({
-        contents,
+        contents: Buffer.from(contents),
         stat: (file.stat as any) ?? fs.statSync(file.path),
         path: to,
         history: [file.path],

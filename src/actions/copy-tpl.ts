@@ -1,7 +1,7 @@
 import ejs from 'ejs';
 import type { MemFsEditor } from '../index.js';
 import type { CopyOptions } from './copy.js';
-import { processTpl } from '../util.js';
+import { processTpl, renderTpl } from '../util.js';
 
 export function copyTpl(
   this: MemFsEditor,
@@ -14,15 +14,12 @@ export function copyTpl(
   data ||= {};
   tplOptions ||= {};
 
-  this.copy(
-    from,
-    to,
-    {
-      processDestinationPath: (path) => path.replace(/.ejs$/, ''),
-      ...options,
-      process: (contents, filename) => processTpl({ contents, filename, data, tplOptions }),
+  this.copy(from, to, {
+    ...options,
+    fileTransform(destPath: string, sourcePath: string, contents: Buffer) {
+      const processedPath = renderTpl(destPath, data, tplOptions);
+      const processedContent = processTpl({ contents, filename: sourcePath, data, tplOptions });
+      return [processedPath.replace(/.ejs$/, ''), processedContent];
     },
-    data,
-    tplOptions,
-  );
+  });
 }

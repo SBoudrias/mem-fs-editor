@@ -1,13 +1,10 @@
 import { describe, beforeEach, it, expect, vi, afterEach } from 'vitest';
 import fs from 'fs/promises';
 import os from 'os';
-import path, { dirname } from 'path';
+import path from 'path';
 import { type MemFsEditor, MemFsEditorFile, create } from '../src/index.js';
 import { create as createMemFs } from 'mem-fs';
 import { getFixture } from './fixtures.js';
-import { fileURLToPath } from 'url';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
 
 describe('#copy()', () => {
   let memFs: MemFsEditor;
@@ -85,19 +82,33 @@ describe('#copy()', () => {
     }).toThrow('Trying to copy from a source that does not exist: ');
   });
 
-  it('copy file and process contents', () => {
+  it('transforms file path and contents using fileTransform', () => {
     const filepath = getFixture('file-a.txt');
     const initialContents = memFs.read(filepath);
-    const contents = 'some processed contents';
-    const newPath = getFixture('../../test/new/path/file.txt');
-    memFs.copy(filepath, newPath, {
-      process(contentsArg) {
-        expect(contentsArg).toBeInstanceOf(Buffer);
-        expect(contentsArg.toString()).toEqual(initialContents);
-        return contents;
+    const transformedPath = '/transformed/path/file.txt';
+    const transformedContent = 'transformed content';
+
+    memFs.copy(filepath, '/original/path/file.txt', {
+      fileTransform(destPath, _srcPath, contents) {
+        expect(contents).toBeInstanceOf(Buffer);
+        expect(contents.toString()).toBe(initialContents);
+        expect(destPath).toBe(path.resolve('/original/path/file.txt'));
+        return [transformedPath, Buffer.from(transformedContent)];
       },
     });
-    expect(memFs.read(newPath)).toBe(contents);
+
+    expect(memFs.read(transformedPath)).toBe(transformedContent);
+    expect(() => memFs.read('/original/path/file.txt')).toThrow();
+  });
+
+  it('uses default fileTransform when not provided', () => {
+    const filepath = getFixture('file-a.txt');
+    const initialContents = memFs.read(filepath);
+    const destPath = '/new/path/file.txt';
+
+    memFs.copy(filepath, destPath);
+
+    expect(memFs.read(destPath)).toBe(initialContents);
   });
 
   it('copy by directory', () => {
@@ -122,9 +133,9 @@ describe('#copy()', () => {
   });
 
   it('copy files by globbing and process contents', () => {
-    const process = vi.fn().mockImplementation((f) => f);
-    memFs.copy(getFixture('**'), outputDir, { process });
-    expect(process).toHaveBeenCalledTimes(13); // 10 total files under 'fixtures', not counting folders
+    const fileTransform = vi.fn().mockImplementation((destPath, _srcPath, contents) => [destPath, contents]);
+    memFs.copy(getFixture('**'), outputDir, { fileTransform });
+    expect(fileTransform).toHaveBeenCalledTimes(13); // 10 total files under 'fixtures', not counting folders
     expect(memFs.read(path.join(outputDir, 'file-a.txt'))).toBe('foo' + os.EOL);
     expect(memFs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
   });
@@ -133,12 +144,6 @@ describe('#copy()', () => {
     memFs.copy(getFixture('**'), outputDir);
     expect(memFs.read(path.join(outputDir, 'file-a.txt'))).toBe('foo' + os.EOL);
     expect(memFs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
-  });
-
-  it('accepts template paths', () => {
-    const outputFile = getFixture('test/<%= category %>/file-a.txt');
-    memFs.copy(getFixture('file-a.txt'), outputFile, {}, { category: 'foo' });
-    expect(memFs.read(getFixture('test/foo/file-a.txt'))).toBe('foo' + os.EOL);
   });
 
   it('requires destination directory when globbing', () => {
@@ -178,7 +183,7 @@ describe('#copy()', () => {
 
   it('accepts fromBasePath', () => {
     memFs.copy(['file-a.txt', 'nested/file.txt'], outputDir, {
-      fromBasePath: path.join(__dirname, 'fixtures'),
+      fromBasePath: path.join(import.meta.dirname, 'fixtures'),
       noGlob: true,
     });
     expect(memFs.read(path.join(outputDir, '/file-a.txt'))).toBe('foo' + os.EOL);
