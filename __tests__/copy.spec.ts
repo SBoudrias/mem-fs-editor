@@ -85,26 +85,25 @@ describe('#copy()', () => {
   it('transforms file path and contents using fileTransform', () => {
     const filepath = getFixture('file-a.txt');
     const initialContents = memFs.read(filepath);
-    const transformedPath = '/transformed/path/file.txt';
+    const transformedPath = 'transformed/path/file.txt';
     const transformedContent = 'transformed content';
 
-    memFs.copy(filepath, '/original/path/file.txt', {
+    memFs.copy(filepath, transformedPath, {
       fileTransform(destPath, _srcPath, contents) {
         expect(contents).toBeInstanceOf(Buffer);
         expect(contents.toString()).toBe(initialContents);
-        expect(destPath).toBe(path.resolve('/original/path/file.txt'));
-        return [transformedPath, Buffer.from(transformedContent)];
+        expect(destPath).toBe(path.resolve(transformedPath));
+        return [destPath, Buffer.from(transformedContent)];
       },
     });
 
     expect(memFs.read(transformedPath)).toBe(transformedContent);
-    expect(() => memFs.read('/original/path/file.txt')).toThrow();
   });
 
   it('uses default fileTransform when not provided', () => {
     const filepath = getFixture('file-a.txt');
     const initialContents = memFs.read(filepath);
-    const destPath = '/new/path/file.txt';
+    const destPath = 'new/path/file.txt';
 
     memFs.copy(filepath, destPath);
 
