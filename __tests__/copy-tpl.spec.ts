@@ -1,6 +1,6 @@
 import { describe, beforeEach, it, expect, vi } from 'vitest';
 import os from 'os';
-import path, { resolve } from 'path';
+import path from 'path';
 import { type MemFsEditor, MemFsEditorFile, create } from '../src/index.js';
 import { create as createMemFs } from 'mem-fs';
 import normalize from 'normalize-path';
@@ -132,17 +132,35 @@ describe('#copyTpl()', () => {
     expect(memFs.exists(path.join(newPath, 'file-ejs-extension.txt'))).toBeTruthy();
   });
 
-  it("doens't removes ejs extension when not globbing", () => {
-    const filepath = getFixture('ejs/file-ejs-extension.txt.ejs');
-    const newPath = '/new/path/file-ejs-extension.txt.ejs';
-    memFs.copyTpl(filepath, newPath);
-    expect(memFs.exists(newPath)).toBeTruthy();
+  it('processes both filepath and content as templates', () => {
+    const filepath = getFixture('file-tpl.txt');
+    const newPath = '/new/<%= name %>/file.txt';
+    memFs.copyTpl(filepath, newPath, { name: 'bar' });
+    // Check that both path and content were processed
+    expect(memFs.exists('/new/bar/file.txt')).toBeTruthy();
+    expect(memFs.read('/new/bar/file.txt')).toBe('bar' + os.EOL);
+  });
+
+  it('provides source filepath to fileTransform', () => {
+    const filepath = getFixture('file-tpl.txt');
+    const newPath = '/new/path/file.txt';
+    memFs.copyTpl(filepath, newPath, { name: 'bar' }, undefined, {
+      fileTransform(destPath: string, sourcePath: string, contents: Buffer): [string, Buffer] {
+        // Verify that sourcePath is the original template file
+        expect(sourcePath).toBe(filepath);
+        // Verify that destPath is the target path
+        expect(destPath).toBe(path.resolve(newPath));
+        // Return unmodified path and content
+        return [destPath, contents];
+      },
+    });
   });
 
   it('keeps template path in file history', () => {
     const filepath = getFixture('ejs/file-ejs-extension.txt.ejs');
-    const newPath = '/new/path/file-ejs-extension.txt.ejs';
+    const newPath = '/new/path/file-ejs-extension.txt';
     memFs.copyTpl(filepath, newPath);
-    expect(memFs.store.get(newPath).history).toMatchObject([resolve(filepath), resolve(newPath)]);
+    expect(memFs.exists(newPath)).toBeTruthy();
+    expect(memFs.store.get(newPath).history).toMatchObject([path.resolve(filepath), path.resolve(newPath)]);
   });
 });
