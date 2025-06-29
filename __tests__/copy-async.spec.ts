@@ -22,6 +22,12 @@ describe('#copyAsync()', () => {
     expect(memFs.store.get(newPath).state).toBe('modified');
   });
 
+  it('throws when trying to copy from a non-existing file', async () => {
+    const filepath = getFixture('does-not-exits');
+    const newPath = getFixture('../../test/new/path/file.txt');
+    await expect(memFs.copyAsync(filepath, newPath)).rejects.toThrow();
+  });
+
   describe('using append option', () => {
     it('should append file to file already loaded', async () => {
       const filepath = getFixture('file-a.txt');
