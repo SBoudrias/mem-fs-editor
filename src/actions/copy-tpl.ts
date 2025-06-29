@@ -1,7 +1,6 @@
 import ejs from 'ejs';
 import type { MemFsEditor } from '../index.js';
-import type { CopyOptions } from './copy.js';
-import { processTpl, renderTpl } from '../util.js';
+import { isBinary } from '../util.js';
 
 export function copyTpl(
   this: MemFsEditor,
@@ -9,7 +8,7 @@ export function copyTpl(
   to: string,
   data?: ejs.Data,
   tplOptions?: ejs.Options,
-  options?: CopyOptions,
+  options?: Parameters<MemFsEditor['copy']>[2],
 ) {
   data ||= {};
   tplOptions ||= {};
@@ -17,8 +16,16 @@ export function copyTpl(
   this.copy(from, to, {
     ...options,
     fileTransform(destPath: string, sourcePath: string, contents: Buffer) {
-      const processedPath = renderTpl(destPath, data, tplOptions);
-      const processedContent = processTpl({ contents, filename: sourcePath, data, tplOptions });
+      const processedPath = ejs.render(destPath, data, { cache: false, ...tplOptions, async: false });
+      const processedContent = isBinary(sourcePath, contents)
+        ? contents
+        : ejs.render(contents.toString(), data, {
+            // Setting filename by default allow including partials.
+            filename: sourcePath,
+            cache: true,
+            ...tplOptions,
+            async: false,
+          });
       return [processedPath.replace(/.ejs$/, ''), processedContent];
     },
   });

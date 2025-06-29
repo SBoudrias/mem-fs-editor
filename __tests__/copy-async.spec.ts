@@ -37,7 +37,7 @@ describe('#copyAsync()', () => {
     });
   });
 
-  it('can copy directory not commited to disk', async () => {
+  it('can copy directory not committed to disk', async () => {
     const sourceDir = getFixture('../../test/foo');
     const destDir = getFixture('../../test/bar');
     memFs.write(path.join(sourceDir, 'file-a.txt'), 'a');

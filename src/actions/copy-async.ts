@@ -4,17 +4,15 @@ import fsPromises from 'fs/promises';
 import path from 'path';
 import createDebug from 'debug';
 
-import { glob, isDynamicPattern } from 'tinyglobby';
+import { glob, GlobOptions, isDynamicPattern } from 'tinyglobby';
 import multimatch from 'multimatch';
 import normalize from 'normalize-path';
 import File from 'vinyl';
 
 import type { MemFsEditor } from '../index.js';
-import type { CopyOptions, CopySingleOptions } from './copy.js';
+import type { Options as MultimatchOptions } from 'multimatch';
 import { resolveFromPaths, getCommonPath, type ResolvedFrom, globify, resolveGlobOptions } from '../util.js';
 import { writeInternal } from './write.js';
-import { copySingle } from './copy.js';
-import append from './append.js';
 
 const debug = createDebug('mem-fs-editor:copy-async');
 
@@ -30,25 +28,40 @@ async function getOneFile(filepath: string) {
   return undefined;
 }
 
-export type CopySingleAsyncOptions = Parameters<typeof append>[2] &
-  Omit<CopySingleOptions, 'fileTransform'> & {
-    append?: boolean;
+type CopySingleAsyncOptions = Parameters<MemFsEditor['append']>[2] & {
+  append?: boolean;
 
-    /**
-     * Transform both the file path and content during copy.
-     * @param destinationPath The destination file path
-     * @param sourcePath The source file path
-     * @param contents The file content as Buffer
-     * @returns Tuple of [new filepath, new content]
-     */
-    fileTransform?: (
-      destinationPath: string,
-      sourcePath: string,
-      contents: Buffer,
-    ) => [string, string | Buffer] | Promise<[string, string | Buffer]>;
-  };
+  /**
+   * Transform both the file path and content during copy.
+   * @param destinationPath The destination file path
+   * @param sourcePath The source file path
+   * @param contents The file content as Buffer
+   * @returns Tuple of [new filepath, new content]
+   */
+  fileTransform?: (
+    destinationPath: string,
+    sourcePath: string,
+    contents: Buffer,
+  ) => [string, string | Buffer] | Promise<[string, string | Buffer]>;
+};
 
-export type CopyAsyncOptions = CopyOptions & CopySingleAsyncOptions;
+type CopyAsyncOptions = CopySingleAsyncOptions & {
+  noGlob?: boolean;
+  /**
+   * Options for disk globbing.
+   * Glob options that should be compatible with minimatch results.
+   */
+  globOptions?: Pick<
+    GlobOptions,
+    'caseSensitiveMatch' | 'cwd' | 'debug' | 'deep' | 'dot' | 'expandDirectories' | 'followSymbolicLinks'
+  >;
+  /**
+   * Options for store files matching.
+   */
+  storeMatchOptions?: MultimatchOptions;
+  ignoreNoMatch?: boolean;
+  fromBasePath?: string;
+};
 
 export async function copyAsync(
   this: MemFsEditor,
@@ -64,12 +77,6 @@ export async function copyAsync(
   assert(!noGlob || !hasMultimatchOptions, '`noGlob` and `storeMatchOptions` are mutually exclusive');
 
   if (typeof from === 'string') {
-    // If `from` is a string and an existing file just go ahead and copy it.
-    if (this.store.existsInMemory(from) && this.exists(from)) {
-      copySingle(this, from, to, options);
-      return;
-    }
-
     const oneFile = await getOneFile(from);
     if (oneFile) {
       return copySingleAsync(this, oneFile, to, options);
@@ -137,10 +144,7 @@ export async function copyAsync(
 
   await Promise.all([
     ...diskFiles.map((file) => copySingleAsync(this, file, generateDestination(file), options)),
-    ...storeFiles.map((file) => {
-      copySingle(this, file, generateDestination(file), options);
-      return Promise.resolve();
-    }),
+    ...storeFiles.map((file) => copySingleAsync(this, file, generateDestination(file), options)),
   ]);
 }
 
@@ -161,22 +165,20 @@ async function copySingleAsync(editor: MemFsEditor, from: string, to: string, op
   }
 
   const { fileTransform = defaultFileTransform } = options;
-  [to, contents] = await Promise.resolve(fileTransform(path.resolve(to), from, file.contents));
+  const transformPromise = fileTransform(path.resolve(to), from, file.contents);
+  [to, contents] = await transformPromise;
 
-  if (options.append) {
-    if (editor.store.existsInMemory(to)) {
-      editor.append(to, contents, { create: true, ...options });
-      return;
-    }
+  if (options.append && editor.store.existsInMemory(to)) {
+    editor.append(to, contents, { create: true, ...options });
+  } else {
+    writeInternal(
+      editor.store,
+      new File({
+        contents: Buffer.from(contents),
+        stat: file.stat as any,
+        path: to,
+        history: [from],
+      }),
+    );
   }
-
-  writeInternal(
-    editor.store,
-    new File({
-      contents: Buffer.from(contents),
-      stat: await fsPromises.stat(from),
-      path: to,
-      history: [from],
-    }),
-  );
 }

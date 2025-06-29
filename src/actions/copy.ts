@@ -10,11 +10,11 @@ import File from 'vinyl';
 import { writeInternal } from './write.js';
 
 import type { MemFsEditor } from '../index.js';
-import { resolveFromPaths, getCommonPath, ResolvedFrom, globify, resolveGlobOptions } from '../util.js';
+import { resolveFromPaths, getCommonPath, ResolvedFrom, resolveGlobOptions, globify } from '../util.js';
 
 const debug = createDebug('mem-fs-editor:copy');
 
-export type CopySingleOptions = {
+type CopySingleOptions = {
   append?: boolean;
   /**
    * Transform both the file path and content during copy.
@@ -26,7 +26,7 @@ export type CopySingleOptions = {
   fileTransform?: (destinationPath: string, sourcePath: string, contents: Buffer) => [string, string | Buffer];
 };
 
-export type CopyOptions = CopySingleOptions & {
+type CopyOptions = CopySingleOptions & {
   noGlob?: boolean;
   /**
    * Options for disk globbing.
@@ -146,14 +146,9 @@ export function copySingle(editor: MemFsEditor, from: string, to: string, option
   const { fileTransform = defaultFileTransform } = options;
   [to, contents] = fileTransform(path.resolve(to), from, file.contents);
 
-  if (options.append) {
-    if (editor.store.existsInMemory(to)) {
-      editor.append(to, contents, { create: true, ...options });
-      return;
-    }
-  }
-
-  if (File.isVinyl(file)) {
+  if (options.append && editor.store.existsInMemory(to)) {
+    editor.append(to, contents, { create: true, ...options });
+  } else if (File.isVinyl(file)) {
     writeInternal(
       editor.store,
       Object.assign(file.clone({ contents: false, deep: false }), {
