@@ -85,6 +85,7 @@ describe('#copyTplAsync()', () => {
     const filepath = getFixture('file-tpl-partial.*');
     await memFs.copyTplAsync([filepath], '/new/path/', {}, {}, { globOptions, fromBasePath: getFixture() });
 
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     expect(glob).toHaveBeenCalledWith([normalizePath(filepath)], expect.objectContaining(globOptions));
   });
 

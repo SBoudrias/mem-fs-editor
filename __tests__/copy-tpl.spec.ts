@@ -69,6 +69,7 @@ describe('#copyTpl()', () => {
     const filepath = getFixture('file-tpl-partial.*');
     memFs.copyTpl([filepath], '/new/path/', {}, {}, { globOptions, fromBasePath: getFixture() });
 
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     expect(globSync).toHaveBeenCalledWith([normalize(filepath)], expect.objectContaining(globOptions));
   });
 
