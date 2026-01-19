@@ -73,23 +73,27 @@ Delete a file or a directory.
 
 `filePath` can also be a `glob`. If `filePath` is glob, you can optionally pass in an `options.globOptions` object to change its pattern matching behavior. The full list of options are being described [here](https://github.com/mrmlnc/fast-glob#options-1). The `sync` flag is forced to be `true` in `globOptions`.
 
-### `#copy(from, to, [options], context[, templateOptions ])`
+### `#copy(from, to, [options])`
 
 Copy file(s) from the `from` path to the `to` path.
 When passing array, you should pass `options.fromBasePath` to be used to calculate the `to` relative path. The common directory will be detected and used as `fromBasePath` otherwise.
 
-Optionally, pass an `options.process` function (`process(contents)`) returning a string or a buffer who'll become the new file content. The process function will take a single contents argument who is the copied file contents as a `Buffer`.
+Optionally, pass an `options.fileTransform` function (`fileTransform(filepath, contents)`) that transforms both the destination path and file contents. The function takes two arguments:
+- `filepath`: The resolved destination file path
+- `contents`: The file contents as a `Buffer`
+
+It should return a tuple `[newFilepath, newContents]` where:
+- `newFilepath`: The transformed destination path (string)
+- `newContents`: The transformed file contents (Buffer)
 
 `options.ignoreNoMatch` can be used to silence the error thrown if no files match the `from` pattern.
 `options.append` can be used to append `from` contents to `to` instead of copying, when the file is already loaded in mem-fs (safe for regeneration).
 
 `from` can be a glob pattern that'll be match against the file system. If that's the case, then `to` must be an output directory. For a globified `from`, you can optionally pass in an `options.globOptions` object to change its pattern matching behavior. The full list of options are being described [here](https://github.com/mrmlnc/fast-glob#options-1). The `nodir` flag is forced to be `true` in `globOptions` to ensure a vinyl object representing each matching directory is marked as `deleted` in the `mem-fs` store.
 
-Optionally, when `from` is a glob pattern, pass an `options.processDestinationPath` function (`processDestinationPath(destinationFile)`) returning a string who'll become the new file name.
-
 `options.noGlob` can be used to by bypass glob matching entirely. In that case, `from` will directly match file paths against the file system.
 
-### `#copyAsync(from, to, [options], context[, templateOptions ])`
+### `#copyAsync(from, to, [options])`
 
 Async version of `copy`.
 
