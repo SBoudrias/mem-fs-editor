@@ -6,13 +6,13 @@ jobs:
   Linting:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: latest
           cache: npm
       - run: node --version
-      - run: npm ci
+      - run: npm ci --engine-strict
       - name: Typescript
         run: npx tsc -p tsconfig.json --noEmit
       - name: Eslint
@@ -29,8 +29,8 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
           cache: npm

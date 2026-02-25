@@ -11,6 +11,10 @@ updates:
       - dependency-name: '*'
         update-types: ['version-update:semver-minor', 'version-update:semver-patch']
     groups:
+      eslint:
+        patterns:
+          - '@eslint/*'
+          - 'eslint'
       vitest:
         patterns:
           - '@vitest/*'
