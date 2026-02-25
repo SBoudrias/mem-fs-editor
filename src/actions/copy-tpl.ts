@@ -10,13 +10,17 @@ export function copyTpl(
   tplOptions?: ejs.Options,
   options?: Parameters<MemFsEditor['copy']>[2],
 ) {
+  if (tplOptions?.async) {
+    throw new Error('Async EJS rendering is not supported in appendTpl');
+  }
+
   data ||= {};
   tplOptions ||= {};
 
   this.copy(from, to, {
     ...options,
     fileTransform(destPath: string, sourcePath: string, contents: Buffer) {
-      const processedPath = ejs.render(destPath, data, { cache: false, ...tplOptions });
+      const processedPath = ejs.render(destPath, data, { cache: false, ...tplOptions, async: false });
       const processedContent = isBinary(sourcePath, contents)
         ? contents
         : ejs.render(contents.toString(), data, {

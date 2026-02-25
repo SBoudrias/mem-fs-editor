@@ -25,6 +25,12 @@ describe('#copyTpl()', () => {
     memFs = create(createMemFs<MemFsEditorFile>());
   });
 
+  it("doesn't accept async EJS rendering", () => {
+    expect(() => {
+      memFs.copyTpl('', '', {}, { async: true });
+    }).toThrowError('Async EJS rendering is not supported in appendTpl');
+  });
+
   it('copy file and process contents as underscore template', () => {
     const filepath = getFixture('file-tpl.txt');
     const newPath = '/new/path/file.txt';

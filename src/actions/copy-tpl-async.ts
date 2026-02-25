@@ -16,7 +16,7 @@ export default async function (
       const processedPath = await ejs.render(destPath, data, tplOptions);
       const processedContent = isBinary(sourcePath, contents)
         ? contents
-        : ejs.render(contents.toString(), data, {
+        : await ejs.render(contents.toString(), data, {
             // Setting filename by default allow including partials.
             filename: sourcePath,
             cache: false,
