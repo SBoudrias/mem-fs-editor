@@ -16,7 +16,7 @@ export function copyTpl(
   this.copy(from, to, {
     ...options,
     fileTransform(destPath: string, sourcePath: string, contents: Buffer) {
-      const processedPath = ejs.render(destPath, data, { cache: false, ...tplOptions, async: false });
+      const processedPath = ejs.render(destPath, data, { cache: false, ...tplOptions });
       const processedContent = isBinary(sourcePath, contents)
         ? contents
         : ejs.render(contents.toString(), data, {
