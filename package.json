@@ -39,7 +39,7 @@
     "debug": "^4.4.1",
     "deep-extend": "^0.6.0",
     "ejs": "^4.0.1",
-    "isbinaryfile": "6.0.0",
+    "isbinaryfile": "5.0.4",
     "minimatch": "^10.0.1",
     "multimatch": "^7.0.0",
     "normalize-path": "^3.0.0",
@@ -83,6 +83,6 @@
     "node": ">=20.0.0"
   },
   "acceptDependencies": {
-    "isbinaryfile": "^5.0.4"
+    "isbinaryfile": "^6.0.0"
   }
 }
