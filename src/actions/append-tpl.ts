@@ -1,7 +1,5 @@
 import ejs from 'ejs';
 import type { MemFsEditor } from '../index.js';
-import { renderTpl } from '../util.js';
-import append from './append.js';
 
 export default function appendTpl(
   this: MemFsEditor,
@@ -9,7 +7,11 @@ export default function appendTpl(
   contents: string | Buffer,
   data?: ejs.Data,
   tplOptions?: ejs.Options,
-  options?: Parameters<typeof append>[2],
+  options?: Parameters<MemFsEditor['append']>[2],
 ) {
-  this.append(to, renderTpl(contents.toString(), data, tplOptions), options);
+  if (tplOptions?.async) {
+    throw new Error('Async EJS rendering is not supported in appendTpl');
+  }
+
+  this.append(to, ejs.render(contents.toString(), data, { ...tplOptions, async: false }), options);
 }

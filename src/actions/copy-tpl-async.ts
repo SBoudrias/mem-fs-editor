@@ -1,8 +1,6 @@
-import fs from 'fs/promises';
-import { isBinary, processTpl } from '../util.js';
+import { isBinary } from '../util.js';
 import type { MemFsEditor } from '../index.js';
 import ejs from 'ejs';
-import type { CopyAsyncOptions } from './copy-async.js';
 
 export default async function (
   this: MemFsEditor,
@@ -10,31 +8,23 @@ export default async function (
   to: string,
   data: ejs.Data = {},
   tplOptions?: ejs.Options,
-  options?: CopyAsyncOptions,
+  options?: Parameters<MemFsEditor['copyAsync']>[2],
 ) {
-  await this.copyAsync(
-    from,
-    to,
-    {
-      processDestinationPath: (path) => path.replace(/.ejs$/, ''),
-      ...options,
-      processFile(filename) {
-        if (isBinary(filename)) {
-          return fs.readFile(filename);
-        }
+  await this.copyAsync(from, to, {
+    ...options,
+    async fileTransform(destPath: string, sourcePath: string, contents: Buffer): Promise<[string, string | Buffer]> {
+      const processedPath = await ejs.render(destPath, data, tplOptions);
+      const processedContent = isBinary(sourcePath, contents)
+        ? contents
+        : await ejs.render(contents.toString(), data, {
+            // Setting filename by default allow including partials.
+            filename: sourcePath,
+            cache: false,
+            ...tplOptions,
+            // This cannot be set to true because `include()` then also become async which change the behaviors of templates...
+          });
 
-        return ejs.renderFile(filename, data, { cache: true, ...tplOptions });
-      },
-      process: (contents, filename, destination) =>
-        processTpl({
-          contents,
-          filename,
-          destination,
-          data,
-          tplOptions,
-        }),
+      return [processedPath.replace(/.ejs$/, ''), processedContent];
     },
-    data,
-    tplOptions,
-  );
+  });
 }

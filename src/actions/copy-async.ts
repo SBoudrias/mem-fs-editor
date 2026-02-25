@@ -3,28 +3,18 @@ import fs from 'fs';
 import fsPromises from 'fs/promises';
 import path from 'path';
 import createDebug from 'debug';
-import ejs from 'ejs';
-import { glob, isDynamicPattern } from 'tinyglobby';
+
+import { glob, GlobOptions, isDynamicPattern } from 'tinyglobby';
 import multimatch from 'multimatch';
 import normalize from 'normalize-path';
 import File from 'vinyl';
 
 import type { MemFsEditor } from '../index.js';
-import type { CopyOptions, CopySingleOptions } from './copy.js';
-import { resolveFromPaths, renderTpl, getCommonPath, type ResolvedFrom, globify, resolveGlobOptions } from '../util.js';
+import type { Options as MultimatchOptions } from 'multimatch';
+import { resolveFromPaths, getCommonPath, type ResolvedFrom, globify, resolveGlobOptions } from '../util.js';
 import { writeInternal } from './write.js';
-import { copySingle } from './copy.js';
-import append from './append.js';
 
 const debug = createDebug('mem-fs-editor:copy-async');
-
-function renderFilepath(filepath: string, data?: ejs.Data, tplOptions?: ejs.Options) {
-  if (!data) {
-    return filepath;
-  }
-
-  return renderTpl(filepath, data, tplOptions);
-}
 
 async function getOneFile(filepath: string) {
   const resolved = path.resolve(filepath);
@@ -38,15 +28,46 @@ async function getOneFile(filepath: string) {
   return undefined;
 }
 
-export type CopyAsyncOptions = CopySingleAsyncOptions & CopyOptions;
+type CopySingleAsyncOptions = Parameters<MemFsEditor['append']>[2] & {
+  append?: boolean;
+
+  /**
+   * Transform both the file path and content during copy.
+   * @param destinationPath The destination file path
+   * @param sourcePath The source file path
+   * @param contents The file content as Buffer
+   * @returns Tuple of [new filepath, new content]
+   */
+  fileTransform?: (
+    destinationPath: string,
+    sourcePath: string,
+    contents: Buffer,
+  ) => [string, string | Buffer] | Promise<[string, string | Buffer]>;
+};
+
+type CopyAsyncOptions = CopySingleAsyncOptions & {
+  noGlob?: boolean;
+  /**
+   * Options for disk globbing.
+   * Glob options that should be compatible with minimatch results.
+   */
+  globOptions?: Pick<
+    GlobOptions,
+    'caseSensitiveMatch' | 'cwd' | 'debug' | 'deep' | 'dot' | 'expandDirectories' | 'followSymbolicLinks'
+  >;
+  /**
+   * Options for store files matching.
+   */
+  storeMatchOptions?: MultimatchOptions;
+  ignoreNoMatch?: boolean;
+  fromBasePath?: string;
+};
 
 export async function copyAsync(
   this: MemFsEditor,
   from: string | string[],
   to: string,
   options: CopyAsyncOptions = {},
-  data?: ejs.Data,
-  tplOptions?: ejs.Options,
 ) {
   to = path.resolve(to);
   const { noGlob } = options;
@@ -56,15 +77,9 @@ export async function copyAsync(
   assert(!noGlob || !hasMultimatchOptions, '`noGlob` and `storeMatchOptions` are mutually exclusive');
 
   if (typeof from === 'string') {
-    // If `from` is a string and an existing file just go ahead and copy it.
-    if (this.store.existsInMemory(from) && this.exists(from)) {
-      copySingle(this, from, renderFilepath(to, data, tplOptions), options);
-      return;
-    }
-
     const oneFile = await getOneFile(from);
     if (oneFile) {
-      return copySingleAsync(this, oneFile, renderFilepath(to, data, tplOptions), options);
+      return copySingleAsync(this, oneFile, to, options);
     }
   }
 
@@ -124,56 +139,46 @@ export async function copyAsync(
       'When copying multiple files, provide a directory as destination',
     );
 
-    const processDestinationPath = options.processDestinationPath || ((path) => path);
-    generateDestination = (filepath) => {
-      const toFile = path.relative(fromBasePath, filepath);
-      return processDestinationPath(path.join(to, toFile));
-    };
+    generateDestination = (filepath) => path.join(to, path.relative(fromBasePath, filepath));
   }
 
   await Promise.all([
-    ...diskFiles.map((file) =>
-      copySingleAsync(this, file, renderFilepath(generateDestination(file), data, tplOptions), options),
-    ),
-    ...storeFiles.map((file) => {
-      copySingle(this, file, renderFilepath(generateDestination(file), data, tplOptions), options);
-      return Promise.resolve();
-    }),
+    ...diskFiles.map((file) => copySingleAsync(this, file, generateDestination(file), options)),
+    ...storeFiles.map((file) => copySingleAsync(this, file, generateDestination(file), options)),
   ]);
 }
 
-export type CopySingleAsyncOptions = Parameters<typeof append>[2] &
-  CopySingleOptions & {
-    append?: boolean;
-    processFile?: (filepath: string) => string | Promise<string | Buffer>;
-  };
+const defaultFileTransform = (destPath: string, _sourcePath: string, contents: Buffer): [string, Buffer] => [
+  destPath,
+  contents,
+];
 
 async function copySingleAsync(editor: MemFsEditor, from: string, to: string, options: CopySingleAsyncOptions = {}) {
-  if (!options.processFile) {
-    copySingle(editor, from, to, options);
-    return;
-  }
-
   from = path.resolve(from);
 
   debug('Copying %s to %s with %o', from, to, options);
 
-  const contents = await options.processFile(from);
-
-  if (options.append) {
-    if (editor.store.existsInMemory(to)) {
-      editor.append(to, contents, { create: true, ...options });
-      return;
-    }
+  const file = editor.store.get(from);
+  let contents: string | Buffer;
+  if (!file.contents) {
+    throw new Error(`Cannot copy empty file ${from}`);
   }
 
-  writeInternal(
-    editor.store,
-    new File({
-      contents: Buffer.from(contents),
-      stat: await fsPromises.stat(from),
-      path: to,
-      history: [from],
-    }),
-  );
+  const { fileTransform = defaultFileTransform } = options;
+  const transformPromise = fileTransform(path.resolve(to), from, file.contents);
+  [to, contents] = await transformPromise;
+
+  if (options.append && editor.store.existsInMemory(to)) {
+    editor.append(to, contents, { create: true, ...options });
+  } else {
+    writeInternal(
+      editor.store,
+      new File({
+        contents: Buffer.from(contents),
+        stat: file.stat as any,
+        path: to,
+        history: [from],
+      }),
+    );
+  }
 }

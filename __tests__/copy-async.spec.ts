@@ -22,6 +22,12 @@ describe('#copyAsync()', () => {
     expect(memFs.store.get(newPath).state).toBe('modified');
   });
 
+  it('throws when trying to copy from a non-existing file', async () => {
+    const filepath = getFixture('does-not-exits');
+    const newPath = getFixture('../../test/new/path/file.txt');
+    await expect(memFs.copyAsync(filepath, newPath)).rejects.toThrow();
+  });
+
   describe('using append option', () => {
     it('should append file to file already loaded', async () => {
       const filepath = getFixture('file-a.txt');
@@ -37,7 +43,7 @@ describe('#copyAsync()', () => {
     });
   });
 
-  it('can copy directory not commited to disk', async () => {
+  it('can copy directory not committed to disk', async () => {
     const sourceDir = getFixture('../../test/foo');
     const destDir = getFixture('../../test/bar');
     memFs.write(path.join(sourceDir, 'file-a.txt'), 'a');
@@ -55,17 +61,20 @@ describe('#copyAsync()', () => {
     await expect(memFs.copyAsync(filepath, newPath)).rejects.toThrow();
   });
 
-  it('copy file and process contents', async () => {
+  it('transforms file path and contents using fileTransform', async () => {
     const filepath = getFixture('file-a.txt');
     const contents = 'some processed contents';
     const newPath = getFixture('../../test/new/path/file.txt');
+    const transformedPath = getFixture('../../test/transformed/path/file.txt');
     await memFs.copyAsync(filepath, newPath, {
-      processFile(filename) {
-        expect(filename).toEqual(filepath);
-        return contents;
+      fileTransform(destPath: string, sourcePath: string, fileContents: Buffer): [string, Buffer] {
+        expect(destPath).toBe(path.resolve(newPath));
+        expect(sourcePath).toBe(filepath);
+        expect(fileContents).toBeInstanceOf(Buffer);
+        return [transformedPath, Buffer.from(contents)];
       },
     });
-    expect(memFs.read(newPath)).toBe(contents);
+    expect(memFs.read(transformedPath)).toBe(contents);
   });
 
   it('copy by directory', async () => {
@@ -92,15 +101,16 @@ describe('#copyAsync()', () => {
     }).toThrow();
   });
 
-  it('copy files by globbing and process contents', async () => {
+  it('transforms files when globbing', async () => {
     const outputDir = getFixture('../../test/output');
-    const processFile = vi.fn().mockImplementation(function (from) {
-      return memFs.store.get(from).contents;
-    });
-    await memFs.copyAsync(getFixture('**'), outputDir, {
-      processFile,
-    });
-    expect(processFile).toHaveBeenCalledTimes(13); // 10 total files under 'fixtures', not counting folders
+    const fileTransform = vi
+      .fn()
+      .mockImplementation((destPath: string, sourcePath: string, contents: Buffer): [string, Buffer] => [
+        destPath,
+        contents,
+      ]);
+    await memFs.copyAsync(getFixture('**'), outputDir, { fileTransform });
+    expect(fileTransform).toHaveBeenCalledTimes(13); // 10 total files under 'fixtures', not counting folders
     expect(memFs.read(path.join(outputDir, 'file-a.txt'))).toBe('foo' + os.EOL);
     expect(memFs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
   });
@@ -110,12 +120,6 @@ describe('#copyAsync()', () => {
     await memFs.copyAsync(getFixture('**'), outputDir);
     expect(memFs.read(path.join(outputDir, 'file-a.txt'))).toBe('foo' + os.EOL);
     expect(memFs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
-  });
-
-  it('accepts template paths', async () => {
-    const outputFile = getFixture('test/<%= category %>/file-a.txt');
-    await memFs.copyAsync(getFixture('file-a.txt'), outputFile, {}, { category: 'foo' });
-    expect(memFs.read(getFixture('test/foo/file-a.txt'))).toBe('foo' + os.EOL);
   });
 
   it('requires destination directory when globbing', async () => {

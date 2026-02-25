@@ -11,6 +11,12 @@ describe('#appendTpl()', () => {
     memFs = create(createMemFs<MemFsEditorFile>());
   });
 
+  it("doesn't accept async EJS rendering", () => {
+    expect(() => {
+      memFs.appendTpl('', '', {}, { async: true });
+    }).toThrowError('Async EJS rendering is not supported in appendTpl');
+  });
+
   it('appends to file and processes contents as underscore template', () => {
     const filepath = getFixture('file-a.txt');
     const originalContent = memFs.read(filepath);

@@ -1,4 +1,3 @@
-import ejs from 'ejs';
 import fs from 'fs';
 import path from 'path';
 import commondir from 'commondir';
@@ -75,35 +74,6 @@ export function isBinary(filePath: string, newFileContents?: Buffer) {
   return (
     (fs.existsSync(filePath) && isBinaryFileSync(filePath)) || (newFileContents && isBinaryFileSync(newFileContents))
   );
-}
-
-export function renderTpl(template: string, data?: ejs.Data, options?: ejs.Options): string {
-  return ejs.render(template, data, { cache: false, ...options, async: false });
-}
-
-export function processTpl({
-  contents,
-  filename,
-  data,
-  tplOptions,
-}: {
-  contents: Buffer;
-  filename: string;
-  destination?: string;
-  data?: ejs.Data;
-  tplOptions?: ejs.Options;
-}): string | Buffer {
-  if (isBinary(filename, contents)) {
-    return contents;
-  }
-
-  return ejs.render(contents.toString(), data, {
-    // Setting filename by default allow including partials.
-    filename,
-    cache: true,
-    ...tplOptions,
-    async: false,
-  });
 }
 
 export type ResolvedFrom = {
