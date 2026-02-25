@@ -22,7 +22,6 @@ export default async function (
             cache: false,
             ...tplOptions,
             // This cannot be set to true because `include()` then also become async which change the behaviors of templates...
-            async: false,
           });
 
       return [processedPath.replace(/.ejs$/, ''), processedContent];
