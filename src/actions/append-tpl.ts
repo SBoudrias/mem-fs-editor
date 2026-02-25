@@ -9,5 +9,5 @@ export default function appendTpl(
   tplOptions?: ejs.Options,
   options?: Parameters<MemFsEditor['append']>[2],
 ) {
-  this.append(to, ejs.render(contents.toString(), data, { ...tplOptions, async: false }), options);
+  this.append(to, ejs.render(contents.toString(), data, tplOptions), options);
 }

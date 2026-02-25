@@ -13,7 +13,7 @@ export default async function (
   await this.copyAsync(from, to, {
     ...options,
     async fileTransform(destPath: string, sourcePath: string, contents: Buffer): Promise<[string, string | Buffer]> {
-      const processedPath = await ejs.render(destPath, data, { ...tplOptions, async: true });
+      const processedPath = await ejs.render(destPath, data, tplOptions);
       const processedContent = isBinary(sourcePath, contents)
         ? contents
         : ejs.render(contents.toString(), data, {
