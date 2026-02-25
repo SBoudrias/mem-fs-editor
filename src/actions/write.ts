@@ -33,12 +33,7 @@ export function writeInternal<EditorFile extends MemFsEditorFile>(store: Store<E
   }
 }
 
-export default function write(
-  this: MemFsEditor,
-  filepath: string,
-  contents: string | Buffer,
-  stat: fs.Stats | undefined = undefined,
-) {
+export default function write(this: MemFsEditor, filepath: string, contents: string | Buffer, stat?: fs.Stats) {
   assert(typeof contents === 'string' || Buffer.isBuffer(contents), 'Expected `contents` to be a String or a Buffer');
 
   const newContents = Buffer.isBuffer(contents) ? contents : Buffer.from(contents);
