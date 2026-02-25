@@ -71,7 +71,7 @@
     "vitest": "^4.0.18"
   },
   "peerDependencies": {
-    "@types/node": ">=20",
+    "@types/node": ">=22",
     "mem-fs": "^4.0.0"
   },
   "peerDependenciesMeta": {
@@ -80,7 +80,7 @@
     }
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.0.0"
   },
   "acceptDependencies": {
     "isbinaryfile": "^6.0.0"
