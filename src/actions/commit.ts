@@ -9,7 +9,7 @@ async function commit<EditorFile extends MemFsEditorFile>(
   options?: PipelineOptions<EditorFile> | FileTransform<EditorFile>,
   ...transforms: FileTransform<EditorFile>[]
 ): Promise<void> {
-  if (isFileTransform(options)) {
+  if (isFileTransform<EditorFile>(options)) {
     transforms = [options, ...transforms];
     options = undefined;
   }
