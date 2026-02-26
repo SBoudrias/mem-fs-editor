@@ -42,7 +42,7 @@ describe('#commit()', () => {
     let called = 0;
 
     // eslint-disable-next-line require-yield
-    const filter = Duplex.from(async function* (generator: AsyncGenerator<MemFsEditorFile>) {
+    const filter = Duplex.from(async function* (generator: AsyncIterable<MemFsEditorFile>) {
       // eslint-disable-next-line no-unreachable-loop, @typescript-eslint/no-unused-vars
       for await (const _file of generator) {
         called++;
@@ -57,7 +57,7 @@ describe('#commit()', () => {
     let called = 0;
 
     await memFs.commit(
-      Duplex.from(async function* (generator: AsyncGenerator<MemFsEditorFile>) {
+      Duplex.from(async function* (generator: AsyncIterable<MemFsEditorFile>) {
         for await (const file of generator) {
           called++;
           file.contents = Buffer.from('modified');
@@ -75,7 +75,7 @@ describe('#commit()', () => {
 
     await memFs.commit(
       { filter: (file) => file.path.endsWith('1.txt') && isFilePending(file) },
-      Duplex.from(async function* (generator: AsyncGenerator<MemFsEditorFile>) {
+      Duplex.from(async function* (generator: AsyncIterable<MemFsEditorFile>) {
         for await (const file of generator) {
           called++;
           file.contents = Buffer.from('modified');
@@ -152,7 +152,7 @@ describe('#commit()', () => {
     memFs.store.get('to-delete');
 
     await memFs.commit(
-      Duplex.from(async function* (generator: AsyncGenerator<MemFsEditorFile>) {
+      Duplex.from(async function* (generator: AsyncIterable<MemFsEditorFile>) {
         for await (const file of generator) {
           expect(file.path).not.toEqual(path.resolve('to-delete'));
           expect(file.path).not.toEqual(path.resolve('copy-to-delete'));
