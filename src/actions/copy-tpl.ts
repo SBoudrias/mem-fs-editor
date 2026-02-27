@@ -19,13 +19,16 @@ export function copyTpl(
         throw new Error('Async EJS rendering is not supported');
       }
 
-      const processedPath = ejs.render(destinationPath, data, { cache: false, ...transformOptions, async: false });
+      const processedPath = ejs.render(destinationPath, data, {
+        ...transformOptions,
+        cache: false, // Cache uses filename as key, which is not provided in this case.
+        async: false,
+      });
       const processedContent = isBinary(sourcePath, contents)
         ? contents
         : ejs.render(contents.toString(), data, {
             // Setting filename by default allow including partials.
             filename: sourcePath,
-            cache: true,
             ...transformOptions,
             async: false,
           });

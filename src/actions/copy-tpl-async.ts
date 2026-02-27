@@ -15,15 +15,18 @@ export default async function (
     ...options,
     async fileTransform(destinationPath, sourcePath, contents) {
       const { transformOptions } = options ?? {};
-      const processedPath = await ejs.render(destinationPath, data, transformOptions);
+      const processedPath = await ejs.render(destinationPath, data, {
+        ...transformOptions,
+        cache: false, // Cache uses filename as key, which is not provided in this case.
+      });
       const processedContent = isBinary(sourcePath, contents)
         ? contents
         : await ejs.render(contents.toString(), data, {
             // Setting filename by default allow including partials.
             filename: sourcePath,
-            cache: false,
+            // Async option cannot be set to true because `include()` then also become async which change the behaviors of templates.
+            // Users must pass async value in transformOptions if they want to use async features of ejs.
             ...transformOptions,
-            // This cannot be set to true because `include()` then also become async which change the behaviors of templates...
           });
 
       return [processedPath.replace(/.ejs$/, ''), processedContent];
