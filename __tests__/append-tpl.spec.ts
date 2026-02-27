@@ -13,7 +13,7 @@ describe('#appendTpl()', () => {
 
   it("doesn't accept async EJS rendering", () => {
     expect(() => {
-      memFs.appendTpl('', '', {}, { async: true });
+      memFs.appendTpl('', '', {}, { transformOptions: { async: true } });
     }).toThrowError('Async EJS rendering is not supported');
   });
 
@@ -33,7 +33,7 @@ describe('#appendTpl()', () => {
     const originalContent = memFs.read(filepath);
     const contentPath = getFixture('file-tpl-custom-delimiter.txt');
     const contents = memFs.read(contentPath);
-    memFs.appendTpl(filepath, contents, { name: 'bar' }, { delimiter: '?' });
+    memFs.appendTpl(filepath, contents, { name: 'bar' }, { transformOptions: { delimiter: '?' } });
     expect(memFs.read(filepath)).toBe(originalContent + 'bar' + os.EOL);
   });
 

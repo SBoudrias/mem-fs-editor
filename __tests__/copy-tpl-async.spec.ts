@@ -56,7 +56,7 @@ describe('#copyTplAsync()', () => {
       newPath,
       { name: 'mustache' },
       {
-        delimiter: '?',
+        transformOptions: { delimiter: '?' },
       },
     );
     expect(memFs.read(newPath)).toBe('mustache' + os.EOL);
@@ -74,16 +74,14 @@ describe('#copyTplAsync()', () => {
     const newPath = '/new/path/file-append.txt';
     await memFs.copyTplAsync(filepath, newPath, { name: 'new content' });
     expect(memFs.read(newPath)).toBe('new content' + os.EOL);
-    await memFs.copyTplAsync(filepath, newPath, { name: 'new content' }, undefined, {
-      append: true,
-    });
+    await memFs.copyTplAsync(filepath, newPath, { name: 'new content' }, { append: true });
     expect(memFs.read(newPath)).toBe('new content' + os.EOL + 'new content' + os.EOL);
   });
 
   it('should pass globOptions to glob', async () => {
     const globOptions = { debug: false } as const;
     const filepath = getFixture('file-tpl-partial.*');
-    await memFs.copyTplAsync([filepath], '/new/path/', {}, {}, { globOptions, fromBasePath: getFixture() });
+    await memFs.copyTplAsync([filepath], '/new/path/', {}, { globOptions, fromBasePath: getFixture() });
 
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     expect(glob).toHaveBeenCalledWith([normalizePath(filepath)], expect.objectContaining(globOptions));
@@ -91,21 +89,21 @@ describe('#copyTplAsync()', () => {
 
   it('should fail when passing noGlob and globOptions', async () => {
     await expect(
-      memFs.copyTplAsync(['foo'], '/new/path/', {}, {}, { globOptions: { debug: false }, noGlob: true }),
+      memFs.copyTplAsync(['foo'], '/new/path/', {}, { globOptions: { debug: false }, noGlob: true }),
     ).rejects.toThrowError('`noGlob` and `globOptions` are mutually exclusive');
   });
 
   it('should pass storeMatchOptions to multimatch', async () => {
     const storeMatchOptions = { debug: false } as const;
     const filepath = getFixture('file-tpl-partial.*');
-    await memFs.copyTplAsync([filepath], '/new/path/', {}, {}, { storeMatchOptions, fromBasePath: getFixture() });
+    await memFs.copyTplAsync([filepath], '/new/path/', {}, { storeMatchOptions, fromBasePath: getFixture() });
 
     expect(multimatch).toHaveBeenCalledWith(expect.any(Array), [normalizePath(filepath)], storeMatchOptions);
   });
 
   it('should fail when passing noGlob and storeMatchOptions', async () => {
     await expect(
-      memFs.copyTplAsync(['foo'], '/new/path/', {}, {}, { storeMatchOptions: { debug: false }, noGlob: true }),
+      memFs.copyTplAsync(['foo'], '/new/path/', {}, { storeMatchOptions: { debug: false }, noGlob: true }),
     ).rejects.toThrowError('`noGlob` and `storeMatchOptions` are mutually exclusive');
   });
 
@@ -127,7 +125,7 @@ describe('#copyTplAsync()', () => {
       newPath,
       {},
       {
-        context: { a },
+        transformOptions: { context: { a } },
       },
     );
     expect(memFs.read(newPath)).toBe('new content new content' + os.EOL);

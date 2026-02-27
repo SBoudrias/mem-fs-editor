@@ -6,28 +6,27 @@ export function copyTpl(
   this: MemFsEditor,
   from: string | string[],
   to: string,
-  data?: ejs.Data,
-  tplOptions?: ejs.Options,
-  options?: Omit<NonNullable<Parameters<MemFsEditor['copy']>[2]>, 'fileTransform'>,
+  data: ejs.Data = {},
+  options?: Omit<NonNullable<Parameters<MemFsEditor['copy']>[2]>, 'fileTransform'> & {
+    transformOptions?: ejs.Options;
+  },
 ) {
-  data ||= {};
-  tplOptions ||= {};
-
   this.copy(from, to, {
     ...options,
-    fileTransform(destPath: string, sourcePath: string, contents: Buffer) {
-      if (tplOptions.async) {
+    fileTransform(destinationPath, sourcePath, contents) {
+      const { transformOptions } = options ?? {};
+      if (transformOptions?.async) {
         throw new Error('Async EJS rendering is not supported');
       }
 
-      const processedPath = ejs.render(destPath, data, { cache: false, ...tplOptions, async: false });
+      const processedPath = ejs.render(destinationPath, data, { cache: false, ...transformOptions, async: false });
       const processedContent = isBinary(sourcePath, contents)
         ? contents
         : ejs.render(contents.toString(), data, {
             // Setting filename by default allow including partials.
             filename: sourcePath,
             cache: true,
-            ...tplOptions,
+            ...transformOptions,
             async: false,
           });
       return [processedPath.replace(/.ejs$/, ''), processedContent];

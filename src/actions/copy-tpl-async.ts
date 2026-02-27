@@ -7,20 +7,22 @@ export default async function (
   from: string | string[],
   to: string,
   data: ejs.Data = {},
-  tplOptions?: ejs.Options,
-  options?: Omit<NonNullable<Parameters<MemFsEditor['copyAsync']>[2]>, 'fileTransform'>,
+  options?: Omit<NonNullable<Parameters<MemFsEditor['copyAsync']>[2]>, 'fileTransform'> & {
+    transformOptions?: ejs.Options;
+  },
 ) {
   await this.copyAsync(from, to, {
     ...options,
-    async fileTransform(destPath: string, sourcePath: string, contents: Buffer): Promise<[string, string | Buffer]> {
-      const processedPath = await ejs.render(destPath, data, tplOptions);
+    async fileTransform(destinationPath, sourcePath, contents) {
+      const { transformOptions } = options ?? {};
+      const processedPath = await ejs.render(destinationPath, data, transformOptions);
       const processedContent = isBinary(sourcePath, contents)
         ? contents
         : await ejs.render(contents.toString(), data, {
             // Setting filename by default allow including partials.
             filename: sourcePath,
             cache: false,
-            ...tplOptions,
+            ...transformOptions,
             // This cannot be set to true because `include()` then also become async which change the behaviors of templates...
           });
 

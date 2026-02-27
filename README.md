@@ -54,12 +54,13 @@ Append the new contents to the current file contents.
 - `options.separator` (default `os.EOL`). Separator to insert between current and new contents.
 - `options.create` (default `false`). Create the file if doesn't exists.
 
-### `#appendTpl(filepath, contents, context[, templateOptions[, [options]])`
+### `#appendTpl(filepath, contents, data[, [options])`
 
-Append the new `contents` to the exsting `filepath` content and parse the new contents as an [ejs](http://ejs.co/) template where `context` is the template context (the variable names available inside the template).
+Append the new `contents` to the existing `filepath` content and parse the new contents as an [ejs](http://ejs.co/) template where `data` is the template context (the variable names available inside the template).
 
 - `options.trimEnd` (default `true`). Trim trailing whitespace of the current file contents.
 - `options.separator` (default `os.EOL`). Separator to insert between current and new contents.
+- `options.transformOptions`. Options passed to the EJS renderer when processing the template, similar to `copyTpl`.
 
 ### `#extendJSON(filepath, contents[, replacer [, space]])`
 
@@ -100,15 +101,17 @@ Async version of `copy`.
 `copy` loads `from` to memory and copy its contents to `to`.
 `copyAsync` copies directly from the disk to `to`, falling back to `copy` behavior if the file doesn't exists on disk.
 
-Same parameters of `copy` (see [copy() documentation for more details](#copyfrom-to-options-context-templateoptions-)).
+Same parameters of `copy`
 
-### `#copyTpl(from, to, context[, templateOptions [, copyOptions]])`
+See [copy() documentation for more details](#copyfrom-to-data-options-).
 
-Copy the `from` file and, if it is not a binary file, parse its content as an [ejs](http://ejs.co/) template where `context` is the template context (the variable names available inside the template).
+### `#copyTpl(from, to, data[, options])`
 
-You can optionally pass a `templateOptions` object. `mem-fs-editor` automatically setup the filename option so you can easily use partials.
+Copy the `from` file and, if it is not a binary file, parse its content as an [ejs](http://ejs.co/) template where `data` is the template context (the variable names available inside the template).
 
-You can also optionally pass a `copyOptions` object (see [copy() documentation for more details](#copyfrom-to-options-context-templateoptions-)).
+You can optionally pass a `transformOptions` object in `options` parameter. `mem-fs-editor` automatically setup the filename option so you can easily use partials.
+
+You can also optionally pass a `options` object (see [copy() documentation for more details](#copyfrom-to-data-options-)).
 
 Templates syntax looks like this:
 
@@ -125,13 +128,13 @@ Dir syntax looks like this:
 
 Refer to the [ejs documentation](http://ejs.co/) for more details.
 
-### `#copyTplAsync(from, to, [options], context[, templateOptions ])`
+### `#copyTplAsync(from, to, data[, options])`
 
 Async version of `copyTpl` that uses `copyAsync` instead of `copy`.
 
 Can be used for best performance. Reduces overheads.
 
-Same parameters of `copyTpl` (see [copyTpl() documentation for more details](#copyfrom-to-options-context-templateoptions-)).
+Same parameters of `copyTpl` (see [copyTpl() documentation for more details](#copyfrom-to-data-options-)).
 
 ### `#move(from, to, [options])`
 

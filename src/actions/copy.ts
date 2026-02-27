@@ -127,7 +127,7 @@ export function copy(this: MemFsEditor, from: string | string[], to: string, opt
   });
 }
 
-const defaultFileTransform = (destPath: string, _srcPath: string, contents: Buffer): [string, Buffer] => [
+const defaultFileTransform: NonNullable<CopySingleOptions['fileTransform']> = (destPath, _srcPath, contents) => [
   destPath,
   contents,
 ];
