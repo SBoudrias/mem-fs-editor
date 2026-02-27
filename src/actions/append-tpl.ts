@@ -7,10 +7,10 @@ export default function appendTpl(
   contents: string | Buffer,
   data?: ejs.Data,
   tplOptions?: ejs.Options,
-  options?: Parameters<MemFsEditor['append']>[2],
+  options?: NonNullable<Parameters<MemFsEditor['append']>[2]>,
 ) {
   if (tplOptions?.async) {
-    throw new Error('Async EJS rendering is not supported in appendTpl');
+    throw new Error('Async EJS rendering is not supported');
   }
 
   this.append(to, ejs.render(contents.toString(), data, { ...tplOptions, async: false }), options);

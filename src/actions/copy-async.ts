@@ -83,7 +83,7 @@ export async function copyAsync(
     }
   }
 
-  const fromBasePath = getCommonPath(from);
+  const { fromBasePath = getCommonPath(from) } = options;
   const resolvedFromPaths = resolveFromPaths({ from, fromBasePath });
   const hasDynamicPattern = resolvedFromPaths.some((f) => isDynamicPattern(normalize(f.from)));
   const { preferFiles } = resolveGlobOptions({
@@ -107,9 +107,9 @@ export async function copyAsync(
   let diskFiles: string[] = [];
   if (globResolved.length > 0) {
     const patterns = globResolved.map((file) => globify(file.from)).flat();
-    diskFiles = (await glob(patterns, { ...options.globOptions, absolute: true, onlyFiles: true })).map((file) =>
-      path.resolve(file),
-    );
+    diskFiles = (
+      await glob(patterns, { cwd: fromBasePath, ...options.globOptions, absolute: true, onlyFiles: true })
+    ).map((file) => path.resolve(file));
 
     const normalizedStoreFilePaths = this.store
       .all()
@@ -159,13 +159,11 @@ async function copySingleAsync(editor: MemFsEditor, from: string, to: string, op
   debug('Copying %s to %s with %o', from, to, options);
 
   const file = editor.store.get(from);
-  let contents: string | Buffer;
-  if (!file.contents) {
-    throw new Error(`Cannot copy empty file ${from}`);
-  }
+  assert(file.contents, `Cannot copy empty file ${from}`);
 
   const { fileTransform = defaultFileTransform } = options;
   const transformPromise = fileTransform(path.resolve(to), from, file.contents);
+  let contents: string | Buffer;
   [to, contents] = await transformPromise;
 
   if (options.append && editor.store.existsInMemory(to)) {
@@ -177,7 +175,7 @@ async function copySingleAsync(editor: MemFsEditor, from: string, to: string, op
         contents: Buffer.from(contents),
         stat: file.stat as any,
         path: to,
-        history: [from],
+        history: [file.path],
       }),
     );
   }

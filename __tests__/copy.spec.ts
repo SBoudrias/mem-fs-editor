@@ -189,12 +189,29 @@ describe('#copy()', () => {
     expect(memFs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
   });
 
-  it('accepts detects fromBasePath from common', () => {
+  it('detects fromBasePath from common prefix', () => {
     const outputDir = getFixture('../../test/output');
     memFs.copy([getFixture('file-a.txt'), getFixture('nested/file.txt')], outputDir, {
       noGlob: true,
     });
     expect(memFs.read(path.join(outputDir, '/file-a.txt'))).toBe('foo' + os.EOL);
     expect(memFs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
+  });
+
+  it('provides source filepath to fileTransform', () => {
+    const filepath = getFixture('file-tpl.txt');
+    const newPath = '/new/path/file.txt';
+    memFs.copy(filepath, newPath, {
+      fileTransform(destPath: string, sourcePath: string, contents: Buffer): [string, Buffer] {
+        // Verify that sourcePath is the original template file
+        expect(sourcePath).toBe(filepath);
+        // Verify that destPath is the target path
+        expect(destPath).toBe(path.resolve(newPath));
+        // Verify that content is the original file content
+        expect(contents.toString().trim()).toBe('<%= name %>');
+        // Return unmodified path and content
+        return [destPath, contents];
+      },
+    });
   });
 });

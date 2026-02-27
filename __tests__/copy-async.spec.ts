@@ -138,4 +138,40 @@ describe('#copyAsync()', () => {
     const newStat = fs.statSync(copyname);
     expect(newStat.mode).toBe(oldStat.mode);
   });
+
+  it('accepts fromBasePath', async () => {
+    const outputDir = path.join(os.tmpdir(), 'mem-fs-editor');
+    await memFs.copyAsync(['file-a.txt', 'nested/file.txt'], outputDir, {
+      fromBasePath: path.join(import.meta.dirname, 'fixtures'),
+      noGlob: true,
+    });
+    expect(memFs.read(path.join(outputDir, '/file-a.txt'))).toBe('foo' + os.EOL);
+    expect(memFs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
+  });
+
+  it('detects fromBasePath from common prefix', async () => {
+    const outputDir = getFixture('../../test/output');
+    await memFs.copyAsync([getFixture('file-a.txt'), getFixture('nested/file.txt')], outputDir, {
+      noGlob: true,
+    });
+    expect(memFs.read(path.join(outputDir, '/file-a.txt'))).toBe('foo' + os.EOL);
+    expect(memFs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
+  });
+
+  it('provides options to fileTransform', async () => {
+    const filepath = getFixture('file-tpl.txt');
+    const newPath = '/new/path/file.txt';
+    await memFs.copyAsync(filepath, newPath, {
+      fileTransform(destPath: string, sourcePath: string, contents: Buffer): [string, Buffer] {
+        // Verify that sourcePath is the original template file
+        expect(sourcePath).toBe(filepath);
+        // Verify that destPath is the target path
+        expect(destPath).toBe(path.resolve(newPath));
+        // Verify that content is the original file content
+        expect(contents.toString().trim()).toBe('<%= name %>');
+        // Return unmodified path and content
+        return [destPath, contents];
+      },
+    });
+  });
 });

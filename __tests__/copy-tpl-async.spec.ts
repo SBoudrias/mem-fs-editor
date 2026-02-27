@@ -146,19 +146,4 @@ describe('#copyTplAsync()', () => {
     await memFs.copyTplAsync(filepath, newPath, { name: 'new content' });
     expect(memFs.store.get(newPath).history).toMatchObject([resolve(filepath), resolve(newPath)]);
   });
-
-  it('provides source filepath to fileTransform', async () => {
-    const filepath = getFixture('file-tpl.txt');
-    const newPath = '/new/path/file.txt';
-    await memFs.copyTplAsync(filepath, newPath, { name: 'bar' }, undefined, {
-      fileTransform(destPath: string, sourcePath: string, contents: Buffer): [string, Buffer] {
-        // Verify that sourcePath is the original template file
-        expect(sourcePath).toBe(filepath);
-        // Verify that destPath is the target path
-        expect(destPath).toBe(path.resolve(newPath));
-        // Return unmodified path and content
-        return [destPath, contents];
-      },
-    });
-  });
 });

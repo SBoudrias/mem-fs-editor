@@ -8,7 +8,7 @@ export default async function (
   to: string,
   data: ejs.Data = {},
   tplOptions?: ejs.Options,
-  options?: Parameters<MemFsEditor['copyAsync']>[2],
+  options?: Omit<NonNullable<Parameters<MemFsEditor['copyAsync']>[2]>, 'fileTransform'>,
 ) {
   await this.copyAsync(from, to, {
     ...options,

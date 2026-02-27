@@ -8,18 +8,18 @@ export function copyTpl(
   to: string,
   data?: ejs.Data,
   tplOptions?: ejs.Options,
-  options?: Parameters<MemFsEditor['copy']>[2],
+  options?: Omit<NonNullable<Parameters<MemFsEditor['copy']>[2]>, 'fileTransform'>,
 ) {
-  if (tplOptions?.async) {
-    throw new Error('Async EJS rendering is not supported in appendTpl');
-  }
-
   data ||= {};
   tplOptions ||= {};
 
   this.copy(from, to, {
     ...options,
     fileTransform(destPath: string, sourcePath: string, contents: Buffer) {
+      if (tplOptions.async) {
+        throw new Error('Async EJS rendering is not supported');
+      }
+
       const processedPath = ejs.render(destPath, data, { cache: false, ...tplOptions, async: false });
       const processedContent = isBinary(sourcePath, contents)
         ? contents
