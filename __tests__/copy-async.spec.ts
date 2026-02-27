@@ -6,6 +6,9 @@ import { MemFsEditor, MemFsEditorFile, create } from '../src/index.js';
 import { create as createMemFs } from 'mem-fs';
 import { getFixture } from './fixtures.js';
 
+type CopyAsyncFunction = MemFsEditor['copyAsync'];
+type CopyAsyncOptions = NonNullable<Parameters<CopyAsyncFunction>[2]>;
+
 describe('#copyAsync()', () => {
   let memFs: MemFsEditor;
 
@@ -67,8 +70,8 @@ describe('#copyAsync()', () => {
     const newPath = getFixture('../../test/new/path/file.txt');
     const transformedPath = getFixture('../../test/transformed/path/file.txt');
     await memFs.copyAsync(filepath, newPath, {
-      fileTransform(destPath: string, sourcePath: string, fileContents: Buffer): [string, Buffer] {
-        expect(destPath).toBe(path.resolve(newPath));
+      fileTransform(destinationPath, sourcePath, fileContents) {
+        expect(destinationPath).toBe(path.resolve(newPath));
         expect(sourcePath).toBe(filepath);
         expect(fileContents).toBeInstanceOf(Buffer);
         return [transformedPath, Buffer.from(contents)];
@@ -104,11 +107,8 @@ describe('#copyAsync()', () => {
   it('transforms files when globbing', async () => {
     const outputDir = getFixture('../../test/output');
     const fileTransform = vi
-      .fn()
-      .mockImplementation((destPath: string, sourcePath: string, contents: Buffer): [string, Buffer] => [
-        destPath,
-        contents,
-      ]);
+      .fn<NonNullable<CopyAsyncOptions['fileTransform']>>()
+      .mockImplementation((destinationPath, _sourcePath, contents) => [destinationPath, contents]);
     await memFs.copyAsync(getFixture('**'), outputDir, { fileTransform });
     expect(fileTransform).toHaveBeenCalledTimes(13); // 10 total files under 'fixtures', not counting folders
     expect(memFs.read(path.join(outputDir, 'file-a.txt'))).toBe('foo' + os.EOL);
@@ -158,19 +158,19 @@ describe('#copyAsync()', () => {
     expect(memFs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
   });
 
-  it('provides options to fileTransform', async () => {
+  it('provides correct parameters to fileTransform', async () => {
     const filepath = getFixture('file-tpl.txt');
     const newPath = '/new/path/file.txt';
     await memFs.copyAsync(filepath, newPath, {
-      fileTransform(destPath: string, sourcePath: string, contents: Buffer): [string, Buffer] {
+      fileTransform(destinationPath, sourcePath, contents) {
         // Verify that sourcePath is the original template file
         expect(sourcePath).toBe(filepath);
         // Verify that destPath is the target path
-        expect(destPath).toBe(path.resolve(newPath));
+        expect(destinationPath).toBe(path.resolve(newPath));
         // Verify that content is the original file content
         expect(contents.toString().trim()).toBe('<%= name %>');
         // Return unmodified path and content
-        return [destPath, contents];
+        return [destinationPath, contents];
       },
     });
   });

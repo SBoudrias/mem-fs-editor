@@ -32,6 +32,8 @@ type CopySingleAsyncOptions = Parameters<MemFsEditor['append']>[2] & {
   append?: boolean;
 
   /**
+   * @experimental This API is experimental and may change without a major version bump.
+   *
    * Transform both the file path and content during copy.
    * @param destinationPath The destination file path
    * @param sourcePath The source file path
@@ -87,9 +89,9 @@ export async function copyAsync(
   const resolvedFromPaths = resolveFromPaths({ from, fromBasePath });
   const hasDynamicPattern = resolvedFromPaths.some((f) => isDynamicPattern(normalize(f.from)));
   const { preferFiles } = resolveGlobOptions({
-    noGlob: false,
+    noGlob,
     hasDynamicPattern,
-    hasGlobOptions: Boolean(options.globOptions),
+    hasGlobOptions,
   });
 
   const storeFiles: string[] = [];
@@ -148,7 +150,7 @@ export async function copyAsync(
   ]);
 }
 
-const defaultFileTransform = (destPath: string, _sourcePath: string, contents: Buffer): [string, Buffer] => [
+const defaultFileTransform: NonNullable<CopyAsyncOptions['fileTransform']> = (destPath, _sourcePath, contents) => [
   destPath,
   contents,
 ];
@@ -168,6 +170,14 @@ async function copySingleAsync(editor: MemFsEditor, from: string, to: string, op
 
   if (options.append && editor.store.existsInMemory(to)) {
     editor.append(to, contents, { create: true, ...options });
+  } else if (File.isVinyl(file)) {
+    writeInternal(
+      editor.store,
+      Object.assign(file.clone({ contents: false, deep: false }), {
+        contents: Buffer.from(contents),
+        path: to,
+      }),
+    );
   } else {
     writeInternal(
       editor.store,

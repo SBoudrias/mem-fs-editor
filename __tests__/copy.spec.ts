@@ -6,6 +6,9 @@ import { type MemFsEditor, MemFsEditorFile, create } from '../src/index.js';
 import { create as createMemFs } from 'mem-fs';
 import { getFixture } from './fixtures.js';
 
+type CopyFunction = MemFsEditor['copy'];
+type CopyOptions = NonNullable<Parameters<CopyFunction>[2]>;
+
 describe('#copy()', () => {
   let memFs: MemFsEditor;
   let outputDir: string;
@@ -132,7 +135,9 @@ describe('#copy()', () => {
   });
 
   it('copy files by globbing and process contents', () => {
-    const fileTransform = vi.fn().mockImplementation((destPath, _srcPath, contents) => [destPath, contents]);
+    const fileTransform = vi
+      .fn<NonNullable<CopyOptions['fileTransform']>>()
+      .mockImplementation((destPath, _srcPath, contents) => [destPath, contents]);
     memFs.copy(getFixture('**'), outputDir, { fileTransform });
     expect(fileTransform).toHaveBeenCalledTimes(13); // 10 total files under 'fixtures', not counting folders
     expect(memFs.read(path.join(outputDir, 'file-a.txt'))).toBe('foo' + os.EOL);
@@ -198,19 +203,19 @@ describe('#copy()', () => {
     expect(memFs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
   });
 
-  it('provides source filepath to fileTransform', () => {
+  it('provides correct parameters to fileTransform', () => {
     const filepath = getFixture('file-tpl.txt');
     const newPath = '/new/path/file.txt';
     memFs.copy(filepath, newPath, {
-      fileTransform(destPath: string, sourcePath: string, contents: Buffer): [string, Buffer] {
+      fileTransform(destinationPath, sourcePath, contents) {
         // Verify that sourcePath is the original template file
         expect(sourcePath).toBe(filepath);
         // Verify that destPath is the target path
-        expect(destPath).toBe(path.resolve(newPath));
+        expect(destinationPath).toBe(path.resolve(newPath));
         // Verify that content is the original file content
         expect(contents.toString().trim()).toBe('<%= name %>');
         // Return unmodified path and content
-        return [destPath, contents];
+        return [destinationPath, contents];
       },
     });
   });

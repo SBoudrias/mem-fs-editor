@@ -17,6 +17,8 @@ const debug = createDebug('mem-fs-editor:copy');
 type CopySingleOptions = {
   append?: boolean;
   /**
+   * @experimental This API is experimental and may change without a major version bump.
+   *
    * Transform both the file path and content during copy.
    * @param destinationPath The destination file path
    * @param sourcePath The source file path
@@ -127,7 +129,7 @@ export function copy(this: MemFsEditor, from: string | string[], to: string, opt
   });
 }
 
-const defaultFileTransform = (destPath: string, _srcPath: string, contents: Buffer): [string, Buffer] => [
+const defaultFileTransform: NonNullable<CopySingleOptions['fileTransform']> = (destPath, _srcPath, contents) => [
   destPath,
   contents,
 ];
