@@ -109,7 +109,7 @@ See [copy() documentation for more details](#copyfrom-to-options).
 
 Copy the `from` file and, if it is not a binary file, parse its content as an [ejs](http://ejs.co/) template where `data` is the template context (the variable names available inside the template).
 
-You can optionally pass a `transformOptions` object in `options` parameter. `mem-fs-editor` automatically setup the filename option so you can easily use partials.
+`options.transformOptions` replaced the old `tplOptions` parameter and is passed as ejs options. `mem-fs-editor` automatically setup the filename option so you can easily use partials.
 
 You can also optionally pass a `options` object (see [copy() documentation for more details](#copyfrom-to-options)).
 
