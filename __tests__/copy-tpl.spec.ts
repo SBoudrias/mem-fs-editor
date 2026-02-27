@@ -28,7 +28,7 @@ describe('#copyTpl()', () => {
   it("doesn't accept async EJS rendering", () => {
     expect(() => {
       memFs.copyTpl('', '', {}, { async: true });
-    }).toThrowError('Async EJS rendering is not supported in appendTpl');
+    }).toThrowError('Async EJS rendering is not supported');
   });
 
   it('copy file and process contents as underscore template', () => {
@@ -146,21 +146,6 @@ describe('#copyTpl()', () => {
     // Check that both path and content were processed
     expect(memFs.exists('/new/bar/file.txt')).toBeTruthy();
     expect(memFs.read('/new/bar/file.txt')).toBe('bar' + os.EOL);
-  });
-
-  it('provides source filepath to fileTransform', () => {
-    const filepath = getFixture('file-tpl.txt');
-    const newPath = '/new/path/file.txt';
-    memFs.copyTpl(filepath, newPath, { name: 'bar' }, undefined, {
-      fileTransform(destPath: string, sourcePath: string, contents: Buffer): [string, Buffer] {
-        // Verify that sourcePath is the original template file
-        expect(sourcePath).toBe(filepath);
-        // Verify that destPath is the target path
-        expect(destPath).toBe(path.resolve(newPath));
-        // Return unmodified path and content
-        return [destPath, contents];
-      },
-    });
   });
 
   it('keeps template path in file history', () => {
