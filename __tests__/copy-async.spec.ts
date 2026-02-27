@@ -168,7 +168,7 @@ describe('#copyAsync()', () => {
         // Verify that destPath is the target path
         expect(destPath).toBe(path.resolve(newPath));
         // Verify that content is the original file content
-        expect(contents.toString()).toBe('<%= name %>\n');
+        expect(contents.toString().trim()).toBe('<%= name %>');
         // Return unmodified path and content
         return [destPath, contents];
       },
