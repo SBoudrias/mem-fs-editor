@@ -17,6 +17,8 @@ const debug = createDebug('mem-fs-editor:copy');
 type CopySingleOptions = {
   append?: boolean;
   /**
+   * @experimental This API is experimental and may change without a major version bump.
+   *
    * Transform both the file path and content during copy.
    * @param destinationPath The destination file path
    * @param sourcePath The source file path

@@ -158,7 +158,7 @@ describe('#copyAsync()', () => {
     expect(memFs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
   });
 
-  it('provides options to fileTransform', async () => {
+  it('provides correct parameters to fileTransform', async () => {
     const filepath = getFixture('file-tpl.txt');
     const newPath = '/new/path/file.txt';
     await memFs.copyAsync(filepath, newPath, {

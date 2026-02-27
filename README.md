@@ -54,7 +54,7 @@ Append the new contents to the current file contents.
 - `options.separator` (default `os.EOL`). Separator to insert between current and new contents.
 - `options.create` (default `false`). Create the file if doesn't exists.
 
-### `#appendTpl(filepath, contents, data[, [options])`
+### `#appendTpl(filepath, contents, data[, options])`
 
 Append the new `contents` to the existing `filepath` content and parse the new contents as an [ejs](http://ejs.co/) template where `data` is the template context (the variable names available inside the template).
 
@@ -103,7 +103,7 @@ Async version of `copy`.
 
 Same parameters of `copy`
 
-See [copy() documentation for more details](#copyfrom-to-data-options-).
+See [copy() documentation for more details](#copyfrom-to-options).
 
 ### `#copyTpl(from, to, data[, options])`
 
@@ -111,7 +111,7 @@ Copy the `from` file and, if it is not a binary file, parse its content as an [e
 
 You can optionally pass a `transformOptions` object in `options` parameter. `mem-fs-editor` automatically setup the filename option so you can easily use partials.
 
-You can also optionally pass a `options` object (see [copy() documentation for more details](#copyfrom-to-data-options-)).
+You can also optionally pass a `options` object (see [copy() documentation for more details](#copyfrom-to-options)).
 
 Templates syntax looks like this:
 
@@ -134,7 +134,7 @@ Async version of `copyTpl` that uses `copyAsync` instead of `copy`.
 
 Can be used for best performance. Reduces overheads.
 
-Same parameters of `copyTpl` (see [copyTpl() documentation for more details](#copyfrom-to-data-options-)).
+Same parameters of `copyTpl` (see [copyTpl() documentation for more details](#copytplfrom-to-data-options)).
 
 ### `#move(from, to, [options])`
 

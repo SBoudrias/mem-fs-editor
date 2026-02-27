@@ -203,7 +203,7 @@ describe('#copy()', () => {
     expect(memFs.read(path.join(outputDir, '/nested/file.txt'))).toBe('nested' + os.EOL);
   });
 
-  it('provides options to fileTransform', () => {
+  it('provides correct parameters to fileTransform', () => {
     const filepath = getFixture('file-tpl.txt');
     const newPath = '/new/path/file.txt';
     memFs.copy(filepath, newPath, {
