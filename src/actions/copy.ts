@@ -14,21 +14,32 @@ import { resolveFromPaths, getCommonPath, ResolvedFrom, resolveGlobOptions, glob
 
 const debug = createDebug('mem-fs-editor:copy');
 
-type CopySingleOptions = {
+type CopySingleOptions<TransformData = any, TransformOptions = any> = {
   append?: boolean;
   /**
    * @experimental This API is experimental and may change without a major version bump.
    *
    * Transform both the file path and content during copy.
-   * @param destinationPath The destination file path
-   * @param sourcePath The source file path
-   * @param contents The file content as Buffer
-   * @returns Tuple of [new filepath, new content]
+   * @param options The transform options
+   * @param options.destinationPath The destination file path
+   * @param options.sourcePath The source file path
+   * @param options.contents The file content as Buffer
+   * @param options.options The options passed to fileTransform
+   * @param options.data The data passed to fileTransform
+   * @returns An object containing the new file path and contents.
    */
-  fileTransform?: (destinationPath: string, sourcePath: string, contents: Buffer) => [string, string | Buffer];
+  fileTransform?: (options: {
+    destinationPath: string;
+    sourcePath: string;
+    contents: Buffer;
+    data?: TransformData;
+    options?: TransformOptions;
+  }) => { path: string; contents: string | Buffer };
+  transformData?: TransformData;
+  transformOptions?: TransformOptions;
 };
 
-type CopyOptions = CopySingleOptions & {
+type CopyOptions<TransformData = any, TransformOptions = any> = CopySingleOptions<TransformData, TransformOptions> & {
   noGlob?: boolean;
   /**
    * Options for disk globbing.
@@ -46,7 +57,12 @@ type CopyOptions = CopySingleOptions & {
   fromBasePath?: string;
 };
 
-export function copy(this: MemFsEditor, from: string | string[], to: string, options: CopyOptions = {}) {
+export function copy<const TransformData = any, const TransformOptions = any>(
+  this: MemFsEditor,
+  from: string | string[],
+  to: string,
+  options: CopyOptions<TransformData, TransformOptions> = {},
+) {
   const { fromBasePath = getCommonPath(from), noGlob } = options;
   const hasGlobOptions = Boolean(options.globOptions);
   const hasMultimatchOptions = Boolean(options.storeMatchOptions);
@@ -129,12 +145,17 @@ export function copy(this: MemFsEditor, from: string | string[], to: string, opt
   });
 }
 
-const defaultFileTransform: NonNullable<CopySingleOptions['fileTransform']> = (destPath, _srcPath, contents) => [
-  destPath,
+const defaultFileTransform: NonNullable<CopySingleOptions['fileTransform']> = ({ destinationPath, contents }) => ({
+  path: destinationPath,
   contents,
-];
+});
 
-export function copySingle(editor: MemFsEditor, from: string, to: string, options: CopySingleOptions = {}) {
+export function copySingle<const TransformData = any, const TransformOptions = any>(
+  editor: MemFsEditor,
+  from: string,
+  to: string,
+  options: CopySingleOptions<TransformData, TransformOptions> = {},
+) {
   assert(editor.exists(from), 'Trying to copy from a source that does not exist: ' + from);
 
   debug('Copying %s to %s with %o', from, to, options);
@@ -145,8 +166,14 @@ export function copySingle(editor: MemFsEditor, from: string, to: string, option
     throw new Error(`Cannot copy empty file ${from}`);
   }
 
-  const { fileTransform = defaultFileTransform } = options;
-  [to, contents] = fileTransform(path.resolve(to), from, file.contents);
+  const { fileTransform = defaultFileTransform, transformOptions, transformData } = options;
+  ({ path: to, contents } = fileTransform({
+    destinationPath: path.resolve(to),
+    sourcePath: from,
+    contents: file.contents,
+    options: transformOptions,
+    data: transformData,
+  }));
 
   if (options.append && editor.store.existsInMemory(to)) {
     editor.append(to, contents, { create: true, ...options });

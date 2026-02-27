@@ -69,13 +69,16 @@ describe('#copyAsync()', () => {
     const contents = 'some processed contents';
     const newPath = getFixture('../../test/new/path/file.txt');
     const transformedPath = getFixture('../../test/transformed/path/file.txt');
+    const transformOptions = { someOption: true };
     await memFs.copyAsync(filepath, newPath, {
-      fileTransform(destinationPath, sourcePath, fileContents) {
+      fileTransform({ destinationPath, sourcePath, contents: fileContents, options }) {
         expect(destinationPath).toBe(path.resolve(newPath));
         expect(sourcePath).toBe(filepath);
         expect(fileContents).toBeInstanceOf(Buffer);
-        return [transformedPath, Buffer.from(contents)];
+        expect(options).toMatchObject({ someOption: true });
+        return { path: transformedPath, contents: Buffer.from(contents) };
       },
+      transformOptions,
     });
     expect(memFs.read(transformedPath)).toBe(contents);
   });
@@ -108,7 +111,7 @@ describe('#copyAsync()', () => {
     const outputDir = getFixture('../../test/output');
     const fileTransform = vi
       .fn<NonNullable<CopyAsyncOptions['fileTransform']>>()
-      .mockImplementation((destinationPath, _sourcePath, contents) => [destinationPath, contents]);
+      .mockImplementation(({ destinationPath, contents }) => ({ path: destinationPath, contents }));
     await memFs.copyAsync(getFixture('**'), outputDir, { fileTransform });
     expect(fileTransform).toHaveBeenCalledTimes(13); // 10 total files under 'fixtures', not counting folders
     expect(memFs.read(path.join(outputDir, 'file-a.txt'))).toBe('foo' + os.EOL);
@@ -161,17 +164,25 @@ describe('#copyAsync()', () => {
   it('provides correct parameters to fileTransform', async () => {
     const filepath = getFixture('file-tpl.txt');
     const newPath = '/new/path/file.txt';
+    const transformOptions = { async: true };
+    const transformData = { someData: 123 };
     await memFs.copyAsync(filepath, newPath, {
-      fileTransform(destinationPath, sourcePath, contents) {
+      fileTransform({ destinationPath, sourcePath, contents, options, data }) {
         // Verify that sourcePath is the original template file
         expect(sourcePath).toBe(filepath);
         // Verify that destPath is the target path
         expect(destinationPath).toBe(path.resolve(newPath));
         // Verify that content is the original file content
         expect(contents.toString().trim()).toBe('<%= name %>');
+        // Verify that options is the same as transformOptions
+        expect(options).toMatchObject(transformOptions);
+        // Verify that data is the same as transformData
+        expect(data).toMatchObject(transformData);
         // Return unmodified path and content
-        return [destinationPath, contents];
+        return { path: destinationPath, contents };
       },
+      transformOptions,
+      transformData,
     });
   });
 });

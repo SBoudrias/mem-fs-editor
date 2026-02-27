@@ -28,26 +28,36 @@ async function getOneFile(filepath: string) {
   return undefined;
 }
 
-type CopySingleAsyncOptions = Parameters<MemFsEditor['append']>[2] & {
+type CopySingleAsyncOptions<TransformData = any, TransformOptions = any> = Parameters<MemFsEditor['append']>[2] & {
   append?: boolean;
 
   /**
    * @experimental This API is experimental and may change without a major version bump.
    *
    * Transform both the file path and content during copy.
-   * @param destinationPath The destination file path
-   * @param sourcePath The source file path
-   * @param contents The file content as Buffer
-   * @returns Tuple of [new filepath, new content]
+   * @param options The transform options
+   * @param options.destinationPath The destination file path
+   * @param options.sourcePath The source file path
+   * @param options.contents The file content as Buffer
+   * @param options.options The options passed to fileTransform
+   * @param options.data The data passed to fileTransform
+   * @returns An object containing the new file path and contents.
    */
-  fileTransform?: (
-    destinationPath: string,
-    sourcePath: string,
-    contents: Buffer,
-  ) => [string, string | Buffer] | Promise<[string, string | Buffer]>;
+  fileTransform?: (options: {
+    destinationPath: string;
+    sourcePath: string;
+    contents: Buffer;
+    data?: TransformData;
+    options?: TransformOptions;
+  }) => { path: string; contents: string | Buffer } | Promise<{ path: string; contents: string | Buffer }>;
+  transformData?: TransformData;
+  transformOptions?: TransformOptions;
 };
 
-type CopyAsyncOptions = CopySingleAsyncOptions & {
+type CopyAsyncOptions<TransformData = any, TransformOptions = any> = CopySingleAsyncOptions<
+  TransformData,
+  TransformOptions
+> & {
   noGlob?: boolean;
   /**
    * Options for disk globbing.
@@ -65,11 +75,11 @@ type CopyAsyncOptions = CopySingleAsyncOptions & {
   fromBasePath?: string;
 };
 
-export async function copyAsync(
+export async function copyAsync<const TransformData = any, const TransformOptions = any>(
   this: MemFsEditor,
   from: string | string[],
   to: string,
-  options: CopyAsyncOptions = {},
+  options: CopyAsyncOptions<TransformData, TransformOptions> = {},
 ) {
   to = path.resolve(to);
   const { noGlob } = options;
@@ -150,12 +160,17 @@ export async function copyAsync(
   ]);
 }
 
-const defaultFileTransform: NonNullable<CopyAsyncOptions['fileTransform']> = (destPath, _sourcePath, contents) => [
-  destPath,
+const defaultFileTransform: NonNullable<CopyAsyncOptions['fileTransform']> = ({ destinationPath, contents }) => ({
+  path: destinationPath,
   contents,
-];
+});
 
-async function copySingleAsync(editor: MemFsEditor, from: string, to: string, options: CopySingleAsyncOptions = {}) {
+async function copySingleAsync<const TransformData = any, const TransformOptions = any>(
+  editor: MemFsEditor,
+  from: string,
+  to: string,
+  options: CopySingleAsyncOptions<TransformData, TransformOptions> = {},
+) {
   from = path.resolve(from);
 
   debug('Copying %s to %s with %o', from, to, options);
@@ -163,10 +178,16 @@ async function copySingleAsync(editor: MemFsEditor, from: string, to: string, op
   const file = editor.store.get(from);
   assert(file.contents, `Cannot copy empty file ${from}`);
 
-  const { fileTransform = defaultFileTransform } = options;
-  const transformPromise = fileTransform(path.resolve(to), from, file.contents);
+  const { fileTransform = defaultFileTransform, transformOptions, transformData } = options;
+  const transformPromise = fileTransform({
+    destinationPath: path.resolve(to),
+    sourcePath: from,
+    contents: file.contents,
+    options: transformOptions,
+    data: transformData,
+  });
   let contents: string | Buffer;
-  [to, contents] = await transformPromise;
+  ({ path: to, contents } = await transformPromise);
 
   if (options.append && editor.store.existsInMemory(to)) {
     editor.append(to, contents, { create: true, ...options });
