@@ -79,8 +79,9 @@ Delete a file or a directory.
 Copy file(s) from the `from` path to the `to` path.
 When passing array, you should pass `options.fromBasePath` to be used to calculate the `to` relative path. The common directory will be detected and used as `fromBasePath` otherwise.
 
-Optionally, pass an `options.fileTransform` function (`fileTransform(filepath, contents)`) that transforms both the destination path and file contents. The function takes two arguments:
-- `filepath`: The resolved destination file path
+Optionally, pass an `options.fileTransform` function (`fileTransform(destinationPath, sourcePath, contents)`) that transforms both the destination path and file contents. The function takes two arguments:
+- `destinationPath`: The resolved destination file path
+- `sourcePath`: The resolved source file path
 - `contents`: The file contents as a `Buffer`
 
 It should return a tuple `[newFilepath, newContents]` where:
