@@ -19,7 +19,7 @@ export function copyTpl(
         throw new Error('Async EJS rendering is not supported');
       }
 
-      const processedPath = ejs.render(destinationPath, data, {
+      let processedPath = ejs.render(destinationPath, data, {
         ...options,
         cache: false, // Cache uses filename as key, which is not provided in this case.
         async: false,
@@ -32,7 +32,12 @@ export function copyTpl(
             ...options,
             async: false,
           });
-      return { path: processedPath.replace(/.ejs$/, ''), contents: processedContent };
+      if (!to.endsWith('.ejs')) {
+        // If the initial destination path ends with .ejs, the output is expected to be .ejs file, so we keep the extension. Remove .ejs extension for other cases.
+        processedPath = processedPath.replace(/.ejs$/, '');
+      }
+
+      return { path: processedPath, contents: processedContent };
     },
   });
 }

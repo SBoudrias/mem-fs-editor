@@ -15,7 +15,7 @@ export default async function (
     ...options,
     transformData: data,
     async fileTransform({ destinationPath, sourcePath, contents, data, options }) {
-      const processedPath = await ejs.render(destinationPath, data, {
+      let processedPath = await ejs.render(destinationPath, data, {
         ...options,
         cache: false, // Cache uses filename as key, which is not provided in this case.
       });
@@ -28,8 +28,12 @@ export default async function (
             // Users must pass async value in transformOptions if they want to use async features of ejs.
             ...options,
           });
+      if (!to.endsWith('.ejs')) {
+        // If the initial destination path ends with .ejs, the output is expected to be .ejs file, so we keep the extension. Remove .ejs extension for other cases.
+        processedPath = processedPath.replace(/.ejs$/, '');
+      }
 
-      return { path: processedPath.replace(/.ejs$/, ''), contents: processedContent };
+      return { path: processedPath, contents: processedContent };
     },
   });
 }
