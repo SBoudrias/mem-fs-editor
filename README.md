@@ -79,16 +79,30 @@ Delete a file or a directory.
 Copy file(s) from the `from` path to the `to` path.
 When passing array, you should pass `options.fromBasePath` to be used to calculate the `to` relative path. The common directory will be detected and used as `fromBasePath` otherwise.
 
-Optionally, pass an `options.fileTransform` function (`fileTransform(destinationPath, sourcePath, contents)`) that transforms both the destination path and file contents. The function takes two arguments:
+Optionally, pass an `options.fileTransform` function that transforms both the destination path and file contents. The function receives a single object parameter with the following properties:
 
-- `destinationPath`: The resolved destination file path
-- `sourcePath`: The resolved source file path
+- `destinationPath`: The resolved destination file path (string)
+- `sourcePath`: The source file path (string)
 - `contents`: The file contents as a `Buffer`
+- `data`: Optional data passed via `options.transformData`
+- `options`: Optional options passed via `options.transformOptions`
 
-It should return a tuple `[newFilepath, newContents]` where:
+The function should return an object `{ path, contents }` where:
 
-- `newFilepath`: The transformed destination path (string)
-- `newContents`: The transformed file contents (Buffer)
+- `path`: The transformed destination path (string)
+- `contents`: The transformed file contents (string | Buffer)
+
+Example:
+
+```js
+fs.copy('source.txt', 'dest.txt', {
+  fileTransform({ destinationPath, sourcePath, contents, data, options }) {
+    const newPath = destinationPath.replace('.txt', '.md');
+    const newContents = contents.toString().toUpperCase();
+    return { path: newPath, contents: newContents };
+  },
+});
+```
 
 `options.ignoreNoMatch` can be used to silence the error thrown if no files match the `from` pattern.
 `options.append` can be used to append `from` contents to `to` instead of copying, when the file is already loaded in mem-fs (safe for regeneration).
@@ -104,7 +118,7 @@ Async version of `copy`.
 `copy` loads `from` to memory and copy its contents to `to`.
 `copyAsync` copies directly from the disk to `to`, falling back to `copy` behavior if the file doesn't exists on disk.
 
-Same parameters of `copy`
+Same parameters of `copy`. The `fileTransform` function can also return a `Promise<{ path: string; contents: string | Buffer }>` for async transformations.
 
 See [copy() documentation for more details](#copyfrom-to-options).
 

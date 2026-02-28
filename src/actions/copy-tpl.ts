@@ -7,20 +7,20 @@ export function copyTpl(
   from: string | string[],
   to: string,
   data: ejs.Data = {},
-  options?: Omit<NonNullable<Parameters<MemFsEditor['copy']>[2]>, 'fileTransform'> & {
+  options?: Omit<NonNullable<Parameters<MemFsEditor['copy']>[2]>, 'fileTransform' | 'transformData'> & {
     transformOptions?: ejs.Options;
   },
 ) {
   this.copy(from, to, {
     ...options,
-    fileTransform(destinationPath, sourcePath, contents) {
-      const { transformOptions } = options ?? {};
-      if (transformOptions?.async) {
+    transformData: data,
+    fileTransform({ destinationPath, sourcePath, contents, data, options }) {
+      if (options?.async) {
         throw new Error('Async EJS rendering is not supported');
       }
 
       const processedPath = ejs.render(destinationPath, data, {
-        ...transformOptions,
+        ...options,
         cache: false, // Cache uses filename as key, which is not provided in this case.
         async: false,
       });
@@ -29,10 +29,10 @@ export function copyTpl(
         : ejs.render(contents.toString(), data, {
             // Setting filename by default allow including partials.
             filename: sourcePath,
-            ...transformOptions,
+            ...options,
             async: false,
           });
-      return [processedPath.replace(/.ejs$/, ''), processedContent];
+      return { path: processedPath.replace(/.ejs$/, ''), contents: processedContent };
     },
   });
 }
