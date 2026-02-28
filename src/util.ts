@@ -97,6 +97,14 @@ export function resolveFromPaths({
   });
 }
 
-export function resolveGlobOptions({ noGlob, hasGlobOptions, hasDynamicPattern }) {
+export function resolveGlobOptions({
+  noGlob,
+  hasGlobOptions,
+  hasDynamicPattern,
+}: {
+  noGlob?: boolean;
+  hasGlobOptions?: boolean;
+  hasDynamicPattern?: boolean;
+}) {
   return { preferFiles: noGlob || (!hasGlobOptions && !hasDynamicPattern) };
 }
