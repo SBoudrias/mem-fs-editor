@@ -35,7 +35,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: npm
       - run: node --version
-      - run: npm ci
+      - run: npm ci --engine-strict
       - name: Vitest
         run: npx vitest --run --coverage
       - uses: codecov/codecov-action@v5
