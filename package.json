@@ -40,7 +40,7 @@
     "debug": "^4.4.3",
     "deep-extend": "^0.6.0",
     "ejs": "^4.0.1",
-    "isbinaryfile": "5.0.7",
+    "isbinaryfile": "6.0.0",
     "minimatch": "^10.2.4",
     "multimatch": "^8.0.0",
     "normalize-path": "^3.0.0",
