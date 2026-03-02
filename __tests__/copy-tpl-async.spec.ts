@@ -203,5 +203,12 @@ for (const method of ['copyTpl', 'copyTplAsync'] as const) {
       await memFs[method](filepath, newPath, { name: 'new content' });
       expect(memFs.store.get(newPath).history).toMatchObject([resolve(filepath), resolve(newPath)]);
     });
+
+    it('does not remove ejs extension when the destination path ends with .ejs', async () => {
+      const filepath = getFixture('ejs/file-ejs-extension.txt.ejs');
+      const newPath = '/new/path/file-ejs-extension.txt.ejs';
+      await memFs[method](filepath, newPath);
+      expect(memFs.exists(newPath)).toBeTruthy();
+    });
   });
 }
