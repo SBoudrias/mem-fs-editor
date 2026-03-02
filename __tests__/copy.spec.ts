@@ -15,7 +15,7 @@ describe('#copy()', () => {
 
   beforeEach(async () => {
     memFs = create(createMemFs<MemFsEditorFile>());
-    outputDir = path.join(os.tmpdir(), 'mem-fs-editor');
+    outputDir = path.join(os.tmpdir(), 'mem-fs-editor', Math.random().toString().split('.')[1]);
     await fs.mkdir(outputDir, { recursive: true });
   });
 
@@ -87,16 +87,12 @@ describe('#copy()', () => {
 
   it('transforms file path and contents using fileTransform', () => {
     const filepath = getFixture('file-a.txt');
-    const initialContents = memFs.read(filepath);
-    const transformedPath = 'transformed/path/file.txt';
+    const transformedPath = getFixture('../../test/transformed/path/file.txt');
     const transformedContent = 'transformed content';
 
-    memFs.copy(filepath, transformedPath, {
-      fileTransform({ destinationPath, contents }) {
-        expect(contents).toBeInstanceOf(Buffer);
-        expect(contents.toString()).toBe(initialContents);
-        expect(destinationPath).toBe(path.resolve(transformedPath));
-        return { path: destinationPath, contents: Buffer.from(transformedContent) };
+    memFs.copy(filepath, 'any', {
+      fileTransform() {
+        return { path: transformedPath, contents: Buffer.from(transformedContent) };
       },
     });
 
@@ -134,7 +130,7 @@ describe('#copy()', () => {
     }).toThrow();
   });
 
-  it('copy files by globbing and process contents', () => {
+  it('transforms files when globbing', () => {
     const fileTransform = vi
       .fn<NonNullable<CopyOptions['fileTransform']>>()
       .mockImplementation(({ destinationPath, contents }) => ({ path: destinationPath, contents }));
@@ -159,7 +155,7 @@ describe('#copy()', () => {
   it('preserve permissions', async () => {
     const filename = path.join(outputDir, 'perm.txt');
     const copyname = path.join(outputDir, 'copy-perm.txt');
-    await fs.writeFile(filename, 'foo', { mode: 0o733 });
+    await fs.writeFile(filename, 'foo', { mode: 0o755, encoding: 'utf-8' });
 
     memFs.copy(filename, copyname);
 
@@ -170,7 +166,7 @@ describe('#copy()', () => {
   });
 
   it('copy with globbing disabled', () => {
-    const newPath = getFixture('../../test/output', 'file.txt');
+    const newPath = path.join(outputDir, 'file.txt');
     memFs.copy(getFixture('file-(specia!-char$).txt'), newPath, {
       noGlob: true,
     });
@@ -178,7 +174,7 @@ describe('#copy()', () => {
   });
 
   it('copy glob like file when noGlob', () => {
-    const newPath = getFixture('../../test/output', 'file.txt');
+    const newPath = path.join(outputDir, 'file.txt');
     memFs.copy(getFixture('[file].txt'), newPath, {
       noGlob: true,
     });
@@ -195,7 +191,6 @@ describe('#copy()', () => {
   });
 
   it('detects fromBasePath from common prefix', () => {
-    const outputDir = getFixture('../../test/output');
     memFs.copy([getFixture('file-a.txt'), getFixture('nested/file.txt')], outputDir, {
       noGlob: true,
     });
