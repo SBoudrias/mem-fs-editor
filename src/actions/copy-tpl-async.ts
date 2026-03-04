@@ -6,11 +6,30 @@ export default async function (
   this: MemFsEditor,
   from: string | string[],
   to: string,
+  data?: ejs.Data,
+  options?: Omit<NonNullable<Parameters<MemFsEditor['copyAsync']>[2]>, 'fileTransform' | 'transformData'> & {
+    transformOptions?: ejs.Options;
+  },
+): Promise<void>;
+export default async function (
+  this: MemFsEditor,
+  from: string | string[],
+  to: string,
   data: ejs.Data = {},
   options?: Omit<NonNullable<Parameters<MemFsEditor['copyAsync']>[2]>, 'fileTransform' | 'transformData'> & {
     transformOptions?: ejs.Options;
   },
-) {
+  compatOptions?: Omit<NonNullable<Parameters<MemFsEditor['copyAsync']>[2]>, 'fileTransform' | 'transformData'>,
+): Promise<void> {
+  /* v8 ignore next -- @preserve */
+  if (compatOptions) {
+    // Backward compatibility.
+    options = {
+      ...compatOptions,
+      transformOptions: options as ejs.Options,
+    };
+  }
+
   await this.copyAsync(from, to, {
     ...options,
     transformData: data,

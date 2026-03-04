@@ -22,7 +22,13 @@ export default defineConfig([
     rules: {
       'max-params': 'off',
       'no-eq-null': 'off',
-
+      'capitalized-comments': [
+        'error',
+        'always',
+        {
+          ignorePattern: 'v8',
+        },
+      ],
       eqeqeq: [
         'error',
         'always',

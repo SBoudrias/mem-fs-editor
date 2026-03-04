@@ -162,6 +162,7 @@ export function copySingle<const TransformData = any, const TransformOptions = a
   const file = editor.store.get(from);
 
   let contents: string | Buffer;
+  /* v8 ignore next -- @preserve should not happen */
   if (!file.contents) {
     throw new Error(`Cannot copy empty file ${from}`);
   }
