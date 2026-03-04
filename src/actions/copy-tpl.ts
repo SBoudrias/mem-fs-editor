@@ -6,11 +6,29 @@ export function copyTpl(
   this: MemFsEditor,
   from: string | string[],
   to: string,
+  data?: ejs.Data,
+  options?: Omit<NonNullable<Parameters<MemFsEditor['copy']>[2]>, 'fileTransform' | 'transformData'> & {
+    transformOptions?: ejs.Options;
+  },
+): void;
+export function copyTpl(
+  this: MemFsEditor,
+  from: string | string[],
+  to: string,
   data: ejs.Data = {},
   options?: Omit<NonNullable<Parameters<MemFsEditor['copy']>[2]>, 'fileTransform' | 'transformData'> & {
     transformOptions?: ejs.Options;
   },
-) {
+  compatOptions?: Omit<NonNullable<Parameters<MemFsEditor['copy']>[2]>, 'fileTransform' | 'transformData'>,
+): void {
+  if (compatOptions) {
+    // Backward compatibility.
+    options = {
+      ...compatOptions,
+      transformOptions: options as ejs.Options,
+    };
+  }
+
   this.copy(from, to, {
     ...options,
     transformData: data,
