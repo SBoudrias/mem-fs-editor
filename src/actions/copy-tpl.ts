@@ -21,6 +21,7 @@ export function copyTpl(
   },
   compatOptions?: Omit<NonNullable<Parameters<MemFsEditor['copy']>[2]>, 'fileTransform' | 'transformData'>,
 ): void {
+  /* v8 ignore next -- @preserve */
   if (compatOptions) {
     // Backward compatibility.
     options = {

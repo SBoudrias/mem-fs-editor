@@ -21,6 +21,7 @@ export default async function (
   },
   compatOptions?: Omit<NonNullable<Parameters<MemFsEditor['copyAsync']>[2]>, 'fileTransform' | 'transformData'>,
 ): Promise<void> {
+  /* v8 ignore next -- @preserve */
   if (compatOptions) {
     // Backward compatibility.
     options = {
