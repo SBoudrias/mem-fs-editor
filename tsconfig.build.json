@@ -4,6 +4,7 @@
   "compilerOptions": {
     /* Emit */
     "noEmit": false,
+    "rootDir": "./src",
     "outDir": "./dist",
     "declaration": true,
     "noImplicitAny": true,
