@@ -131,7 +131,11 @@ export async function copyAsync<const TransformData = any, const TransformOption
       // The store may have a glob path and when we try to copy it will fail because not real file
       .filter((filePath) => !isDynamicPattern(filePath));
 
-    multimatch(normalizedStoreFilePaths, patterns, options.storeMatchOptions).forEach((filePath) => {
+    multimatch(
+      normalizedStoreFilePaths,
+      patterns.map((p) => (path.isAbsolute(p) ? p : path.posix.join(normalize(fromBasePath), p))),
+      options.storeMatchOptions,
+    ).forEach((filePath) => {
       storeFiles.push(path.resolve(filePath));
     });
   }
