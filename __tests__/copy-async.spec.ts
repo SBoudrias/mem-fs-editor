@@ -77,6 +77,18 @@ for (const method of ['copy', 'copyAsync'] as const) {
       expect(memFs.read(path.join(destDir, 'file-b.txt'))).toBe('b');
     });
 
+    it('can copy relative directory not committed', async () => {
+      const sourceDir = getFixture('../../test/foo');
+      const destDir = getFixture('../../test/bar');
+      memFs.write(path.join(sourceDir, 'file-a.txt'), 'a');
+      memFs.write(path.join(sourceDir, 'file-b.txt'), 'b');
+
+      await memFs[method]('**', destDir, { fromBasePath: sourceDir });
+
+      expect(memFs.read(path.join(destDir, 'file-a.txt'))).toBe('a');
+      expect(memFs.read(path.join(destDir, 'file-b.txt'))).toBe('b');
+    });
+
     it('throws when trying to copy from a non-existing file', async () => {
       const filepath = getFixture('does-not-exits');
       const newPath = getFixture('../../test/new/path/file.txt');
